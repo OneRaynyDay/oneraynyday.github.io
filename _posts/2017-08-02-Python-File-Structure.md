@@ -20,7 +20,38 @@ At the top level, we should only have the following:
 - `tests` this is our test suite.
     - But you may ask: "How does the test files access the module?". We'll answer this later.
 
-## Makefile(Optional)
+## Setup.py
+
+`setup.py` describes things like `name`, `version`, `packages`. If you want your project to be indexed on PyPI, then you need a unique `name` field.
+
+An example of metadata in your `setup.py`:
+
+```python
+import sys, os
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
+
+setup(name='package_name',
+      version='version_1',
+      description='this is a package',
+      license='mit',
+      install_requires=['package1','package2'],
+      py_modules=['core_module']
+    ) 
+```
+
+Why do we have `distutils` OR `setuptools`? Here's the history:
+
+> **Distutils** is still the standard tool for packaging in Python. It is included in the standard library (Python 2 and Python 3.0 to 3.3). It is useful for simple Python distributions, but lacks features. It introduces the distutils Python package that can be imported in your setup.py script.
+
+> **Setuptools** was developed to overcome Distutils' limitations, and is not included in the standard library. It introduced a command-line utility called easy_install. It also introduced the setuptools Python package that can be imported in your setup.py script, and the pkg_resources Python package that can be imported in your code to locate data files installed with a distribution. One of its gotchas is that it monkey-patches the distutils Python package. It should work well with pip. The latest version was released in July 2013.
+
+
+
+
+### Makefile(Optional)
 
 Sometimes you'll see a makefile for **python development**, and you might ask:
 
