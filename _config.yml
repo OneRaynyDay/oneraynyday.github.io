@@ -6,7 +6,7 @@ highlighter:      pygments
 permalink:        pretty
 
 # Setup
-title:            OneRaynyBlog
+title:            Ray
 tagline:          'UCLA CS'
 description:      'UCLA CS. ML. Math. Algorithms.'
 url:              http://oneraynyday.github.io
