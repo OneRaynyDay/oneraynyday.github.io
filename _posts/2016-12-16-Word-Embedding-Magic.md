@@ -1,5 +1,6 @@
 ---
 published: true
+use_math: true
 layout: default
 ---
 **Word embeddings are pretty amazing. But it's not like no one knows that already.**
