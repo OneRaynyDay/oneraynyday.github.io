@@ -15,7 +15,7 @@ baseurl:          ''
 author:
   name:           'Ray Zhang'
 
-paginate:         5
+paginate:         5     
 
 # Custom vars
 version:          2.1.0
