@@ -34,7 +34,7 @@ Some examples of loss functions are:
 - $l(h(x), y) = e^{-h(x)y}$, known as exponential loss.
 	- Adaboost, and other boosts like logit boost uses a similar analog, i.e. taking a log of this.
 
-For our purposes of understanding learning theory, we will use the 0/1 loss, since it's easy, and it's bounded. For any unbounded loss, we need to appropriately re-adjust the variance(explained in Hoeffding portion).
+For our purposes of understanding learning theory, we will use the 0/1 loss, since it's easy, and it's bounded. For any unbounded loss, we need to appropriately re-adjust the variance, explained in Hoeffding portion.
 
 # PAC Learning
 
