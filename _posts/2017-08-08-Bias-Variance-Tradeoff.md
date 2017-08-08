@@ -142,7 +142,7 @@ And we yield similar observations as above.
 
 # Bounding $R_N(f)$ with $R_N(f^*)$
 
-So far, we've used the hoeffding bound to get a good estimate on how far apart empirical risk and expected risk is. Can we say something about the empirical risk between $f$ and $f^*$?
+So far, we've used the hoeffding bound to get a good estimate on how far apart empirical risk and expected risk is. Let's now denote $f$ as the hypothesis we choose to minimize the **empirical risk**. Can we say something about the empirical risk between $f$ and $f^*$?
 
 The argument is pretty subtle, so I'll break it down into 4 parts:
 
