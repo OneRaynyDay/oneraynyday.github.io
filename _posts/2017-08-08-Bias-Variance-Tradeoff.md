@@ -55,6 +55,8 @@ This is great and all, but **this is only one hypothesis**. For a general class 
 
 # Uniform Bound
 
+![uniform_bound]({{ site.url }}/assets/uniformconvergence.png)
+
 The most basic way to plug Hoeffding into a general class of hypothesis, which we will denote $ \mathcal{H} $, is to assume that there exists no overlap between the bad hypotheses. A bad hypothesis is one where:
 
 $$
@@ -173,6 +175,8 @@ $R(f) \leq [inf_{f^* \in \mathcal{H}}R(f^*)] + 2 \sqrt{\frac{log(\frac{2M}{\delt
 This single equation is the holy grail equation to learning theory. In the next section when we talk about Vapnik-Chervonenkis dimensions, we will still use this equation, but with a small twist. We can also observe the bias-variance tradeoff in this single equation...
 
 ## Bias-Variance Tradeoff
+
+![bias_variance_tradeoff]({{ site.url }}/assets/bias_variance.png)
 
 If we have a ton of classes, like say a neural network over a linear model, our $\mathcal{H}$ will be a large set, and thus we can't get a tight bound. However, the optimal risk will also be _hopefully_ lower. 
 
