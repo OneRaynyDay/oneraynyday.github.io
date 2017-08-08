@@ -174,11 +174,11 @@ This single equation is the holy grail equation to learning theory. In the next 
 
 ## Bias-Variance Tradeoff
 
-If we have a ton of classes, like say a neural network over a linear model, our $\mathcal{H}$ will be a large set, and thus we can't get a tight bound. However, the optimal risk will also be(hopefully) lower. 
+If we have a ton of classes, like say a neural network over a linear model, our $\mathcal{H}$ will be a large set, and thus we can't get a tight bound. However, the optimal risk will also be _hopefully_ lower. 
 
 ### Using a Neural Net:
 
-We increase the complexity of our model, the set size becomes larger[increase risk], but the $inf R(f^*)$ is smaller[decrease risk]. Thus, using a neural net by itself won't help much. **Regularization** saves the day here. It's a way to control the complexity of our model(variance) while still decreasing risk. **This situation is low bias, high variance**.
+We increase the complexity of our model, the set size becomes larger[increase risk], but the $inf R(f^*)$ is smaller[decrease risk]. Thus, using a neural net by itself won't help much. **Regularization** saves the day here. It's a way to control the complexity of our model[variance] while still decreasing risk. **This situation is low bias, high variance**.
 
 ### Using a Linear Model:
 
