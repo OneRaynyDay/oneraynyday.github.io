@@ -33,7 +33,7 @@ A hypothesis in our case is just a mathematical model that tries to map x's to y
 - **linear support vector machine** assumes a separating hyperplane with greatest margin between two classes.
 - **logistic regression** assumes a separating hyperplane with the sigmoid function modeling the bernoulli distribution.
 - **decision trees** assume that the data is separated into classes by parallel axis splits, of which minimize the entropy/misclassification/gini index/etc.
-- **neural networks** assume a nonlinear mapping between x and y, and attempts to model the irregular probability distribution underneath. In reality, neural networks are just _self-learned kernel transformations of the data applied to a linear model_. There's nothing special. 
+- **neural networks** assume a nonlinear mapping between x and y, and attempts to model the probability distribution underneath. In reality, neural networks are just _self-learned kernel functions of the data applied to a linear model_. There's nothing special. 
 
 And the list goes on.
 
