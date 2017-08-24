@@ -169,14 +169,14 @@ This is great news because then it means **given a bound on the VC dimension, we
 
 + We expanded this idea to multiple hypotheses inside of a **hypothesis set**, like a set of all possible SVM's or something similar. 
 
-+ We realized that by using **uniform bounds**, which is saying that we're _pretty_ accurate with a _pretty good chance_, for _all_ hypotheses within our hypothesis set, as long as our hypothesis set is _not that big_.
++ We realized that by using **uniform bounds**, we can say that we're _pretty_ accurate with a _pretty good chance_, for _all_ hypotheses within our hypothesis set, as long as our hypothesis set is _not that big_.
 
 	+ We observed that it's harder to be _pretty accurate_ if our model sucks.
 	+ BUT, we also observed that it's harder to have a _pretty good chance_ if our model's way too complicated.
 
 + We also realized that with our uniform bound formulation, we can't possibly extend this idea to SVM's! There's infinite hypotheses within the set, rendering our bound moot.
 
-	+ BUT, we also observed that if we turn our attention to a couple of points, **a lot of the SVM models do effectively the same thing.**
+	+ BUT, we also observed that if we turn our attention to a couple of points, **a lot of the SVM hypotheses do effectively the same thing.**
 	+ THEN, we realized that if our model has a special property called a **VC dimension** that's finite, then _we can have a better and better chance as the # of data points increase_, asymptotically fulfilling PAC!
 
 So we found out a way to prove that _some_ models can generalize! Note that we cannot apply this idea to _all_ models, but at least we got somewhere.
