@@ -57,7 +57,7 @@ This is great and all, but **this is only one hypothesis**. For a general class 
 
 ![uniform_bound]({{ site.url }}/assets/uniformconvergence.png)
 
-The most basic way to plug Hoeffding into a general class of hypothesis, which we will denote $ \mathcal{H} $, is to assume that there exists no overlap between the bad hypotheses. A bad hypothesis is one where:
+The most basic way to plug Hoeffding into a general class of hypothesis, which we will denote $ \mathcal{H} $, is to assume that there exists no overlap between the bad hypotheses(I will elaborate on what overlap means). A bad hypothesis is one where:
 
 $$
 |R_{N}(f_{bad}) - R(f_{bad})| \geq \epsilon
@@ -93,9 +93,18 @@ $$
 P(\{\cup(B_i)_{i=0}^M\}^c) = 1 - P(\{\cup(B_i)_{i=0}^M\}) = 1 - \sum_{i=0}^M P(B_i)
 $$ 
 
-due to an assumption on each hypothesis being disjoint, which is a broad assumption.
+due to an assumption on each hypothesis being disjoint, which is a broad assumption. This assumption on that they are disjoint means that we add up the probability for each one without accounting for the inclusion. Recall the inclusion-exclusion principle:
 
-We use hoeffding on each individual event and get:
+$$
+P(A \cup B) = P(A) + P(B) - P(A \cap B)
+$$
+
+Here, we are assuming that $P(A \cap B) = 0$. If we didn't use this assumption, then it'd get ugly. Just for the sake of illustration, we would get:
+
+$-1^0*2C1P(B_i) + -1^1*2C2P(B_i \cap B_j)$ for 2 events...
+$-1^0*3C1P(B_i) + -1^1*3C2P(B_i \cap B_j) + -1^2*3C3P(B_i \cap B_j \cap B_k)$ for 3 events...
+
+So we **could** utilize the fact that there are overlaps to get a tighter bound, but it's way too resource consuming for now. Thus, we use hoeffding on each individual **disjoint** event and get:
 
 $$
 1 - \sum_{i=0}^M P(B_i) \geq 1 - 2Me^{-2N\epsilon^2}
