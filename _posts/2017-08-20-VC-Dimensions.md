@@ -23,7 +23,7 @@ $$
 H_m(x_1, x_2, ..., x_m) = \{(h(x_1), h(x_2), ..., h(x_m)) | h \in \mathcal{H}\} 
 $$
 
-$H_m(x_1, x_2, ..., x_m)$ in this case is **the # of possible combinations of outputs** for these specific m points. If we have $\Re^{Nxd} \to \\{-1,+1\\}^N$, then we can have up to total $2^N$ possibilities for outputs. For example, a good $\mathcal{H}$ could give the set $\{(-1, +1), (-1, -1), (+1, -1), (+1, +1)\}$, which has a cardinality of $2^2$. We can define the following:
+$H_m(x_1, x_2, ..., x_m)$ in this case is **the # of possible combinations of outputs** for these specific m points. If we have $\Re^{Nxd} \to \\{-1,+1\\}^N$, then we can have up to total $2^N$ possibilities for outputs. For example, a good $\mathcal{H}$ could give the set $\\{(-1, +1), (-1, -1), (+1, -1), (+1, +1)\\}$, which has a cardinality of $2^2$. We can define the following:
 
 $$
 m_\mathcal{H}(N) = max_{x_{1,...,m}} |H_m(x_1,...,x_m)|
