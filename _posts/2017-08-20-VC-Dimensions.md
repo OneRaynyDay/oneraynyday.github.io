@@ -191,19 +191,19 @@ Here's a small diagram of PAC:
 
 ### Rademacher Complexity
 
-The rademacher random variable is a random variable $\sigma \in \{-1, +1\}$, with probability $\frac{1}{2}$ for each event. Consider the following:
+The rademacher random variable is a random variable $\sigma \in \\{-1, +1\\}$, with probability $\frac{1}{2}$ for each event. Consider the following:
 
 $$
 E_{\sigma}[\frac{1}{N}\sum_{i=0}^N \sigma_ih(x_i)] = E_{\sigma}[h(x)] \approx E_{\sigma, D^N}[h(x)]
 $$
  
-Suppose $h(x) = c \forall x$. For now we assume $h : \Re^d \to \Re$, then the above expression becomes:
+Suppose $h(x) = c \forall x$. For now we assume $h : \Re^d \to \\{-1,+1\\}$, then the above expression becomes:
 
 $$
 \frac{1}{N}( c \sum_{i=1}^N E_{\sigma}[\sigma_i] ) = 0
 $$
 
-Due to the linearity of expectation. But for a complexity class of non-shattering dimensions, we obtain $2^n$ possibilities $\forall n$. We will simply pick the hypothesis that completely **overfits to the rademacher random variable noise!** 
+Due to the linearity of expectation. But for a complexity class of non-shattering dimensions, we obtain $2^n$ possibilities $\forall n$. We will simply pick the hypothesis that completely **overfits to the rademacher random variable noise!** We can output anywhere from [-1,1], but we only care about [0,1], since negating the hypothesis that gives -1 will give us a perfect classifier. If we can arbitrarily choose $h(x_i)$ to output same sign as $\sigma_i$, then we can reach 1.
 
 Using rademacher complexity, we can reach a similar bound as VC dimensions.
 
