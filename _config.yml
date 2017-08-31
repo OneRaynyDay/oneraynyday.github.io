@@ -1,5 +1,5 @@
 # Dependencies
-markdown:         redcarpet
+markdown:         kramdown
 highlighter:      pygments
 
 # Permalinks
@@ -8,7 +8,7 @@ permalink:        pretty
 # Setup
 title:            Ray
 tagline:          'UCLA CS'
-description:      ' '
+description:      'CS & Math Stuff'
 url:              http://oneraynyday.github.io
 baseurl:          ''
 
