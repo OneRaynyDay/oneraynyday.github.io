@@ -2,6 +2,7 @@
 published: true
 title: Statistical Learning Theory - VC Dimensions
 use_math: true
+category: ML
 layout: default
 ---
 

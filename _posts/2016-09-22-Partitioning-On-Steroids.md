@@ -1,5 +1,6 @@
 ---
 published: true
+category: algorithms
 layout: default
 ---
 Okay - I know I already made a post about partitioning for quicksort, but there are so many bad points about it that I just **had** to create a new one. Not that what I wrote was bad - my blog's great, but rather the algorithm itself.

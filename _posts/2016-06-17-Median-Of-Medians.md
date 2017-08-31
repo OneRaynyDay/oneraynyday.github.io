@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Median of Medians (Finding median-ish values)
+category: algorithms
 published: true
 ---
 In the previous post we said that our quickSelectSort was O(N^2) worst case. This is super bad because if we simply used a heapsort algorithm, which is O(N) heapify(Might elaborate on this later), and O(klogN) to extract out k greatest elements, then the total is O(N+klogN) which is asymptotically lower than O(N^2) since we know k < n. We want to use the best algorithm to select k greatest elements right? Well, then we have to tweak the O(N^2) implementation of quickSelectSort a bit. The key is to **use a median-finding technique**.

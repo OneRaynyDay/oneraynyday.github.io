@@ -1,5 +1,6 @@
 ---
 published: true
+category: algorithms
 layout: default
 ---
 When given a sorted array, say a vector\<int\>, how would one go about constructing the binary search tree that has "maximized bushiness", or in other words, the most close configuration to being a heap, aka complete BST? Well, this one is easy. However, let's talk about a linked list.

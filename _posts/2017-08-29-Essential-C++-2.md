@@ -1,6 +1,7 @@
 ---
 published: true
 title: Essential C++ - Constructors, Destructors, Assignments
+category: dev
 layout: default
 ---
 

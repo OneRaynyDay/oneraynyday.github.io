@@ -2,6 +2,7 @@
 published: true
 title: Statistical Learning Theory - Bias-Variance Trade-off
 use_math: true
+category: ML
 layout: default
 ---
 

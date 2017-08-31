@@ -1,6 +1,7 @@
 ---
 published: true
 layout: default
+category: algorithms
 publish: true
 ---
 Used often in cryptography, especially RSA public key/private key systems, modular exponentiation is a bit more tricky than you think it would be.

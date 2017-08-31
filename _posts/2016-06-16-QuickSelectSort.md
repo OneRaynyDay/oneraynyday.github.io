@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Quick Select Sort (Partial Sorting)
+category: algorithms
 published: true
 ---
 

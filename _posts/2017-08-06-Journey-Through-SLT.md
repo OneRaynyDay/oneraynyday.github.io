@@ -1,6 +1,7 @@
 ---
 title: Statistical Learning Theory - Hoeffding Bound
 use_math: true
+category: ML
 layout: default
 ---
 

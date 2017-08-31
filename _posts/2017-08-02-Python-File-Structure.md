@@ -1,5 +1,6 @@
 ---
 title: The Hitchhiker's Python Directory Structure
+category: dev
 layout: default
 ---
 

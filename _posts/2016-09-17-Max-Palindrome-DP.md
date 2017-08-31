@@ -1,5 +1,6 @@
 ---
 published: true
+category: algorithms
 layout: default
 ---
 So I just got the news that doing DP for palindromes is cool now. Anyways, so given a question like: "Given this string S, find the biggest palindrome it has." Now... Disregarding the fact that we'll actually never use this stupid algorithm in our real life situations... How do we answer it?

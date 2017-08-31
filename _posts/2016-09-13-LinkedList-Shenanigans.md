@@ -1,5 +1,6 @@
 ---
 published: true
+category: algorithms
 layout: default
 ---
 So I was doing this leetcode question that asked for sorted odd/even lists. I misunderstood the question like always, and coded a harder version. Here's the question for reference: https://leetcode.com/problems/odd-even-linked-list/

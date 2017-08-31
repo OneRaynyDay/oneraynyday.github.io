@@ -1,6 +1,7 @@
 ---
 published: true
 title: Essential C++ - C++ Basics
+category: dev
 layout: default
 ---
 

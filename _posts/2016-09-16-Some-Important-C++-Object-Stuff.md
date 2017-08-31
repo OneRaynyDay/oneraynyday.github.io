@@ -1,5 +1,6 @@
 ---
 published: true
+categories: dev
 layout: default
 ---
 Just a list of things to take mindful consideration of when designing C++ objects. This blog post will grow as I keep making mistakes.

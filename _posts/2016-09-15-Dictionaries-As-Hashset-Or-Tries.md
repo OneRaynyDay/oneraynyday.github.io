@@ -1,5 +1,6 @@
 ---
 published: true
+categories: algorithms
 layout: default
 ---
 Given many different situations, there are specific data structures which are appropriate for the occasion. If we have a dictionary, and we're trying to search words via wildcard(Like, what if we don't exactly remember the spelling of the word..? Is it spiderman or spoderman?), what kind of data structure should we use?

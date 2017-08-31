@@ -1,5 +1,6 @@
 ---
 published: true
+category: algorithms
 layout: default
 ---
 So segment trees are kind of hype now. I guess we can use it to find the largest increasing subsequence type questions, or to find largest subset sum of an array kind of thing. 
