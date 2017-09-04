@@ -1,9 +1,14 @@
 ---
 published: true
-title: C++ - "lvalue/rvalue", and "move semantics"
+title: C++ - Lvalue/Rvalue, and Move Semantics
 category: dev
 layout: default
 ---
+
+# Table of Contents
+
+* TOC
+{:toc}
 
 # Rvalue and Lvalue
 
@@ -148,7 +153,7 @@ bar_by_val(foo); // calls copy constructor
 bar_by_move(std::move(foo)); // calls move constructor
 ```
 
-So as you can see the ranking of **speed is : reference > move > value.**
+So as you can see the ranking of **speed is : reference > move > value.** Generally.
 
 ## So what can you `std::move` efficiently?
 
