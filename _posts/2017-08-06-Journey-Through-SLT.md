@@ -90,7 +90,7 @@ However, note that this is an asymptotic measurement. This is great and all but 
 Before we start, let's abstract away the notion of risk for now. Let's treat these $\epsilon$'s to be $t$, $R_N(f)$'s to be $Z_N$, and $R(f)$ to be $E[X]$. This will make our calculations much cleaner looking, and we'll recover the same result. So we start with:
 
 $$
-\lim_{N \to \infty} P(|Z_N+E[X]| > t) \to 0
+\lim_{N \to \infty} P(|Z_N - E[X]| > t) \to 0
 $$
 
 Then,
@@ -263,3 +263,5 @@ NOTE: Some people who are already familiar might ask why we use Hoeffding instea
 # Next Time
 
 Next time, we talk about finite hypothesis classes, and how we can use hoeffding for **a class of hypotheses** using uniform bound. Here, we've only talked about a single hypothesis, which is not practical.
+
+EDIT: Thanks to Andy for the typo fix :)
