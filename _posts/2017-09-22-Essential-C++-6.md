@@ -77,6 +77,10 @@ Penguin p;
 p.fly(); // COMPILER ERROR!
 ```
 
+# Composition is "has-a"
+
+In contrast to "is-a", which is implemented using inheritance, "has-a" is implemented via 
+
 # Avoid hiding inherited names
 
 While reading, I found this to be really surprising:
@@ -173,4 +177,315 @@ Derived d;
 d.foo(); // is fine
 d.foo(3); // is fine, calls Base::foo(int)
 ```
+
+**Now, if you actually don't want some overloaded functions to exist, then you're gonna need to be more picky:** We'll employ the tactic of a forwarding function:
+
+```c++
+class Base{
+public
+    virtual void foo(); // we want this overloaded
+    virtual void foo(int); // we want this
+    virtual void foo(std::string); // we don't want this!
+};
+class Derived : public Base{
+public:
+    void foo(); // different impl
+    void foo(int); // forwarding function
+};
+
+...
+void Derived::foo(int x){
+    Base::foo(x); // forwarding!
+}
+...
+
+Derived d;
+d.foo(); // is fine
+d.foo(3); // is fine, calls Derived::foo(int), which calls Base::foo(int)
+d.foo(std::string("Hello world!")); // error! (which is good)
+```
+
+# Differentiate inheritance of interface/implementation
+
+# Inheritance of interface
+
+It's pretty much inheriting a **pure-virtual function**, like:
+
+```c++
+class Base{
+    ...
+    virtual void foo() = 0; // pure virtual
+};
+```
+
+# Inheritance of implementation
+
+It's pretty much inheriting a **simple-virtual function**, like:
+
+```c++
+class Base{
+    ...
+    // simple virtual
+    virtual void foo(){ 
+        ... // does something
+    } 
+};
+```
+
+This is used for when you need a default to fall back to.
+
+Sometimes, the developer may be clumsy and _forget that there is a simple virtual implementation_:
+
+```c++
+class Derived{
+    ...
+    // Did NOT declare foo()
+};
+
+...
+
+vector<shared_ptr<Base>> v;
+for(auto ptr : v){
+    // strange... why do some of these not work/default?
+    // Oh that's right! I didn't define foo() in Derived!
+    ptr->foo(); 
+}
+```
+
+Then, their program behaves strangely because they either didn't know they call the function from the `Derived` class, or they call the function and it doesn't behave like how they wanted to.
+
+Scott Meyers suggests the following if you wanted a default implementation:
+
+```c++
+class Base{
+    ...
+    // pure virtual
+    virtual void foo() = 0;
+protected:
+    // notice how this isn't virtual;
+    // it's because we need this to be *invariant* behavior.
+    void defaultFoo(){
+        ... // does something
+    }
+};
+
+class Derived : public Base{
+    ...
+    // define
+    virtual void foo(){
+        defaultFoo();
+    }
+};
+```
+
+That way, we will have the default implementation, but we will let the compiler remind us.
+
+This is a bit more code bloat though.
+
+# Alternative Idioms to `virtual`
+
+## NVI (Non-virtual interface)
+This design revolves around the idea that **virtual functions should be private**.
+
+For example:
+
+```c++
+class Base{
+public:
+    int foo(){
+        ... // do something before
+        int val = doFoo();
+        ... // do something after
+        return val;
+    }
+private:
+    virtual int doFoo(){
+        ... // do something
+    }
+}
+```
+
+The idea is similar to `setUp()` and `tearDown()` before and after the virtual `doFoo()` workhorse.
+
+You're setting up the context, and then analyzing it and giving a result, while using simple virtuals in the middle to do most of the work.
+
+What does private virtual even mean? It means this:
+
+- The private means you cannot call `Base::doFoo()` from even the `Derived` class. 
+- The virtual means you can call `foo()`, which is `Base::foo()`, which can access `Base::doFoo()`.
+
+What do these two points amount to? **Yup, you cannot change the base implementation of `foo()`, but you can override `doFoo()` in the `Derived` class.**
+
+## Strategy Pattern (Function Ptrs)
+
+This is quite a dramatic design decision: **passing pointers to the actual functions to call.**
+
+```c++
+class Base;
+
+int defaultFoo(const Base&);
+
+class Base {
+public:
+    typedef int (*Foo)(const Base&);
+    explicit GameCharacter(Foo f = defaultFoo) : _foo(f) {}
+    ...
+    int foo(){
+        return _foo(*this);
+    }
+private:
+    Foo _foo;
+};
+```
+
+Here, we have a default function to execute `foo()`, passed in via the ctor. We keep a "strategy" as a function pointer in which we'll utilize inside of `void foo()`.
+
+### Strategy Pattern Improved (`std::function`)
+
+We can (and should) also do something with **`std::function<>`**, which generalizes the idea of a function:
+
+```c++
+...
+class Base {
+public:
+    typedef std::function<int (const Base&)> Foo;
+    explicit GameCharacter(Foo f = defaultFoo) : _foo(f) {}
+    ...
+};
+```
+
+This time, we can use any generalization of a function:
+
+```c++
+int defaultFoo1(const Base&); // works
+float defaultFoo2(const Base&); // implicitly casts; works
+struct defaultFoo3{ // generalized function; also works
+    int operator()(const Foo&) const;
+};
+class defaultFoo4{ // A member function of a class.
+    float foo(const Foo&) const; // uses this function
+};
+...
+
+defaultFoo4 df4;
+
+Base b(defaultFoo1);
+Base b(defaultFoo2);
+Base b(defaultFoo3());
+Base b(std::bind(&defaultFoo4::foo, df4, _1));
+```
+
+#### A brief explanation of what the last example does
+
+Inside of any member function of a class, we see something like:
+
+`{return signature} {function name} (arg1, arg2, ... )`
+
+This is not technically all that's happening underneath the hood. What's happening is that it's also taking in an implicit `*this` to know what the member function actually is. It looks more like:
+
+`{return signature} {function name} (*this, arg1, arg2, ... )`
+
+So what we need to do, when we want to use a specific object(in this case, df4's `foo()`)'s functions, then we need to implicitly bind the first argument to the instance that's holding the member function. `std::bind(&defaultFoo4::foo, df4, _1)` binds df4 to the first argument, so that any further arguments will be offset; starting at index 2 instead.
+
+### Strategy Pattern Improved (hierarchical virtual functions)
+
+When we have polymorphism on `foo()`, it will consult vtables on the object containing `foo()`. Normally, that object **is the object we're performing `foo()` on. In strategy pattern, you could delegate the inheritance of foo entirely to its own class:**
+
+```c++
+class Base;
+
+class Foo{
+public:
+    virtual int hidden_foo(const Base&) const; // this can be inherited!
+private:
+};
+
+class Base{
+public:
+    Base(Foo* foo = &defaultFoo) : _foo(foo) {};
+    int foo(){
+        return _foo->hidden_foo(*this);
+    }
+private:
+    Foo* _foo;
+};
+```
+
+This works too.
+
+### Pros/Flexibilities:
+
+1. Being able to supply different `foo()` for same class.
+2. `foo()`'s behavior may be changed during runtime.
+
+### Cons/Limitations:
+
+1. No access to non-public interface of `Base`.
+    - This may lead people to weaken the encapsulation of `Base` to achieve implementation goals.
+
+# Never redefine an inherited non-virtual
+
+You don't want this to happen:
+
+```c++
+Derived d;
+Base* b = &d;
+
+// These 2 are not the same...?
+b->foo(); 
+d->foo();
+```
+
+How could that happen? Does polymorphism allow this? 
+
+Well, yeah if you have `virtual`, or don't override `Base::foo()`. If you don't have virtual, then do not redefine the function, because it's meant to be an **invariant**.
+
+# Never redefine a function's inherited default parameter value
+
+Two things: **virtual functions are dynamically bound, while default parameters are statically bound**. This means that default parameters are defined before virtual lookups.
+
+This means:
+
+```c++
+class Base{
+public:
+    virtual void foo(int x = 1){
+        std::cout << "Base! " << x << std::endl;
+    }
+};
+
+class Derived : public Base{
+public:
+    void foo(int x = 2){
+        std::cout << "Derived! " << x << std::endl;
+    }
+};
+
+Base b;
+Derived d;
+Base* bp = &b;
+Base* dp = &d;
+
+bp->foo(); // Base! 1
+dp->foo(); // Derived! 1
+```
+
+So you're going to be very confused. Don't do it. One way to prevent this is to use NVI design, and have the private virtual function not accept any defaults.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
