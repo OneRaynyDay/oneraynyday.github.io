@@ -11,7 +11,7 @@ Before we start, here's the code:
 1. [Branch with Eigen backend](https://github.com/OneRaynyDay/autodiff/tree/eigen)
 2. [Branch that only supports scalars](https://github.com/OneRaynyDay/autodiff/tree/master)
 
-I worked on this project with my fellow meme [Minh Le](https://youtu.be/2mB_7Da3TcU?t=5m43s).
+I worked on this project with [Minh Le](https://github.com/MinhxLe).
 
 # Why?
 
