@@ -35,7 +35,7 @@ For us, we will **always** put in values at the sources, and the values will pro
 
 Here's some [slides](http://www.robots.ox.ac.uk/~tvg/publications/talks/autodiff.pdf) if you think my explanation is bad.
 
-Differentiation is a core requirement in many of the models required in tensorflow, because we need it to run **gradient descent**. Everyone who graduated from highschool knows what differentiation is; it's just take derivatives of functions and **then do chain rule** if the function is a complicated composition of basic functions! 
+Differentiation is a core requirement in many of the models required in tensorflow, because we need it to run **gradient descent**. Everyone who graduated from highschool* knows what differentiation is; it's just take derivatives of functions and **then do chain rule** if the function is a complicated composition of basic functions! 
 
 ## Super brief overview
 
