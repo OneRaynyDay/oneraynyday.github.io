@@ -237,7 +237,7 @@ A simple way to choose the action is to pick $argmax_a \pi_t(a)$. So we're done!
 
 Here's a plot of how these algorithms do compared to each other:
 
-[!comparison]({{ site.url }}/assets/bandit_algos.png)
+![comparison]({{ site.url }}/assets/bandit_algos.png)
 
 Although some of these methods are considered simple, it is not at all poorly performing. In fact, these are _state of the art_ methods for many of reinforcement learning problems, and some of the ones we'll learn later will be more complicated, more powerful, but more brittle.
 
