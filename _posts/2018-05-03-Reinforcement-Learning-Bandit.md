@@ -76,7 +76,7 @@ $$Q_n = \frac{\sum_i R_i}{n-1}$$
 
 Which can be expressed as:
 
-$$Q_n+1 = Q_n + \frac{1}{n}(R_n - Q_n)$$
+$$Q_{n+1} = Q_n + \frac{1}{n}(R_n - Q_n)$$
 
 Which is a very familiar update rule! Look like sgd by any chance?
 
@@ -84,13 +84,13 @@ Now this has the property of converging with probability 1 to $q_*(a)$ if it's s
 
 We can replace $\frac{1}{n}$ and replace it with $\alpha \in (0, 1]$:
 
-$$Q_n+1 = Q_n + \alpha(R_n - Q_n)$$
+$$Q_{n+1} = Q_n + \alpha(R_n - Q_n)$$
 
 This is an **exponential average**, which geometrically decays the weight of previous rewards.
 
 Now let's abstract it even more: we introduce a function $\alpha_n(a)$ which gives us the weight of a specific reward at time step $n$ (in this case since we're only concerned about an action, replace $\alpha_n(a)$ with $\alpha_n$):
 
-$$Q_n+1 = Q_n + \alpha_n(R_n - Q_n)$$
+$$Q_{n+1} = Q_n + \alpha_n(R_n - Q_n)$$
 
 We need some properties about $\alpha_n(a)$ for this update to be arbitrarily convergent:
 
