@@ -35,7 +35,7 @@ $$S_0 \to A_0 \to R_1 \to S_1 \to A_1 \to R_2 \to …$$
 
 In a finite MDP:
 
-$|\mathcal{S}| < \infty, |\mathcal{A}| < \infty, |\mathcal{R}| < \infty$. 
+$$|\mathcal{S}| < \infty, |\mathcal{A}| < \infty, |\mathcal{R}| < \infty$$ 
 
 $(R_t, S_t)_{t\geq 0}$ is a markov chain here. A **markov chain**, under discrete sigma algebra, is defined as:
 
