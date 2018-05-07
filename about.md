@@ -8,7 +8,8 @@ one of the topics that I dabble in. I'm by no means an expert at any of the fiel
 I do aim to illustrate the concepts that I _do_ know in a clear, digestible, and hopefully fun way.
 
 I'm currently an undergraduate student at UCLA studying computer science. I'm a huge math geek and I take
-too many math classes for fun.
+too many math classes for fun. I used to do fun research with Professor Talwalkar and his PhD student Liam Li,
+but they've since moved to CMU and I haven't been able to find something as interesting since :(
 
 I'm currently doing an internship for Citadel LLC, and I am going to work at Airbnb during the summer,
 working on a (currently secret) ML project. When it comes out, I'll write something about it ;)
