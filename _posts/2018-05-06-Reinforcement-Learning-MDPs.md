@@ -8,7 +8,7 @@ layout: default
 
 Previously, we discussed **$k​$-armed bandits**, and algorithms to find the optimal action-value function $q_*(a)​$. 
 
-Once we found $q_*(a)$, we could just choose $argmax_a q_*(a)$ all the time to reach the optimal solution.
+Once we found $q_\*(a)$, we could just choose $argmax_a q_\*(a)$ all the time to reach the optimal solution.
 
 We now go one more step further, and add a _context_ to our reinforcement learning problem. Context in this case, means that we have a different optimal action-value function for every state:
 
@@ -31,7 +31,11 @@ We thus have a sequence that looks like:
 
 $$S_0 \to A_0 \to R_1 \to S_1 \to A_1 \to R_2 \to …$$
 
-In a finite MDP, $|\mathcal{S}| < \infty, |\mathcal{A}| < \infty, |\mathcal{R}| < \infty$. $(R_t, S_t)_{t\geq 0}$ is a markov chain here. A **markov chain**, under discrete sigma algebra, is defined as:
+In a finite MDP:
+
+$|\mathcal{S}| < \infty, |\mathcal{A}| < \infty, |\mathcal{R}| < \infty$. 
+
+$(R_t, S_t)_{t\geq 0}$ is a markov chain here. A **markov chain**, under discrete sigma algebra, is defined as:
 
 $$P(X_n = x_n|X_{n-1}=x_{n-1}, X_{n-2}=x_{n-2}, X_{n-3}=x_{n-3},…,X_0=x_0) = P(X_n = x_n|X_{n-1}=x_{n-1})$$
 
@@ -69,7 +73,7 @@ This pretty much says, "the immediate rewards are better than the rewards later 
 
 We want to know _how good it is to be in a specific state_, and _how good it is to take an action in a given state_. 
 
-A **policy** is a mapping from states to probabilities of selecting an action. If an agent is following policy $\pi$, then he will take action $a$ at state $s$ with probability $\pi(a|s)$.
+A **policy** is a mapping from states to probabilities of selecting an action. If an agent is following policy $\pi$, then he will take action $a$ at state $s$ with probability $\pi(a\vert s)$.
 
 A **value** of a state $s$, under a policy $\pi$, is the expected return starting from $s$ if we take the policy's suggested actions. It is denoted by $v_\pi(s)$, and is called a _state-value function_.
 
