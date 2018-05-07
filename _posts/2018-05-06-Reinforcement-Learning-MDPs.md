@@ -1,6 +1,6 @@
 ---
 published: true
-title: Reinforcement Learning - Bandit Problems
+title: Reinforcement Learning - Markov Decision Process
 use_math: true
 category: ML
 layout: default
