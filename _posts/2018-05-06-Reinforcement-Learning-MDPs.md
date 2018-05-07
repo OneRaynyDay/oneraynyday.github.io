@@ -6,7 +6,9 @@ category: ML
 layout: default
 ---
 
-Previously, we discussed **$k​$-armed bandits**, and algorithms to find the optimal action-value function $q_*(a)​$. 
+(Work in Progress)
+
+Previously, we discussed **$k$-armed bandits**, and algorithms to find the optimal action-value function $q_*(a)$. 
 
 Once we found $q_\*(a)$, we could just choose $argmax_a q_\*(a)$ all the time to reach the optimal solution.
 
@@ -95,7 +97,7 @@ where the subscript $_p$ is for the probability distribution of $p(s',r\vert s,a
 
 $$= \sum_a \pi_(a|s) \sum_{s'}\sum_r p(s',r|s,a) (r+\gamma E_\pi(G_{t+1}|S_{t+1} = s'))$$
 
-Do you see the recursion here? The expected value of $G_t​$ is dependent on the expected value of $G_{t+1}​$. This is also often called the **Bellman equation for $v_\pi​$**. There is also a similar one for $q_\pi​$, with similar expansions. This is obviously a _hard equation to solve_, and the result is the holy grail - $v_\pi​$. How do we solve it? That's the subject of a large part of reinforcement learning.
+Do you see the recursion here? The expected value of $G_t$ is dependent on the expected value of $G_{t+1}$. This is also often called the **Bellman equation for $v_\pi$**. There is also a similar one for $q_\pi$, with similar expansions. This is obviously a _hard equation to solve_, and the result is the holy grail - $v_\pi$. How do we solve it? That's the subject of a large part of reinforcement learning.
 
 
 
