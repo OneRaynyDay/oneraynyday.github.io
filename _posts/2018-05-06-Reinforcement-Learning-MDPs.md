@@ -83,3 +83,19 @@ If we fix the action that we take at state $S_t = s$, then we would get an _acti
 
 $$q_\pi(s,a) = E_\pi(G_t|S_t=s,A_t=a)$$
 
+If you look closely, you can see a recursive equation in $v_\pi(s)$:
+
+$$v_\pi(s) = E_\pi(G_t|S_t=s)  \quad{\text{(Definition)}}$$
+
+$$ = E_\pi(R_{t+1} + \gamma G_{t+1} | S_t=s) \quad{\text{(Definition)}}$$
+
+$$= \sum_a \pi(a|s) E_p(R_{t+1} + \gamma G_{t+1}) \quad{\text{(Expectation)}} $$
+
+where the subscript $_p$ is for the probability distribution of $p(s',r\vert s,a)$.
+
+$$= \sum_a \pi_(a|s) \sum_{s'}\sum_r p(s',r|s,a) (r+\gamma E_\pi(G_{t+1}|S_{t+1} = s'))$$
+
+Do you see the recursion here? The expected value of $G_t​$ is dependent on the expected value of $G_{t+1}​$. This is also often called the **Bellman equation for $v_\pi​$**. There is also a similar one for $q_\pi​$, with similar expansions. This is obviously a _hard equation to solve_, and the result is the holy grail - $v_\pi​$. How do we solve it? That's the subject of a large part of reinforcement learning.
+
+
+
