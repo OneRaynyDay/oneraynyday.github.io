@@ -6,7 +6,7 @@ category: ML
 layout: default
 ---
 
-To begin, we should note that **bandit problems** are a subset of **tabular solution methods**. The reason it's called tabular is because we can fit all the possible states into a table. The tables tell us everything we need to know about the state of the problem, and so we can often find the exact solution to the problem that's posed. We are following the book _"Reinforcement Learning: An Introduction"_[^1]
+To begin, we should note that **bandit problems** are a subset of **tabular solution methods**. The reason it's called tabular is because we can fit all the possible states into a table. The tables tell us everything we need to know about the state of the problem, and so we can often find the exact solution to the problem that's posed. We are following the book from Richard Sutton and Andrew Barto. [^1]
 
 # $k$-armed Bandit Problem
 
