@@ -6,7 +6,7 @@ category: ML
 layout: default
 ---
 
-To begin, we should note that **bandit problems** are a subset of **tabular solution methods**. The reason it's called tabular is because we can fit all the possible states into a table. The tables tell us everything we need to know about the state of the problem, and so we can often find the exact solution to the problem that's posed.
+To begin, we should note that **bandit problems** are a subset of **tabular solution methods**. The reason it's called tabular is because we can fit all the possible states into a table. The tables tell us everything we need to know about the state of the problem, and so we can often find the exact solution to the problem that's posed. We are following the book _"Reinforcement Learning: An Introduction"_[^1]
 
 # $k$-armed Bandit Problem
 
@@ -16,9 +16,9 @@ We are faced with $k$ different actions. Each action gives you an amount of mone
 
 For some time step $t$, we have an action, $A_t$, and a reward of the action, $R_t$. We denote the **value\* of an arbitrary action $a$** as $q_*(a)$:
 
-$$q_*(a) = E[R_t|A_t = a]​$$
+$$q_*(a) = E[R_t|A_t = a]$$
 
-What does this mean in english? It means "the value of an action $a$ is the expected value of the reward of that action(at any time)."
+What does this mean in english? It means "the value of an action $a$ is the expected value of the reward of that action(at any time)." 
 
 After reading that sentence 3-4 times, it makes sense right? If you knew that doing 1 action will give you the greatest expected value, then you abuse the hell out of it to max your gains.
 
@@ -30,7 +30,7 @@ So how do we make the $Q_t(a)$?
 
 ---
 
-_value*_: in this case, it's different than the concept of rewards. Value is the long run metric, meanwhile reward is the immediate metric. If you got hooked on heroin, it would be awesome rewards for the first hour, but it would be terrible value.
+_value*_: in this case, it's different than the concept of rewards. Value is the long run metric, meanwhile reward is the immediate metric. If you got hooked on heroin, it would be awesome rewards for the first hour, but it would be terrible value. Note here we wrote $q_*(a)$ as an expectation without sums of future rewards. This is not usually true in MDP's, in which we will explore later, but as bandits is a stateless problem, we can use an abuse of notation here.
 
 # Action-value Methods
 
@@ -64,7 +64,9 @@ We take whatever action has the greatest value so far. If we start as a blank sl
 
 ## Action Selection Rule : $\epsilon$-Greedy
 
-What could we do as an alternative? We can try something called an **$\epsilon$-greedy method**. This just means, for some small probability $\epsilon < 1$ at any time $t$, we choose from all actions uniformly. Asymptotically speaking, we will take the actual optimal action with probability of more than $1-\epsilon$(once we found it, we'll make sure to choose it all the time, but we also have $\frac{1}{\vert S\vert} * \epsilon$ chance to pick it in case of the uniform action choices).
+What could we do as an alternative? We can try something called an **$\epsilon$-greedy method**. This just means, for some small probability $\epsilon < 1$ at any time $t$, we choose from all actions uniformly, rather than greedily. It's like tossing a coin, a random variable $X$, with $\epsilon$ probability of getting a tails, in which you would need to randomly select uniformly from all states. When you get heads, you would then perform the same greedy action.
+
+Asymptotically speaking, we will take the actual optimal action with probability of more than $1-\epsilon$(once we found it, we'll make sure to choose it all the time, but we also have $\frac{1}{\vert S\vert} * \epsilon$ chance to pick it in case of the uniform action choices).
 
 ## Crux: Nonstationary Action Value
 
@@ -88,7 +90,7 @@ $$Q_{n+1} = Q_n + \alpha(R_n - Q_n)$$
 
 This is an **exponential average**, which geometrically decays the weight of previous rewards.
 
-Now let's abstract it even more: we introduce a function $\alpha_n(a)$ which gives us the weight of a specific reward at time step $n$ (in this case since we're only concerned about an action, replace $\alpha_n(a)$ with $\alpha_n$):
+Now let's abstract it even more: we introduce a function $\alpha_n(a)​$ which gives us the weight of a specific reward at time step $n​$ (in this case since we're only concerned about an action, replace $\alpha_n(a)​$ with $\alpha_n​$):
 
 $$Q_{n+1} = Q_n + \alpha_n(R_n - Q_n)$$
 
@@ -150,6 +152,8 @@ Doesn't this look familiar to the equality above? In here, some notations:
 2. $c$ is some constant we choose to control degree of exploration.
 
 In the same analog, we can say that $t$ is the hypothesis space size $M$ from our previous equation. This is because as we increase on $t$, the sequence of actions $(a_n)$ up to $t$ grows in space. It is thus harder to select an $A_t$. However, as the amount of times we've selected $a$, $N_t(a)$ increases, we also gain information about how this action behaves. 
+
+UCB is a very powerful algorithm, and one can interpret it with a different view of the same problem: Greedy choosing vs. Regret minimization. In this case, we can interpret it as minimizing regret by giving enough exploration in all states before choosing the $argmax$, therefore "minimizing regret". 
 
 ## Gradient Bandit Algorithms
 
@@ -243,13 +247,7 @@ Although some of these methods are considered simple, it is not at all poorly pe
 
 
 
-
-
-
-
-
-
-
+[^1]: Sutton, Richard S., and Andrew G. Barto. *Reinforcement Learning: an Introduction*. The MIT Press, 2012.
 
 
 
