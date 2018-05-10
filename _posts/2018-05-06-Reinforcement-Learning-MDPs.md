@@ -145,7 +145,7 @@ $$ ||V_{k+1} - V_\pi|| = ||(R_\pi + \gamma P_\pi V_k) - (R_\pi + \gamma P_\pi V\
 
 $$= ||\gamma P_\pi(V_k-V\pi)||$$
 
-Recall that $\gamma < 1$ for infinite time MDP's, and that $$||P_\pi||=1 \forall \pi$$, since this is a stochastic matrix.
+Recall that $\gamma < 1$ for infinite time MDP's, and that $$\vert \vert P_\pi\vert \vert=1 \forall \pi$$, since this is a stochastic matrix.
 
 By triangle inequality (of which, any proper norm exhibits):
 
