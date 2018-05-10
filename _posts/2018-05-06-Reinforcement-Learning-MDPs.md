@@ -77,7 +77,7 @@ We want to know _how good it is to be in a specific state_, and _how good it is 
 
 A **policy** is a mapping from states to probabilities of selecting an action. If an agent is following policy $\pi$, then he will take action $a$ at state $s$ with probability $\pi(a\vert s)$.
 
-A **value** of a state $s$, under a policy $\pi$, is the expected return starting from $s$ if we take the policy's suggested actions. It is denoted by $v_\pi(s)$, and is called a _state-value function_.
+A **value** of a state $s$, under a policy $\pi$, is the expected return starting from $s$ if we take the policy's suggested actions. It is denoted by $v_\pi(s)$, and is called a _state-value function_. We want our state-value function to be maximized at the end. 
 
 $$v_{\pi}(s) = E_\pi(G_t|S_t=s) = E_\pi(\sum_k^\infty\gamma^kR_{t+k+1} | S_t=s)$$
 
@@ -95,9 +95,63 @@ $$= \sum_a \pi(a|s) E_p(R_{t+1} + \gamma G_{t+1}) \quad{\text{(Expectation)}} $$
 
 where the subscript $_p$ is for the probability distribution of $p(s',r\vert s,a)$.
 
-$$= \sum_a \pi_(a|s) \sum_{s'}\sum_r p(s',r|s,a) (r+\gamma E_\pi(G_{t+1}|S_{t+1} = s'))$$
+$$= \sum_a \pi(a|s) \sum_{s'}\sum_r p(s',r|s,a) (r+\gamma E_\pi(G_{t+1}|S_{t+1} = s'))$$
+
+$$= \sum_a \pi(a|s) \sum_{s'}\sum_r p(s',r|s,a) (r+\gamma v_\pi(s'))$$
 
 Do you see the recursion here? The expected value of $G_t$ is dependent on the expected value of $G_{t+1}$. This is also often called the **Bellman equation for $v_\pi$**. There is also a similar one for $q_\pi$, with similar expansions. This is obviously a _hard equation to solve_, and the result is the holy grail - $v_\pi$. How do we solve it? That's the subject of a large part of reinforcement learning.
 
+For interpretations sake, I'll marginalize this a bit further and use definition of expectations:
 
+$$= \sum_{s',r} p_\pi(s',r|s) r + \sum_{s',r} p_\pi(s',r|s) \gamma v_\pi(s')$$
+
+$$= E_\pi(R|s) + \gamma E_\pi(v_\pi(S)|s)$$
+
+To optimize for the action-value function for a specific state $s$, we need to change the parameter, which is $\pi$:
+
+$$v_*(s) = max_\pi v_\pi(s)$$
+
+Similarly we get $q_*(s,a)$.
+
+# Iterative Policy Evaluation
+
+I believe the notation in the book is quite verbose, so I will shorten it here for clarity. Recall our previous bellman equation:
+
+$$v_\pi(s) = \sum_{s',r} p_\pi(s',r|s)(r + \gamma v_\pi(s')) = E_\pi(R|s) + \sum_{s'} p_\pi(s'|s)\gamma v_\pi(s')$$
+
+We'll denote $E_\pi(R\vert s)$ as $R_\pi(s)$ . Then, we can vectorize our system of equations:
+
+$$V_\pi \in \Re^{|\mathcal{S}|}, P_\pi \in \Re^{|\mathcal{S}|x|\mathcal{S}|}, R_\pi \in \Re^{|\mathcal{S}|}$$
+
+$$V_\pi = R_\pi + P_\pi V_\pi$$
+
+One way to solve this $V_\pi$ is to use an algorithm called **iterative policy evaluation**. It is the following update:
+
+$$v_k(s) = R_\pi(s) + \sum_{s'}p_\pi(s'|s)\gamma v_{k-1}(s')$$
+
+In vectorized form:
+
+$V_{k+1} = R_\pi + \gamma P_\pi V_{k}$
+
+with $v_0(s)$ being any arbitrary value in $\Re$.
+
+## Proof of convergence
+
+We can prove that $lim_{k \to \infty} v_k(s) \to v_\pi(s)$.
+
+Proof:
+
+$$ ||V_{k+1} - V_\pi|| = ||(R_\pi + \gamma P_\pi V_k) - (R_\pi + \gamma P_\pi V\pi)||$$
+
+$$= ||\gamma P_\pi(V_k-V\pi)||$$
+
+Recall that $\gamma < 1$ for infinite time MDP's, and that $$||P_\pi||=1 \forall \pi$$, since this is a stochastic matrix.
+
+By triangle inequality (of which, any proper norm exhibits):
+
+$$ \leq \gamma ||P_\pi|| ||V_k-V_\pi|| < ||V_k-V_\pi||$$
+
+Then we see that, ultimately:
+
+$$||V_{k+1} - V_\pi|| < ||V_k - V_\pi|| \blacksquare$$ 
 
