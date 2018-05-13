@@ -6,9 +6,11 @@ category: ML
 layout: default
 ---
 
-(Work in Progress)
+# Table of Contents
 
-Previously, we discussed **$k$-armed bandits**, and algorithms to find the optimal action-value function $q_*(a)$. 
+* TOC
+{:toc}
+Previously, we discussed [**$k$-armed bandits**](https://oneraynyday.github.io/ml/2018/05/03/Reinforcement-Learning-Bandit/), and algorithms to find the optimal action-value function $q_*(a)$. 
 
 Once we found $q_\*(a)$, we could just choose $argmax_a q_\*(a)$ all the time to reach the optimal solution.
 
@@ -141,9 +143,9 @@ We can prove that $lim_{k \to \infty} v_k(s) \to v_\pi(s)$.
 
 Proof:
 
-$$ ||V_{k+1} - V_\pi|| = ||(R_\pi + \gamma P_\pi V_k) - (R_\pi + \gamma P_\pi V\pi)||$$
+$$ ||V_{k+1} - V_\pi|| = ||(R_\pi + \gamma P_\pi V_k) - (R_\pi + \gamma P_\pi V_\pi)||$$
 
-$$= ||\gamma P_\pi(V_k-V\pi)||$$
+$$= ||\gamma P_\pi(V_k-V_\pi)||$$
 
 Recall that $\gamma < 1$ for infinite time MDP's, and that $$\vert \vert P_\pi\vert \vert=1 \forall \pi$$, since this is a stochastic matrix.
 
@@ -197,9 +199,7 @@ $$v_*(s) = max_{a} q_{\pi_*}(s,a)$$
 
 These two are exactly the same, implying that in the condition that equality occurs, we have reached the optimal policy.
 
-
-
-# Final Result: Policy Iteration
+# Policy Iteration
 
 So now that we have a way of evaluating $v_\pi(s)$, and a way to improve $\pi$, we can do something along the lines of:
 
@@ -208,6 +208,99 @@ So now that we have a way of evaluating $v_\pi(s)$, and a way to improve $\pi$, 
 3. Find a better $\pi'$.
 4. Repeat step 2 and 3 until $\pi' = \pi$.
 
+This is called the **policy iteration** algorithm. We have presented a possible method to solve MDP's! We're getting somewhere! Here's a rough pseudocode:
+
+```python
+def value_iter(V_prev):
+    V_next = R + P * V_prev
+    while V_next != V_prev:
+        V_next = R + P * V_prev
+    return V_next
+
+def policy_improvement(prev_pi):
+    for s in S:
+    	pi(s) = prev_pi(s)
+    for s in S:
+    	pi(s) = argmax_a(q(s,a))
+    return pi
+
+def policy_iter(pi_prev):
+    # Initialize
+    q = find_q(pi_prev)
+    V = find_V(pi_prev)
+    pi_next = policy_improvement(pi_prev)
+
+    # Policy Iteration
+    while pi_next != pi_prev:
+        pi_prev = pi_next
+        q = find_q(pi_prev)
+        V = find_V(pi_prev)
+        pi_next = policy_improvement(pi_prev)
+    return pi_next
+```
 
 
-This is called the **policy iteration** algorithm
+
+# Value Iteration
+
+Recall policy iteration. Don't you think it's kind of slow to run the steps 2 and 3 together? Specifically, we're going through all states in calculating the value function $v_\pi$, AND we're going through all the states to calculate the next $\pi'$. This is a lot of work that we don't need to do (roughly $O(N^2)$ run time).
+
+Recall that $v_* = max_a q_{\pi_*}(s,a)$, and we're trying to find $v_*$. Expanding it, $v_*$ is also equivalent to:
+
+$$v_*(s) = max_a E_{\pi_*}(R_{t+1} + \gamma v_*(S_{t+1}) | S_t = s, A_t = a)$$
+
+So this time, we run a different algorithm called **value iteration**:
+
+$$v_{k+1}(s) = max_a \sum_{s',r}p(s',r|s,a)(r+\gamma v_k(s'))$$
+
+This looks like some combination of policy evaluation and policy improvement in one sweep right?
+
+So why does this converge, i.e. $\lim_{k \to \infty} v_k \to v_*$? 
+
+##Proof of Convergence
+
+We use the same contraction operator argument as before, but with a slight twist.
+
+$$||V_{k+1} - V_{\pi*}|| = ||(max_a R_a + \gamma P_a V_k) - (max_a R_a + \gamma P_a V_{\pi*})||$$
+
+$$\leq max_a ||(R_a + \gamma P_a V_k) - (R_a + \gamma P_a V_{\pi*})|| \quad{\text{(1)}}$$
+
+$$\leq max_a \gamma||P_a||||V_k-V_{\pi*}||$$
+
+So:
+
+$$||V_{k+1}-V_{\pi*}|| \leq ||V_k-V_{\pi*}||\blacksquare$$
+
+
+
+As an aside, $\text{(1)}$ is true because:
+
+$$f(x) - g(x) \leq ||f(x) - g(x)|| \quad{\text{(absolute value)}}$$
+
+$$f(x) \leq ||f(x)-g(x)|| + g(x)$$
+
+$$max_x f(x) \leq max_x(||f(x) - g(x)|| + g(x)) \leq max_x||f(x) - g(x)|| + max_x g(x) \quad{\text{(Triangle Inequality)}}$$
+
+$$max_x f(x) - max_x g(x) \leq max_x ||f(x) - g(x)||$$
+
+$$||max_x f(x) - max_x g(x)|| \leq max_x ||f(x) - g(x)||$$
+
+---
+
+So what does this algorithm look like?
+
+```python
+def value_iter(prev_V):
+    V = None
+    while prev_V != V:
+        V = prev_V
+        for s in S:
+            max_v_s = 0
+            for a in A:
+                # Here, P(s,a) is a |S|x|A| matrix, where i,j=p(i,j|s,a)
+                max_v_s = max(P(s,a) * (R(s,a) + gamma V[s]), max_v_s)
+            V[s] = max_v_s
+    return V # returns optimal V
+```
+
+After we get the optimal value, we can easily find the optimal policy.
