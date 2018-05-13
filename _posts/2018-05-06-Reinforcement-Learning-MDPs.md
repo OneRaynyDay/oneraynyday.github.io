@@ -297,7 +297,7 @@ def value_iter(prev_V):
         for s in S:
             max_v_s = 0
             for a in A:
-                # Here, P(s,a) is a |S|x|A| matrix, where i,j=p(i,j|s,a)
+                # P(s,a) is a |S|x|A| matrix, where i,j=p(i,j|s,a)
                 max_v_s = max(P(s,a) * (R(s,a) + gamma V[s]), max_v_s)
             V[s] = max_v_s
     return V # returns optimal V
