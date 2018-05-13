@@ -109,9 +109,9 @@ $$= E_\pi(R|s) + \gamma E_\pi(v_\pi(S)|s)$$
 
 To optimize for the action-value function for a specific state $s$, we need to change the parameter, which is $\pi$:
 
-$$v_*(s) = max_\pi v_\pi(s)$$
+$$v_*(s) = max_{a} q_{\pi_*}(s,a)$$
 
-Similarly we get $q_*(s,a)$.
+The above is the **Bellman optimality equation**. It's pretty much saying what's the best possible value we can get out of a state?
 
 # Iterative Policy Evaluation
 
@@ -119,7 +119,7 @@ I believe the notation in the book is quite verbose, so I will shorten it here f
 
 $$v_\pi(s) = \sum_{s',r} p_\pi(s',r|s)(r + \gamma v_\pi(s')) = E_\pi(R|s) + \sum_{s'} p_\pi(s'|s)\gamma v_\pi(s')$$
 
-We'll denote $E_\pi(R\vert s)$ as $R_\pi(s)$ . Then, we can vectorize our system of equations:
+We'll denote $E_\pi(R\vert s)$ as $R_\pi(s)$ , and $E_\pi(R \vert s,a)$ as $R_\pi(s,a)$, etc. Then, we can vectorize our system of equations:
 
 $$V_\pi \in \Re^{|\mathcal{S}|}, P_\pi \in \Re^{|\mathcal{S}|x|\mathcal{S}|}, R_\pi \in \Re^{|\mathcal{S}|}$$
 
@@ -155,3 +155,59 @@ Then we see that, ultimately:
 
 $$||V_{k+1} - V_\pi|| < ||V_k - V_\pi|| \blacksquare$$ 
 
+# Policy Improvement
+
+Now that we have the true value function(or approaching), we want to find a better policy. For any existing policy $\pi$, we want to find a _better_ $\pi'$, aka one that gives us $V_{\pi'} \succeq V_\pi$ .
+
+So how do we find this $\pi'$? It's actually pretty simple. If you know $v_\pi$, then why not just choose the action that gives you the greatest value on the next step? In formal terms:
+
+$\pi'(s) = argmax_a q_\pi(s,a)$
+
+$$ = argmax_a E(R_{t+1} + \gamma v_\pi(S_{t+1}) | S_t=s, A_t=a)$$
+
+Why is this better? It's due to the idea that **the max of the convex set is always greater than, or equal to the convex combination of any elements of the set.** We essentially apply that simple idea here.
+
+Well, let's expand out what it means:
+
+$$v_\pi(s) \leq q_\pi(s, \pi'(s)) = E(R_{t+1}+\gamma v_\pi(S_{t+1}) | S_t = s, A_t = \pi'(s))$$
+
+$$ = \sum_{r,s'} (r+\gamma v_\pi(s')) p(r,s'|s,\pi'(s))$$
+
+$$ = \sum_{r,s'} (r+\gamma v_\pi(s'))p_{\pi'}(r,s'|s)$$
+
+$$= E_{\pi'}(R_{t+1} + \gamma v_\pi(S_{t+1}) | S_t = s)$$
+
+$$ \leq E_{\pi'}(R_{t+1} + \gamma q_{\pi}(S_{t+1}, \pi'(S_{t+1}))|S_t=s)$$
+
+$$…$$
+
+$$ \leq E(\sum_k R_{t+k} \gamma^k | S_t=s)$$
+
+$$ = v_{\pi'}(s) \blacksquare$$
+
+This means, if we take the action that gives us better results than our current $\pi$, at all $s$ at any time step, then we have created a new policy $\pi'$. 
+
+What happens when we reach equality of $\pi$ and $\pi'$?
+
+$$v_{\pi'}(s) = max_a E(R_{t+1} + \gamma v_{\pi'}(S_{t+1}) | S_t=s, A_t=a)$$
+
+Recall what the **Bellman optimality equation** says:
+
+$$v_*(s) = max_{a} q_{\pi_*}(s,a)$$
+
+These two are exactly the same, implying that in the condition that equality occurs, we have reached the optimal policy.
+
+
+
+# Final Result: Policy Iteration
+
+So now that we have a way of evaluating $v_\pi(s)$, and a way to improve $\pi$, we can do something along the lines of:
+
+1. Initialize with some arbitrary $\pi$, and arbitrary $v_\pi$ estimate.
+2. Find the true $v_\pi$ for the $\pi$.
+3. Find a better $\pi'$.
+4. Repeat step 2 and 3 until $\pi' = \pi$.
+
+
+
+This is called the **policy iteration** algorithm

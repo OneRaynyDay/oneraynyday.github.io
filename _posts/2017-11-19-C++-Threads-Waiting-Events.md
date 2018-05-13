@@ -1,6 +1,6 @@
 ---
 published: true
-title: C++ Concurrency - Sharing Data
+title: C++ Concurrency - Asynchronous Waiting
 category: dev
 layout: default
 ---
