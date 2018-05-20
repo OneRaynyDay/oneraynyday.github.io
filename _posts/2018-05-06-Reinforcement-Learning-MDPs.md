@@ -137,7 +137,7 @@ $V_{k+1} = R_\pi + \gamma P_\pi V_{k}$
 
 with $v_0(s)$ being any arbitrary value in $\Re$.
 
-## Proof of convergence
+## Proof of Convergence
 
 We can prove that $lim_{k \to \infty} v_k(s) \to v_\pi(s)$.
 
@@ -245,7 +245,7 @@ def policy_iter(pi_prev):
 
 Recall policy iteration. Don't you think it's kind of slow to run the steps 2 and 3 together? Specifically, we're going through all states in calculating the value function $v_\pi$, AND we're going through all the states to calculate the next $\pi'$. This is a lot of work that we don't need to do (roughly $O(N^2)$ run time).
 
-Recall that $v_* = max_a q_{\pi_*}(s,a)$, and we're trying to find $v_*$. Expanding it, $v_*$ is also equivalent to:
+Recall that $v\_\* = max_a q\_{\pi\_\*}(s,a)$, and we're trying to find $v\_\*$. Expanding it, $v\_\*$ is also equivalent to:
 
 $$v_*(s) = max_a E_{\pi_*}(R_{t+1} + \gamma v_*(S_{t+1}) | S_t = s, A_t = a)$$
 
@@ -257,7 +257,7 @@ This looks like some combination of policy evaluation and policy improvement in 
 
 So why does this converge, i.e. $\lim_{k \to \infty} v_k \to v_*$? 
 
-##Proof of Convergence
+## Proof of Convergence
 
 We use the same contraction operator argument as before, but with a slight twist.
 
@@ -304,3 +304,140 @@ def value_iter(prev_V):
 ```
 
 After we get the optimal value, we can easily find the optimal policy.
+
+
+
+# See it in action!
+
+To illustrate how this could work, we took the same situation in frozen lake, a classic MDP problem, and we tried solving it with _value iteration_. Here is the code below:
+
+```python
+"""
+Let's use Value Iteration to solve FrozenLake!
+
+Setup
+-----
+We start off by defining our actions:
+A = {move left, move right...} = {(0,1),(0,-1),...}
+S = {(i,j) for 0 <= i,j < 4}
+Reward for (3,3) = 1, and otherwise 0.
+Probability distribution is a 4x(4x4) matrix of exactly the policy.
+We have pi(a|s), where a in A, and s in S.
+
+Problem formulation : https://gym.openai.com/envs/FrozenLake-v0/
+
+Algorithm
+---------
+Because our situation is deterministic for now, we have the value iteration eq:
+
+v <- 0 for all states.
+v_{k+1}(s) = max_a (\sum_{s',r} p(s',r|s,a) (r + \gamma * v_k(s'))
+
+... which decays to:
+
+v_{k+1}(s = max_a (\sum_{s'} 1_(end(s')) + \gamma * v_k(s'))
+
+Because of our deterministic state and the deterministic reward.
+"""
+N = 4
+v = np.zeros((N, N), dtype=np.float32) # Is our value vector.
+THRESHOLD = 1e-5
+A = [(0,1),(0,-1),(1,0),(-1,0)]
+MAP = [
+    "SFFF",
+    "FHFH",
+    "FFFH",
+    "HFFG"
+]
+def proj(n, minn, maxn):
+    """
+    projects n into the range [minn, maxn). 
+    """
+    return max(min(maxn-1, n), minn)
+
+def move(s, tpl, stochasticity=0):
+    """
+    Set stochasticity to any number in [0,1].
+    This is equivalent to "slipping on the ground"
+    in FrozenLake.
+    """
+    if MAP[s[0]][s[1]] == 'H': # Go back to the start
+        return (0,0)
+    if np.random.random() < stochasticity:
+        return random.choice(A)
+    return (proj(s[0] + tpl[0], 0, N), proj(s[1] + tpl[1], 0, N))
+
+def reward(s):
+    return MAP[s[0]][s[1]] == 'G'
+    
+def run_with_value(v, gamma=0.9):
+    old_v = v.copy()
+    for i in range(N):
+        for j in range(N):
+            best_val = 0
+            for a in A:
+                new_s = move((i,j), a)
+                best_val = max(best_val, reward(new_s) + gamma * old_v[new_s])
+            v[i,j] = best_val
+    return old_v
+
+# Performing Value Iteration
+plt.matshow(v)
+old_v = run_with_value(v)
+while norm(v - old_v) >= THRESHOLD:
+    old_v = run_with_value(v)
+plt.matshow(v)
+
+# Extracting policy from v:
+def pi(s, v):
+    cur_best = float("-inf")
+    cur_a = None
+    for a in A:
+        val = v[move(s, a)]
+        if val > cur_best:
+            cur_a = a
+            cur_best = val
+    return cur_a
+
+# Plotting a nice arrow map.
+action_map = np.array([
+    [pi((i,j), v) for j in range(N)] for i in range(N)])
+Fx = np.flip(np.array([ [col[1] for col in row] for row in action_map ]),0)
+Fy = np.flip([ [-col[0] for col in row] for row in action_map ],0)
+plt.quiver(Fx,Fy)
+```
+
+
+
+## Visual Results
+
+We plotted the colormap of value functions per state in our 2D world, and saw it converge to a reasonable policy:
+
+**Iteration 1:**
+![mdp1]({{ site.url }}/assets/mdp1.png)
+
+**Iteration 2:**
+![mdp2]({{ site.url }}/assets/mdp2.png)
+
+**Iteration 3:**
+![mdp3]({{ site.url }}/assets/mdp3.png)
+
+**Iteration 4:**
+![mdp4]({{ site.url }}/assets/mdp4.png)
+
+**End Result:**
+![mdpend]({{ site.url }}/assets/mdp5.png)
+
+In the end, our policy looks like:
+
+![mpdarrow]({{ site.url }}/assets/mdparrow.png)
+
+Pretty cool, huh? You can take a look at the code [here](https://github.com/OneRaynyDay/FrozenLakeMDP).
+
+# Conclusion
+
+So, our little exploration into MDP's have been nice. We learned about how to formulate MDP's and solve them using value iteration and policy iteration. We made a cool little coding example that we can use our algorithms to solve.
+
+One major downside of these algorithms is that it's not applicable for **continuous-value** domains. This means, for even a simple problem as [Cart Pole](https://github.com/openai/gym/wiki/CartPole-v0), we won't have a very smooth way of solving it(discretizing and running our algorithms might work, but it's real hacky). We will explore ways to solve that issue next time!
+
+
