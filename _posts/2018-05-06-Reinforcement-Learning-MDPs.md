@@ -11,7 +11,7 @@ layout: default
 * TOC
 {:toc}
 
-Previously, we discussed [**$k$-armed bandits**](https://oneraynyday.github.io/ml/2018/05/03/Reinforcement-Learning-Bandit/), and algorithms to find the optimal action-value function $q_*(a)$. 
+Previously, we discussed [**$k$-armed bandits**](https://oneraynyday.github.io/ml/2018/05/03/Reinforcement-Learning-Bandit/), and algorithms to find the optimal action-value function $q\_\*(a)$. We will be following the general structure of RL Sutton's book[^1], but adding extra proof, intuition, and a coding example at the end! I found some of his notation unnecessarily verbose, so some may be different.
 
 Once we found $q_\*(a)$, we could just choose $argmax_a q_\*(a)$ all the time to reach the optimal solution.
 
@@ -443,4 +443,4 @@ So, our little exploration into MDP's have been nice. We learned about how to fo
 
 One major downside of these algorithms is that it's not applicable for **continuous-value** domains. This means, for even a simple problem as [Cart Pole](https://github.com/openai/gym/wiki/CartPole-v0), we won't have a very smooth way of solving it(discretizing and running our algorithms might work, but it's real hacky). We will explore ways to solve that issue next time!
 
-
+[^1]: Sutton, Richard S., and Andrew G. Barto. *Reinforcement Learning: an Introduction*. The MIT Press, 2012.
