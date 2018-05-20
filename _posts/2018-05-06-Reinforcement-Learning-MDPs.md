@@ -10,6 +10,7 @@ layout: default
 
 * TOC
 {:toc}
+
 Previously, we discussed [**$k$-armed bandits**](https://oneraynyday.github.io/ml/2018/05/03/Reinforcement-Learning-Bandit/), and algorithms to find the optimal action-value function $q_*(a)$. 
 
 Once we found $q_\*(a)$, we could just choose $argmax_a q_\*(a)$ all the time to reach the optimal solution.
@@ -202,6 +203,8 @@ These two are exactly the same, implying that in the condition that equality occ
 # Policy Iteration
 
 So now that we have a way of evaluating $v_\pi(s)$, and a way to improve $\pi$, we can do something along the lines of:
+
+![policy]({{ site.url }}/assets/generalizedpolicy.png)
 
 1. Initialize with some arbitrary $\pi$, and arbitrary $v_\pi$ estimate.
 2. Find the true $v_\pi$ for the $\pi$.
