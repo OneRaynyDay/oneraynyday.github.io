@@ -164,7 +164,7 @@ Now that we have the true value function(or approaching), we want to find a bett
 
 So how do we find this $\pi'$? It's actually pretty simple. If you know $v_\pi$, then why not just choose the action that gives you the greatest value on the next step? In formal terms:
 
-$\pi'(s) = argmax_a q_\pi(s,a)$
+$$\pi'(s) = argmax_a q_\pi(s,a)$$
 
 $$ = argmax_a E(R_{t+1} + \gamma v_\pi(S_{t+1}) | S_t=s, A_t=a)$$
 
