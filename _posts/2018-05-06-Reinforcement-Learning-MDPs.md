@@ -116,7 +116,7 @@ To optimize for the action-value function for a specific state $s$, we need to c
 
 $$v_*(s) = max_{a} q_{\pi_*}(s,a)$$
 
-The above is the **Bellman optimality equation**. It's pretty much saying what's the best possible value we can get out of a state?
+The above is the **Bellman optimality equation**. It's pretty much saying: _what's the best possible value we can get out of a state?_
 
 # Iterative Policy Evaluation
 
