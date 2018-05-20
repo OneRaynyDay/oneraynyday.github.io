@@ -11,7 +11,7 @@ layout: default
 * TOC
 {:toc}
 
-Previously, we discussed [**$k$-armed bandits**](https://oneraynyday.github.io/ml/2018/05/03/Reinforcement-Learning-Bandit/), and algorithms to find the optimal action-value function $q\_\*(a)$. We will be following the general structure of RL Sutton's book[^1], but adding extra proof, intuition, and a coding example at the end! I found some of his notation unnecessarily verbose, so some may be different.
+Previously, we discussed [**$k$-armed bandits**](https://oneraynyday.github.io/ml/2018/05/03/Reinforcement-Learning-Bandit/), and algorithms to find the optimal action-value function $q\_\*(a)$. 
 
 Once we found $q_\*(a)$, we could just choose $argmax_a q_\*(a)$ all the time to reach the optimal solution.
 
@@ -20,6 +20,8 @@ We now go one more step further, and add a _context_ to our reinforcement learni
 $$q_*(a,s) = E(R_t|A_t=a, S_t=s)$$
 
 This situation, where we have different states, and actions associated with the states to yield rewards, is called a **Markov Decision Process(MDP)**.
+
+We will be following the general structure of RL Sutton's book[^1], but adding extra proof, intuition, and a coding example at the end! I found some of his notation unnecessarily verbose, so some may be different.
 
 # Formalizations
 
