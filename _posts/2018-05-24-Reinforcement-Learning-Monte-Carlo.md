@@ -11,7 +11,7 @@ layout: default
 * TOC
 {:toc}
 
-Previously, we discussed [**markov decision processes**](https://oneraynyday.github.io/ml/2018/05/06/Reinforcement-Learning-MDPs/), and algorithms to find the optimal action-value function $q\_\*(s, a)$ and $v\_\*(s)$. We used **policy iteration and value iteration to solve for the optimal policy.**
+Previously, we discussed [**markov decision processes**](https://oneraynyday.github.io/ml/2018/05/06/Reinforcement-Learning-MDPs/), and algorithms to find the optimal action-value function $q\_\*(s, a)​$ and $v\_\*(s)​$. We used **policy iteration and value iteration to solve for the optimal policy.**
 
 It's nice and all to have dynamic programming solutions to reinforcement learning, but it comes with _many_ restrictions. For example, are there a lot of real world problems where you know the state transition probabilities? Can you arbitrarily start at any state at the beginning? Is your MDP finite?
 
@@ -178,19 +178,125 @@ $$\mathcal{T^k}(s) = min\{i : S_i^k = s\}$$
 
 and we wanted to estimate $v_\pi(s)$, then we can use empirical mean to estimate the value function using **first-visit method**:
 
-$$v_\pi(s) \approx \frac{ \sum_k^N \rho_{\mathcal{T}^k(s) : T^k} G_{\mathcal{T^k(s)}}}{N}$$
+$$v_\pi(s) \approx \frac{ \sum_k^N \rho_{\mathcal{T}^k(s) : T^k-1} G_{\mathcal{T^k(s)}}}{N}$$
 
-Of course, this is easily generalizable to an **every-visit method**, but I wanted to present the simplest form to get the gist. What this is saying is we need to weigh the returns of each episode differently, because *the trajectories that are more likely to occur for $\pi​$ should be weighted more than the ones that are never going to occur.
+Of course, this is easily generalizable to an **every-visit method**, but I wanted to present the simplest form to get the gist. What this is saying is we need to weigh the returns of each episode differently, because *the trajectories that are more likely to occur for $\pi$ should be weighted more than the ones that are never going to occur.
 
-This method of importance sampling is an *unbiased estimator*, but it suffers from *extreme variance problems*. Suppose the importance ratio, $\rho_{\mathcal{T}(s):T^k}$ for some k-th episode is $1000$. That is huge, but can definitely happen. Does that mean the reward will necessarily be $1000$ times more? If we only have one episode, our estimate will be exactly that. This is a little concerning for the purposes of estimation.
+This method of importance sampling is an *unbiased estimator*, but it suffers from *extreme variance problems*. Suppose the importance ratio, $\rho_{\mathcal{T}(s):T^k-1}$ for some k-th episode is $1000$. That is huge, but can definitely happen. Does that mean the reward will necessarily be $1000$ times more? If we only have one episode, our estimate will be exactly that. In the long run, because we have a multiplicative relationship, the ratio may either explode or vanish. This is a little concerning for the purposes of estimation.
 
 ### Weighted Importance Sampling
 
 To reduce the variance, one easy, intuitive way is to reduce the magnitude of the estimate, by dividing by the total sum of all magnitudes of importance ratios(kind of like a softmax function):
 
-$$ v_\pi(s) \approx \frac{ \sum_k^N \rho_{\mathcal{T}^k(s) : T^k} G_{\mathcal{T^k(s)}}}{ \sum_k^N \rho_{\mathcal{T}^k(s) : T^k} }$$
+$$ v_\pi(s) \approx \frac{ \sum_k^N \rho_{\mathcal{T}^k(s) : T^k-1} G_{\mathcal{T^k(s)}}}{ \sum_k^N \rho_{\mathcal{T}^k(s) : T^k-1} }$$
 
 This is called the **weighted importance sampling**. It is a _biased estimate_(with the bias asymptotically going to 0), but has reduced variance. Before, one could come up with a pathologically unbounded variance for the ordinary estimator, but each entry here has the maximum weight of 1, which bounds the variance by above. **Sutton has suggested that, in practice, always use weighted importance sampling.**
+
+### Incremental Implementation
+
+As with many sampling techniques, we can implement it incrementally. Suppose we use the weighted importance sampling method from last section, then we can have some sampling algorithm of the form:
+
+$$ V_n = \frac{\sum_k^{n-1} W_kG_k}{\sum_k^{n-1} W_k} $$
+
+where $W_k$ could be our weight. 
+
+We want to form $V_{n+1}$ based off of $V_n$, which is very doable. Denote $C_n$ as $\sum_k^n W_k$, and we'll keep this running sum updated as we go:
+
+$$V_{n+1} = \frac{\sum_k^{n+1} W_kG_k}{\sum_k^{n+1} W_k} = \frac{\sum_k^{n} W_kG_k + W_{n+1}G_{n+1}}{\sum_k^{n} W_k} \frac{\sum_k^{n} W_k}{\sum_k^{n+1} W_k} = V_n \frac{C_{n-1}}{C_n} + W_n \frac{G_n}{C_n}$$
+
+$$ = V_n + \frac{W_nG_n - V_nW_n}{C_n}$$
+
+$$ = V_n + \frac{W_n}{C_n}(G_n-V_n)$$
+
+And $C_n$'s update rule is pretty obvious: $C_{n+1} = C_n + W_{n+1}$.
+
+Now, this $V_n$ is our value function, but a **very similar** analog of this can also be applied to $Q_n$, which is our action value.
+
+While we are updating the value function, we could also update our policy $\pi$. We can update our $\pi$ with the good old $argmax_a Q_\pi(s,a)$ .
+
+**Warning: Lots of math ahead. What we have right now is already good enough. This is approaching modern research topics.**
+
+### Extra: Discount-aware Importance Sampling
+
+So far, we have counted returns, and sampled returns to get our estimates. However, we neglected the internal structure of $G$. It really is just a sum of discounted rewards, and we have failed to incorporate that into our ratio $\rho$. **Discount-aware importance sampling** models $\gamma$ as a probability of termination. The probability of the episode terminating at some timestep $t$, thus must be of a geometric distribution $\sim geo(\gamma)$:
+
+$$P(T = t) = (1-\gamma)^{t-1} \gamma$$
+
+And full return can be considered an expectation over a *random number of random variables $R_t$*:
+
+$$ G_t = R_{t+1} + \gamma R_{t+2} + … \gamma ^{T-t-1} R_{T}$$
+
+One can construct an arbitrary telescoping sum like so:
+
+$$ \sum_{k=0}^{n-1} (1-\gamma)\gamma^k + \gamma^{n} = 1$$
+
+Inductively, we can see that for setting $k$ starting at $x$, we have $\gamma^x$.
+
+$$\sum_{k=x}^{n-1}(1-\gamma)\gamma^k + \gamma^n = \gamma^x$$
+
+We substitute this into $G$:
+
+$$G_t = \sum_{k=0}^{T-t-1} (1-\gamma)\gamma^k R_{t+1} + \sum_{k=1}^{T-t-1} (1-\gamma)\gamma^k R_{t+2} … + \gamma^{T-t-1}R_T$$
+
+$$ = (1-\gamma)\sum_{k=t+1}^{T-1}\gamma^{k-t-1}G_{t:k} + \gamma^{T-t-1}G_{t:T} $$
+
+Which will lead to equivalent coefficients of $1$, $\gamma$, $\gamma^2$, etc on the $R_t$ terms. This means, now we can decompose $G_t$ into parts and apply discounting on the importance sampling ratios.
+
+Now, recall that before we had:
+
+$$ v_\pi(s) \approx \frac{ \sum_k^N \rho_{\mathcal{T}^k(s) : T^k-1} G_{\mathcal{T^k(s)}}}{ \sum_k^N \rho_{\mathcal{T}^k(s) : T^k-1} } \quad{\text{(Weighted importance sampling)}}$$
+
+If we expanded $G$, we would have, for one of these numerators in the sum:
+
+$$ \rho_{t : T-1} [(1-\gamma)\sum_{k=t+1}^{T-1}\gamma^{k-t-1}G_{t:k} + \gamma^{T-t-1}G_{t:T}]$$
+
+Notice how we are applying the **same ratio to all of the returns**. Some of these returns, $G_{t:t+1}$, are being multiplied by the importance ratio of the entire trajectory, which is not "correct" under the modeling assumption that $\gamma$ is a probability of termination. Intuitively, we want $\rho_{t:t + 1}$ for $G_{t:t+1}$, and that's easy enough:
+
+$$ (1-\gamma)\sum_{k=t+1}^{T-1}\rho_{t:k-1} \gamma^{k-t-1}G_{t:k} + \rho_{t : T-1} \gamma^{T-t-1}G_{t:T}$$
+
+Ah, much better! This way, each partial return will have their correct ratios. **This combats the unbounded variance problem greatly.**
+
+### Extra: Per-reward Importance Sampling
+
+Another way to mitigate the problematic $\rho$ and its variance issues, we can decompose $G$ into its respective rewards and do some analysis. Let's look into $\rho_{t:T-1}G_{t:T}$:
+
+$$\rho_{t:T-1}G_{t:T} = \rho_{t:T-1} (\sum_{k=0}^{T-t} \gamma^kR_{t+k+1})$$
+
+For each term, we have $\rho_{t:T-1}\gamma^kR_{t+k+1}$. Expanding $\rho$, we can see:
+
+$$= \frac{\Pi_{i=t}^T \pi(A_i|S_i)}{\Pi_{i=t}^T b(A_i|S_i)} \gamma^k R_{t+k+1}$$
+
+Taking the expectation without the constant $\gamma^k$:
+
+$$E_b (\rho_{t:T-1}G_{t:T}) = E_b(\frac{\Pi_{i=t}^T \pi(A_i|S_i)}{\Pi_{i=t}^T b(A_i|S_i)} R_{t+k+1})$$
+
+Recall that you can only take $E(AB) = E(A)E(B)$ iff they are independent. It is obvious from the markov property that any $\pi(A_i\vert S_i)$ and $b(A_i\vert S_i)$ is independent of $R_{t+k+1}$ if $i \geq t+k+1$, and $\pi(A_i\vert S_i) \perp \pi(A_j\vert S_j) i \neq j$ (and same for $b$'s). We can take them out and get:
+
+$$E_b(\frac{\Pi_{i=t}^{t+k} \pi(A_i|S_i)}{\Pi_{i=t}^{t+k} b(A_i|S_i)} R_{t+k+1}) \Pi_{i=t+k+1}^T E_b(\frac{\pi(A_i|S_i)}{b(A_i|S_i)})$$
+
+This may look extremely ugly, but one can observe that:
+
+$$E_b(\frac{\pi(A_i|S_i)}{b(A_i|S_i)}) = \sum_a b(a|S_i) \frac{\pi(a|S_i)}{b(a|S_i)} = 1$$
+
+So we can really just completely ignore the second half:
+
+$$ E_b(\frac{\Pi_{i=t}^{t+k} \pi(A_i|S_i)}{\Pi_{i=t}^{t+k} b(A_i|S_i)} R_{t+k+1}) \Pi_{i=t+k+1}^T E_b(\frac{\pi(A_i|S_i)}{b(A_i|S_i)}) =  E_b(\frac{\Pi_{i=t}^{t+k} \pi(A_i|S_i)}{\Pi_{i=t}^{t+k} b(A_i|S_i)} R_{t+k+1}) = \rho_{t:t+k}R_{t+k+1}$$
+
+What does this mean? We can really express our original sum in expectation:
+
+$$E(\rho_{t:T-1}G_{t:T}) = E(\sum_{k=0}^{T-t} \rho_{t:k} \gamma^kR_{t+k+1})$$
+
+Which will then, once again, **decrease the variance of our estimator**.
+
+
+
+
+
+
+
+
+
+
 
 
 
