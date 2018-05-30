@@ -11,7 +11,7 @@ layout: default
 * TOC
 {:toc}
 
-Previously, we discussed [**markov decision processes**](https://oneraynyday.github.io/ml/2018/05/06/Reinforcement-Learning-MDPs/), and algorithms to find the optimal action-value function $q\_\*(s, a)​$ and $v\_\*(s)​$. We used **policy iteration and value iteration to solve for the optimal policy.**
+Previously, we discussed [**markov decision processes**](https://oneraynyday.github.io/ml/2018/05/06/Reinforcement-Learning-MDPs/), and algorithms to find the optimal action-value function $q\_\*(s, a)$ and $v\_\*(s)$. We used **policy iteration and value iteration to solve for the optimal policy.**
 
 It's nice and all to have dynamic programming solutions to reinforcement learning, but it comes with _many_ restrictions. For example, are there a lot of real world problems where you know the state transition probabilities? Can you arbitrarily start at any state at the beginning? Is your MDP finite?
 
@@ -288,21 +288,278 @@ $$E(\rho_{t:T-1}G_{t:T}) = E(\sum_{k=0}^{T-t} \rho_{t:k} \gamma^kR_{t+k+1})$$
 
 Which will then, once again, **decrease the variance of our estimator**.
 
+# On-Policy Model in Python
+
+Because Monte Carlo methods are generally in similar structure, I've made a discrete Monte Carlo model class in python that can be used to plug and play. One can also find the code [here](https://github.com/OneRaynyDay/MonteCarloEngine). It's doctested.
+
+```python
+"""
+General purpose Monte Carlo model for training on-policy methods.
+"""
+from copy import deepcopy
+import numpy as np
+
+class FiniteMCModel:
+    def __init__(self, state_space, action_space, gamma=1.0, epsilon=0.1):
+        """MCModel takes in state_space and action_space (finite) 
+        Arguments
+        ---------
+        
+        state_space: int OR list[observation], where observation is any hashable type from env's obs.
+        action_space: int OR list[action], where action is any hashable type from env's actions.
+        gamma: float, discounting factor.
+        epsilon: float, epsilon-greedy parameter.
+        
+        If the parameter is an int, then we generate a list, and otherwise we generate a dictionary.
+        >>> m = FiniteMCModel(2,3,epsilon=0)
+        >>> m.Q
+        [[0, 0, 0], [0, 0, 0]]
+        >>> m.Q[0][1] = 1
+        >>> m.Q
+        [[0, 1, 0], [0, 0, 0]]
+        >>> m.pi(1, 0)
+        1
+        >>> m.pi(1, 1)
+        0
+        >>> d = m.generate_returns([(0,0,0), (0,1,1), (1,0,1)])
+        >>> assert(d == {(1, 0): 1, (0, 1): 2, (0, 0): 2})
+        >>> m.choose_action(m.pi, 1)
+        0
+        """
+        self.gamma = gamma
+        self.epsilon = epsilon
+        self.Q = None
+        if isinstance(action_space, int):
+            self.action_space = np.arange(action_space)
+            actions = [0]*action_space
+            # Action representation
+            self._act_rep = "list"
+        else:
+            self.action_space = action_space
+            actions = {k:0 for k in action_space}
+            self._act_rep = "dict"
+        if isinstance(state_space, int):
+            self.state_space = np.arange(state_space)
+            self.Q = [deepcopy(actions) for _ in range(state_space)]
+        else:
+            self.state_space = state_space
+            self.Q = {k:deepcopy(actions) for k in state_space}
+            
+        # Frequency of state/action.
+        self.Ql = deepcopy(self.Q)
+
+        
+    def pi(self, action, state):
+        """pi(a,s,A,V) := pi(a|s)
+        We take the argmax_a of Q(s,a).
+        q[s] = [q(s,0), q(s,1), ...]
+        """
+        if self._act_rep == "list":
+            if action == np.argmax(self.Q[state]):
+                return 1
+            return 0
+        elif self._act_rep == "dict":
+            if action == max(self.Q[state], key=self.Q[state].get):
+                return 1
+            return 0
+    
+    
+    def b(self, action, state):
+        """b(a,s,A) := b(a|s) 
+        Sometimes you can only use a subset of the action space
+        given the state.
+
+        Randomly selects an action from a uniform distribution.
+        """
+        return self.epsilon/len(self.action_space) + (1-self.epsilon) * self.pi(action, state)
+
+    
+    def generate_returns(self, ep):
+        """Backup on returns per time period in an epoch
+        Arguments
+        ---------
+        
+        ep: [(observation, action, reward)], an episode trajectory in chronological order.
+        """
+        G = {} # return on state
+        C = 0 # cumulative reward
+        for tpl in reversed(ep):
+            observation, action, reward = tpl
+            G[(observation, action)] = C = reward + self.gamma*C
+        return G
+    
+    
+    def choose_action(self, policy, state):
+        """Uses specified policy to select an action randomly given the state.
+        Arguments
+        ---------
+        
+        policy: function, can be self.pi, or self.b, or another custom policy.
+        state: observation of the environment.
+        """
+        probs = [policy(a, state) for a in self.action_space]
+        return np.random.choice(self.action_space, p=probs)
+
+    
+    def update_Q(self, ep):
+        """Performs a action-value update.
+        Arguments
+        ---------
+        
+        ep: [(observation, action, reward)], an episode trajectory in chronological order.
+        """
+        # Generate returns, return ratio
+        G = self.generate_returns(ep)
+        for s in G:
+            state, action = s
+            q = self.Q[state][action]
+            self.Ql[state][action] += 1
+            N = self.Ql[state][action]
+            self.Q[state][action] = q * N/(N+1) + G[s]/(N+1)
+    
+    def score(self, env, policy, n_samples=1000):
+        """Evaluates a specific policy with regards to the env.
+        Arguments
+        ---------
+        
+        env: an openai gym env, or anything that follows the api.
+        policy: a function, could be self.pi, self.b, etc.
+        """
+        rewards = []
+        for _ in range(n_samples):
+            observation = env.reset()
+            cum_rewards = 0
+            while True:
+                action = self.choose_action(policy, observation)
+                observation, reward, done, _ = env.step(action)
+                cum_rewards += reward
+                if done:
+                    rewards.append(cum_rewards)
+                    break
+        return np.mean(rewards)
+    
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
+```
+
+Try it out for yourself if you would like to use it in different gyms.
+
+## Example: Blackjack 
+
+We use OpenAI's gym in this example. In here, we use a decaying $\epsilon$-greedy policy to solve Blackjack:
+
+```python
+import gym
+env = gym.make("Blackjack-v0")
+
+# The typical imports
+import gym
+import numpy as np
+import matplotlib.pyplot as plt
+from mc import FiniteMCModel as MC
+
+eps = 1000000
+S = [(x, y, z) for x in range(4,22) for y in range(1,11) for z in [True,False]]
+A = 2
+m = MC(S, A, epsilon=1)
+for i in range(1, eps+1):
+    ep = []
+    observation = env.reset()
+    while True:
+        # Choosing behavior policy
+        action = m.choose_action(m.b, observation)
+
+        # Run simulation
+        next_observation, reward, done, _ = env.step(action)
+        ep.append((observation, action, reward))
+        observation = next_observation
+        if done:
+            break
+
+    m.update_Q(ep)
+    # Decaying epsilon, reach optimal policy
+    m.epsilon = max((eps-i)/eps, 0.1)
+
+print("Final expected returns : {}".format(m.score(env, m.pi, n_samples=10000)))
+
+# plot a 3D wireframe like in the example mplot3d/wire3d_demo
+X = np.arange(4, 21)
+Y = np.arange(1, 10)
+Z = np.array([np.array([m.Q[(x, y, False)][0] for x in X]) for y in Y])
+X, Y = np.meshgrid(X, Y)
+
+from mpl_toolkits.mplot3d.axes3d import Axes3D
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.plot_wireframe(X, Y, Z, rstride=1, cstride=1)
+ax.set_xlabel("Player's Hand")
+ax.set_ylabel("Dealer's Hand")
+ax.set_zlabel("Return")
+plt.savefig("blackjackpolicy.png")
+plt.show()
+
+```
 
 
 
+And we get a pretty nice looking plot for when there is no usable ace(hence the `False` in `Z` for meshgrid plotting).
+
+![blackjackplot]({{ site.url }}/assets/blackjackpolicy.png)
+
+I also wrote up a quick off-policy version of the model that's not yet polished, since I wanted to just get a benchmark of performance out. Here is the result:
+
+```
+Iterations: 100/1k/10k/100k/1million.
+Tested on 10k samples for expected returns.
+
+On-policy : greedy
+-0.1636
+-0.1063
+-0.0648
+-0.0458
+-0.0312
+
+On-policy : eps-greedy with eps=0.3
+-0.2152
+-0.1774
+-0.1248
+-0.1268
+-0.1148
+
+Off-policy weighted importance sampling:
+-0.2393
+-0.1347
+-0.1176
+-0.0813
+-0.072
+```
+
+So it seems that off-policy importance sampling may be harder to converge, but does better than the epsilon greedy policy eventually.
+
+## Example: Cliff Walking 
+
+The change to the code is actually very small because, as I said, Monte Carlo sampling is pretty environment agnostic. We changed this portion of the code(minus the plotting part):
+
+```python
+# Before: Blackjack-v0
+env = gym.make("CliffWalking-v0")
+# Before: [(x, y, z) for x in range(4,22) for y in range(1,11) for z in [True,False]]
+S = 4*12 
+# Before: 2
+A = 4 
+```
+
+And so we ran the gym and got -17.0 as the $E_\pi(G)$. Not bad! The cliff walking problem is a map where some blocks are cliffs and others are platforms. You get -1 reward for every step on a platform, and -100 reward for every time you fall down the cliff. When you land on a cliff, you go back to the beginning. For how big the map is, -17.0 per episode is a near-optimal policy. 
+
+![cliffwalking]({{ site.url }}/assets/cliffwalking.png)
 
 
 
+# Conclusion
 
-
-
-
-
-
-
-
-
+Monte Carlo methods are surprisingly good techniques for calculating optimal value functions and action values for arbitrary tasks with "weird" probability distributions for action or observation spaces. We will consider better variations of Monte Carlo methods in the future, but this is a great building block for foundational knowledge in reinforcement learning.
 
 
 
