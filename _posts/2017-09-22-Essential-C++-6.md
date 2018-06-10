@@ -330,7 +330,7 @@ int defaultFoo(const Base&);
 class Base {
 public:
     typedef int (*Foo)(const Base&);
-    explicit GameCharacter(Foo f = defaultFoo) : _foo(f) {}
+    explicit Base(Foo f = defaultFoo) : _foo(f) {}
     ...
     int foo(){
         return _foo(*this);
