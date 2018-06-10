@@ -1,6 +1,6 @@
 ---
 published: true
-title: Essential C++ - Objected Oriented Programming
+title: Essential C++ - Object Oriented Programming
 category: dev
 layout: default
 ---
@@ -101,6 +101,8 @@ public:
 Derived d;
 d.foo(); // is fine
 d.foo(3); // error
+Base* b = new Derived();
+b->foo(2); // is fine
 ```
 
 ## Why does an error occur? Don't we want to inherit the overloaded functions?
