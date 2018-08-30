@@ -50,6 +50,31 @@ Now, if we discretize all elements involved in $f$, including the input and the 
 
 TL;DR: We find the best approximation of $I^W$ with respect to $\gamma$ and the current activation function $f$.
 
+## Details
+
+We refer to `MXNet`'s source code, in which I made a PR in, to explain exactly how the quantization step happens. The link to the file is [here](https://github.com/apache/incubator-mxnet/blob/master/python/mxnet/contrib/quantization.py), and the PR is [here](https://github.com/apache/incubator-mxnet/pull/11833).
+
+```python
+    hist, hist_edges = np.histogram(arr, bins=num_bins, range=(-th, th))
+    zero_bin_idx = num_bins // 2
+    num_half_quantized_bins = num_quantized_bins // 2
+    assert np.allclose(hist_edges[zero_bin_idx] + 
+                           hist_edges[zero_bin_idx + 1],
+                       0, rtol=1e-5, atol=1e-7)
+```
+
+Here, we create a histogram to approximate our activation function. The KL divergence between two continuous-valued distributions is usually performed in software via approximate binning. Each entry of the histogram is a bin entry. i.e. If you have 2 bins, then:
+
+$$
+D_{KL}([1,1]||[1,1]) = 0
+$$
+
+Because these 2 distributions are the same.
+
+_Note: The `contrib` folder for most frameworks is volatile, so the code above may not be an exact 1:1 at the time that you are reading it._
+
+The performance of this model in a single GPU usually yields ~1-2x faster inference speed. On a `p3.8xlarge` (with 4 beefy Volta GPU's), we can get to at most 3x faster on `Resnet50`.
+
 # Bitwise quantization
 
 Bitwise quantization is similar to `int8` quantization. The approximation is as follows:
