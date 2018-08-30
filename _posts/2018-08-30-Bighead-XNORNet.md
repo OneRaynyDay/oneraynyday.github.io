@@ -44,7 +44,11 @@ $$
 sigmoid(x) = \frac{1}{1+e^{-x}}
 $$
 
-With some data distribution D = {x_i}_{i=0}^N, we have some kind of activation function f that does f(D) = Q. This is a generic function f, with some unknown distribution D. 
+With some data distribution $D = {x_i}_{i=0}^N$, we have some kind of activation function $f$ that does $f(D) = Q$. This is a generic function $f$, with some unknown distribution $D$. 
+
+Now, if we discretize all elements involved in $f$, including the input and the weights required for any operator, we get back a function $f_{int8}$, and $f_{int8}(D) * \gamma = P_\gamma$. We minimize the KL divergence between these two distributions, $P_\gamma$ and $Q$.
+
+TL;DR: We find the best approximation of $I^W$ with respect to $\gamma$ and the current activation function $f$.
 
 # Bitwise quantization
 
