@@ -12,6 +12,8 @@ layout: default
 {:toc}
 This article is WIP.
 
+_The opinions expressed in this post are my own and not necesarily those of my employer (i.e. don't fire me pls)_
+
 # Introduction
 
 Over the summer, I interned at Airbnb's machine learning infrastructure team, working on Airbnb's to-be-opensourced library called **`Bighead`**. Think Uber's `Michaelangelo`, in that it's an end-to-end machine learning framework, meant to wrap around most of your typical machine learning workflow, from data ingestion, to training, to hyperparameter selection, visualization, and finally deployment. When it becomes opensource, you can figure out the details for yourself.
@@ -44,7 +46,7 @@ $$
 sigmoid(x) = \frac{1}{1+e^{-x}}
 $$
 
-With some data distribution $D = {x_i}_{i=0}^N$, we have some kind of activation function $f$ that does $f(D) = Q$. This is a generic function $f$, with some unknown distribution $D$. 
+With some data distribution $D = \{x_i\}_{i=0}^N$, we have some kind of activation function $f$ that does $f(D) = Q$. This is a generic function $f$, with some unknown distribution $D$. 
 
 Now, if we discretize all elements involved in $f$, including the input and the weights required for any operator, we get back a function $f_{int8}$, and $f_{int8}(D) * \gamma = P_\gamma$. We minimize the KL divergence between these two distributions, $P_\gamma$ and $Q$.
 
