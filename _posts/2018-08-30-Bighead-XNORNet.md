@@ -36,7 +36,11 @@ I^W_{ij} = cast_{int8}(\frac{W_{ij}}{\gamma^*}) \\
 W \approx I^W * \gamma^*
 $$
 
-where $Q$ is some unknown distribution(explained later), and $P$ our distribution. $\gamma$ is a parameter in $P$, and we optimize the kullback-leibler convergence between these two distributions with respect to $\gamma$. 
+where $Q$ is some unknown distribution(explained later), and $P$ our distribution. $\gamma$ is a parameter in $P$, and we optimize the kullback-leibler convergence between these two distributions with respect to $\gamma$. The $cast_{int8}$ function is a thresholding function:
+
+$$
+cast_{int8}(x) = max(min(-127, 2(\frac{2^8-1)(x+1)}{2(2^8-1)} - \frac{1}{2})), 127)
+$$
 
 Now, let's explain $Q$ and $P$.
 
