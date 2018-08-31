@@ -54,10 +54,10 @@ Now, let's explain $Q$ and $P$.
 For layers of a neural network, we usually generate these things called _activation values_, from functions called _activation functions_. The most common one is the sigmoid:
 
 $$
-sigmoid(x) = \frac{1}{1+e^{-x}}
+\sigma (x) = \frac{1}{1+e^{-x}}
 $$
 
-With some data distribution $D = \{x_i\}_{i=0}^N$, we have some kind of activation function $f$ where $f(D) = P$. This is a generic function $f$, with some unknown distribution $D$. 
+... but technically almost anything could be considered an activation function. With some data distribution $D = \{x_i\}_{i=0}^N$, we have some kind of activation function $f$ where $f(D) = P$. This is a generic function $f$, with some unknown distribution $D$. 
 
 Now, if we discretize all elements involved in $f$, including the input and the weights required for any operator, we get back a function $f_{int8}$, and $f_{int8}(D) * \gamma = Q_\gamma$. We minimize the KL divergence between these two distributions, $Q_\gamma$ and $P$.
 
@@ -149,7 +149,7 @@ The performance of this model in a single GPU usually yields ~1-2x faster infere
 Bitwise quantization is similar to `int8` quantization. The approximation is as follows:
 
 $$
-A, B \Re^{NxM} \\
+A, B \in \Re^{NxM} \\
 \mathcal{B}^X \in \{-1, +1\}^{NxM}
 \alpha, \beta \in \Re
 $$
@@ -173,4 +173,35 @@ $$
 \alpha = \frac{||A||_1}{N}
 $$
 
-WIP
+Multiplying two of these approximations is simple, and also leads to the optimal approximation of the two original matrices multiplied together:
+
+$$
+A*B \approx \mathcal{B}^{A}*\mathcal{B}^{B} * \alpha * \beta
+$$
+
+And if the above were numbers:
+
+$$
+a*b \approx sign(a)*sign(b) * \alpha * \beta
+$$
+
+---
+
+The reason I added the number example is because matrix multiplication can be expressed as a series of dot products. If we can optimize the dot product kernel, it means we can optimize the matrix kernel as well.
+
+If we had a number in `float32`:
+
+```
+a = [sign of a | mantissa of a | exponent of a]
+a * b = [sign a XNOR sign b | mantissa a * mantissa b | exp a + exp b]
+```
+
+If we had a number in ${-1, +1}$:
+
+```
+a = [sign of a]
+b = [sign of b]
+a * b = a XNOR b
+```
+
+This means all of our multiplications can be done via `XNOR`'s! This means we can pack our data into bits and do a vectorized xor on multiple elements at once. This should definitely be faster than performing floating point multiplication in theory!
