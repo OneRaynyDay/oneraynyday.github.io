@@ -36,9 +36,9 @@ I^W_{ij} = cast_{int8}(\frac{W_{ij}}{\gamma^*}) \\
 W \approx I^W * \gamma^*
 $$
 
-where Q is some unknown distribution(explained later), and P is our distribution. \gamma is a parameter in P, and we optimize the kullback-leibler convergence between these two distributions with respect to \gamma. 
+where $Q$ is some unknown distribution(explained later), and $P$ our distribution. $\gamma$ is a parameter in $P$, and we optimize the kullback-leibler convergence between these two distributions with respect to $\gamma$. 
 
-Now, let's explain Q and P.
+Now, let's explain $Q$ and $P$.
 
 For layers of a neural network, we usually generate these things called _activation values_, from functions called _activation functions_. The most common one is the sigmoid:
 
