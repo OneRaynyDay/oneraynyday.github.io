@@ -217,9 +217,12 @@ which is going to be the equivalent of our dot product.
 
 # Approaches to Implement XNORNet
 
-`BLAS` is a very ancient, and established linear algebra framework. It stands for `B`asic `L`inear `A`lgebra `S`ubprograms, and many libraries implement their subroutines based off of `BLAS`'s interface. Some of the fastest variants of `BLAS` are `MKL` from Intel, `ATLAS`, and `OpenBLAS`. Because many deep learning frameworks are glued to `BLAS` libraries, we are faced with two paths:
+`BLAS` is a very ancient, and established linear algebra framework. It stands for `B`asic `L`inear `A`lgebra `S`ubprograms, and many libraries implement their subroutines based off of `BLAS`'s interface. Some of the fastest variants of `BLAS` are `MKL` from Intel, `ATLAS`, and `OpenBLAS`. Some common subprograms we will use are `dot` (dot product between 2 vectors), `gemv` (`ge`neral `m`atrix `v`ector) / `gevm`, `gemm`(`ge`neral `m`atrix `m`atrix).
 
-1. Implement a BLAS routine for bit-wise matrix multiplication.
+Because many deep learning frameworks are glued to `BLAS` libraries, we are faced with two paths:
+
+1. Implement a BLAS routine for bit-wise matrix multiplication, and convince some 3rd party deep learning library to incorporate our changes.
+2. Make a forward-inference framework ourselves, and have the flexibility to inject `xnorgemm` anywhere we want.
 
 ## Forward-inference Compiler
 
