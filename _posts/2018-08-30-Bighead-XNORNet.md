@@ -73,7 +73,7 @@ $$
 
 Because these 2 distributions are the same.
 
-We are about to enter the important `for` loop that decides what threshold, i.e. $\gamma$ is optimal. We run through all reasonable $\gamma$'s and pick the one that gives the lowest KL divergence. The reasonable $\gamma$'s are between $[0, max(|x_i|) \forall i]$. Any elements outside of the distribution will be absorbed to the two corners of the distribution.
+We are about to enter the important `for` loop that decides what threshold, i.e. $\gamma$ is optimal. We run through all reasonable $\gamma$'s and pick the one that gives the lowest KL divergence. The reasonable $\gamma$'s are between $[0, max(\|x_i\|) \forall i]$. Any elements outside of the distribution will be absorbed to the two corners of the distribution.
 
 An example:
 
