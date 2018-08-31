@@ -36,13 +36,20 @@ I^W_{ij} = cast_{int8}(\frac{W_{ij}}{\gamma^*}) \\
 W \approx I^W * \gamma^*
 $$
 
-where Q is some unknown distribution(explained later), and P our distribution. \gamma is a parameter in P, and we optimize the kullback-leibler convergence between these two distributions with respect to \gamma. The cast_{int8} function is a thresholding function:
+where $Q$ is some unknown distribution(explained later), and $P$ our distribution. $\gamma$ is a parameter in $P$, and we optimize the kullback-leibler convergence between these two distributions with respect to $\gamma$. The $cast_{int8}$ function is a thresholding function:
 
 $$
 cast_{int8}(x) = max(min(-127, 2( \lfloor \frac{(2^8-1)(x+1)}{2(2^8-1)} \rfloor - \frac{1}{2})), 127)
 $$
 
-Now, let's explain Q and P.
+Okay, maybe it's better expressed with code:
+
+```python
+def cast_int8(x):
+    return max(min(-127, int(x)), 127)
+```
+
+Now, let's explain $Q$ and $P$.
 
 For layers of a neural network, we usually generate these things called _activation values_, from functions called _activation functions_. The most common one is the sigmoid:
 
