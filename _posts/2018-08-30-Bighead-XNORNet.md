@@ -20,9 +20,11 @@ Over the summer, I interned at Airbnb's machine learning infrastructure team, wo
 
 An argument against end-to-end machine learning frameworks is that you would need to work exclusively in their environment, and for other frameworks that are not completely compliant with its API, we would need to add wrappers (like `tensorflow`, `SpaCy`, etc). 
 
-However, a similar argument for end-to-end machine learning frameworks is that because you have a homogenous wrapper interface, the user _shouldn't really care about which framework underneath they use, just that it works, and works well._
+However, a similar argument for end-to-end machine learning frameworks is that because you have a homogenous wrapper interface, the user _shouldn't really care about which framework underneath they use, just that it works well, is easy to deploy, and easy to visualize and interpret._ 
 
 If we have our own ecosystem, we can build our own data ingestion pipeline, optimize them however we want, and do cool things, like **speed up machine learning inference by swapping out frameworks depending on which stage of the pipeline you are current executing.**
+
+The scoped context of this blog doesn't do `Bighead` enough justice(there are many other features that make it a great library), so check it out when it's available!
 
 # Integer 8-bit quantization
 
