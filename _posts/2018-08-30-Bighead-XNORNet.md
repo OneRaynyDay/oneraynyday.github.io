@@ -139,11 +139,27 @@ Bitwise quantization is similar to `int8` quantization. The approximation is as 
 
 $$
 A, B \Re^{NxM} \\
-\mathcal{B}^X \in \{-1, +1\}^{NxM} \\
-\alpha, \beta \in \Re \\
-\mathcal{B}^{X}_{ij} = signum(X)_{ij} \\
-\alpha = \frac{||A||_1}{N} \\
+\mathcal{B}^X \in \{-1, +1\}^{NxM}
+\alpha, \beta \in \Re
+$$
+
+The approximation is as follows:
+
+$$
 AB \approx \mathcal{B}^{A} \mathcal{B}^{B}\alpha\beta
+$$
+
+One can find the best binary array and magnitudes by solving the following least squares equation:
+
+$$
+argmin_{\mathcal{B}^{A},\alpha} ||A - \mathcal{B}^{A}*\alpha||^2
+$$
+
+After some calculations, the answer is (intuitively):
+
+$$
+\mathcal{B}^{X}_{ij} = signum(X)_{ij} \\
+\alpha = \frac{||A||_1}{N}
 $$
 
 WIP
