@@ -117,7 +117,7 @@ quantized_bins[-1] += sliced_nd_hist[
     num_quantized_bins * num_merged_bins:].sum()
 ```
 
-Here, we generate our distribution $Q$, by binning up the current scope of numbers within $[-\gamma, \gamma]$ into the # of bins you can fit in an `int8`, which is $|[-127,-126,...,127]| = 2^8-1 = 255$ bins.
+Here, we generate our distribution $Q$, by binning up the current scope of numbers within $[-\gamma, \gamma]$ into the # of bins you can fit in an `int8`, which is $\|[-127,-126,...,127]\| = 2^8-1 = 255$ bins.
 
 Now that we have retrieved `q` and `p`, let's do a KL divergence on them. Using scikit:
 
