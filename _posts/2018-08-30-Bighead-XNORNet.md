@@ -209,7 +209,7 @@ This means all of our multiplications can be done via `XNOR`'s! This means we ca
 A naive approach to the dot product would be:
 
 ```python
-x = ! (a ^ b) # xnor
+x = ~ (a ^ b) # xnor
 result = popcount(x) # popcount
 ```
 
