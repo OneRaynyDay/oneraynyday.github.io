@@ -196,7 +196,7 @@ a = [sign of a | mantissa of a | exponent of a]
 a * b = [sign a XNOR sign b | mantissa a * mantissa b | exp a + exp b]
 ```
 
-If we had a number in ${-1, +1}$:
+If we had a number in ${-1, +1}$, and mapped $-1$ to $0$, and $1$ to $1$ in bits:
 
 ```
 a = [sign of a]
@@ -204,4 +204,31 @@ b = [sign of b]
 a * b = a XNOR b
 ```
 
-This means all of our multiplications can be done via `XNOR`'s! This means we can pack our data into bits and do a vectorized xor on multiple elements at once. This should definitely be faster than performing floating point multiplication in theory!
+This means all of our multiplications can be done via `XNOR`'s! This means we can pack our data into bits and do a vectorized xor on multiple elements at once. This should definitely be faster than performing floating point multiplication in theory. In addition, a dot product is just a combination of multiplication and sum reduction. If we use `XNOR` for multiplication, we need an equivalent for sum reduction. Fortunately, there is a native intrinsic `popcount` instruction that allows one to count the number of `1`'s in bytes(32 bytes in AVX2, 64 bytes in AVX512, etc).
+
+A naive approach to the dot product would be:
+
+```python
+x = ! (a ^ b) # xnor
+result = popcount(x) # popcount
+```
+
+which is going to be the equivalent of our dot product.
+
+# Approaches to Implement XNORNet
+
+`BLAS` is a very ancient, and established linear algebra framework. It stands for `B`asic `L`inear `A`lgebra `S`ubprograms, and many libraries implement their subroutines based off of `BLAS`'s interface. Some of the fastest variants of `BLAS` are `MKL` from Intel, `ATLAS`, and `OpenBLAS`. Because many deep learning frameworks are glued to `BLAS` libraries, we are faced with two paths:
+
+1. Implement a BLAS routine for bit-wise matrix multiplication.
+
+## Forward-inference Compiler
+
+
+
+
+
+
+
+
+
+
