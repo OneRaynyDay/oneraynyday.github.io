@@ -247,7 +247,7 @@ We decided that we needed something performant and expressive, that had good bin
 - Support for N-dimensional tensors (something that Armadillo and Eigen could not provide out-of-the-box)
 - Support for lazy operators, thus reducing temporary copies and support efficient type checking using templates during compile time
 - Support for black-box `simd` intrinsic operations
-- Use modern C++11 and above for move semantics compile-time generated fixed-size expressions using type traits built into the standard library.
+- Use modern C++11 for move semantics and compile-time generated fixed-size expressions using type traits built into the standard library.
 
 So now we have decided on our linear algebra library and language of choice, how can we dynamically express the neural network in Python, but get it to work in C++?
 
