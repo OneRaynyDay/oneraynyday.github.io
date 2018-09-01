@@ -36,7 +36,7 @@ I^W_{ij} = cast_{int8}(\frac{W_{ij}}{\gamma^*}) \\
 W \approx I^W * \gamma^*
 $$
 
-where $Q$ is some unknown distribution(explained later), and $P$ our distribution. $\gamma$ is a parameter in $P$, and we optimize the kullback-leibler convergence between these two distributions with respect to $\gamma$. The $cast_{int8}$ function is a thresholding function:
+where $Q$ and $P$ are some unknown distributions(explained later). $\gamma$ is a parameter in $P$, and we optimize the kullback-leibler convergence between these two distributions with respect to $\gamma$. The $cast_{int8}$ function is a thresholding function:
 
 $$
 cast_{int8}(x) = max(min(-127, 2( \lfloor \frac{(2^8-1)(x+1)}{2(2^8-1)} \rfloor - \frac{1}{2})), 127)
@@ -84,7 +84,7 @@ $$
 
 Because these 2 distributions are the same.
 
-We are about to enter the important `for` loop that decides what threshold, i.e. $\gamma$ is optimal. We run through all reasonable $\gamma$'s and pick the one that gives the lowest KL divergence. The reasonable $\gamma$'s are between $[0, max(\|x_i\|) \forall i]$. Any elements outside of the distribution will be absorbed to the two corners of the distribution.
+We are about to enter the important `for` loop that decides what threshold, i.e. $\gamma$ is optimal. We run through all reasonable $\gamma$'s and pick the one that gives the lowest KL divergence. The reasonable $\gamma$'s are between $[0, max_i(\|x_i\|)]$. Any elements outside of the distribution will be absorbed to the two corners of the distribution.
 
 An example:
 
@@ -169,7 +169,7 @@ $$
 After some calculations, the answer is (intuitively):
 
 $$
-\mathcal{B}^{X}_{ij} = signum(X)_{ij} \\
+\mathcal{B}^{A}_{ij} = signum(A)_{ij} \\
 \alpha = \frac{||A||_1}{N}
 $$
 
