@@ -215,6 +215,12 @@ result = popcount(x) # popcount
 
 which is going to be the equivalent of our dot product.
 
+But caveat about this model is that simply doing the same conversion process as Nvidia, like discretizing to `int8`, will give us **horrendous performance**, like, random guessing performance. So our training process is going to have to be revamped.
+
+## Training and Backpropagation of an XNORNet
+
+TODO.
+
 # Approaches to Implement XNORNet
 
 `BLAS` is a very ancient, and established linear algebra framework. It stands for :
