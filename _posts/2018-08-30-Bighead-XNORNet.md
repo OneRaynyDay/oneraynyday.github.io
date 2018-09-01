@@ -142,7 +142,7 @@ There are some extra details that I left out, about smoothing the distribution t
 
 _Note: The `contrib` folder for most frameworks is volatile, so the code above may not be an exact 1:1 at the time that you are reading it._
 
-The performance of this model in a single GPU usually yields ~1-2x faster inference speed. On a `p3.8xlarge` (with 4 beefy Volta GPU's), we can get to at most 3x faster on `Resnet50`.
+The performance of this model in a single GPU usually yields ~1-2x faster inference speed. On a `p3.8xlarge` (with 4 beefy Volta GPU's), we can get to at most 3x faster on `Resnet50`. However, can we discretize this even further?
 
 # Bitwise quantization
 
@@ -233,9 +233,33 @@ which is going to be the equivalent of our dot product.
 Because many deep learning frameworks are glued to `BLAS` libraries, we are faced with two paths:
 
 1. Implement a BLAS routine for bit-wise matrix multiplication, and convince some 3rd party deep learning library to incorporate our changes.
-2. Make a forward-inference framework ourselves, and have the flexibility to inject `xnorgemm` anywhere we want.
+2. Make a forward-inference framework ourselves, and have the flexibility to replace `gemm` with `xnorgemm` anywhere we want.
 
-## Forward-inference Compiler
+## Forward-inference Framework
+
+### Linear Algebra Backend
+
+We wanted our library to interface directly with `NumPy`, which is the standard general numerical computing stack in Python along with `SciPy`. However, directly using `NumPy` will incur huge copy costs and reduced optimization, as well as the curse of GIL locking in Python.
+
+We decided that we needed something performant and expressive, that had good bindings with `NumPy`, and so one of the promising candidates was `xtensor`, from the QuantStack team. It also had a variety of optimizations that we were looking for:
+
+- Support for `NumPy` bindings
+- Support for N-dimensional tensors (something that Armadillo and Eigen could not provide out-of-the-box)
+- Support for lazy operators, thus reducing temporary copies and support efficient type checking using templates during compile time
+- Support for black-box `simd` intrinsic operations
+- Use modern C++11 and above for move semantics compile-time generated fixed-size expressions using type traits built into the standard library.
+
+So now we have decided on our linear algebra library and language of choice, how can we dynamically express the neural network in Python, but get it to work in C++?
+
+### Python to C++ Transpiler
+
+As a primary goal of usability, we wanted the end-user to not spend too much time learning about our framework, but rather use their familiar Python Keras/MXNet/Tensorflow/Pytorch high-level layers, which are all similar in API. Just like how MXNet compiles its python graph into NNVM, and Tensorflow compiles its graph into LLVM, we compile our python graph into C++. Transpiling something that looks like:
+
+TODO: Add example here
+
+
+
+
 
 
 
