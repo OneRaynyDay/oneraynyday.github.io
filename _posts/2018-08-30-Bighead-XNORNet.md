@@ -274,17 +274,19 @@ $$
 Our gradient becomes:
 
 $$
-\frac{\partial C(binarize(W))}{\partial W} = \\
-\frac{\partial C(binarize(W))}{\partial binarize(W)} \frac{\partial binarize(W)}{\partial W} = \\
-\frac{\partialC(binarize(W))}{\partial binarize(W)} \frac{\partial sign(W) * \frac{1}{mn}||W||_1}{\partial W}
+\frac{\partial C(binarize(W))}{\partial W_i} = \\
+\sum_j \frac{\partial C(binarize(W))}{\partial binarize(W)_j} \frac{\partial binarize(W)_j}{\partial W_i} = \\
+\sum_j \frac{\partialC(binarize(W))}{\partial binarize(W)_j} \frac{\partial (sign(W) * \frac{1}{mn}||W||_1)_j}{\partial W_i}
 $$
 
 By product rule:
 
 $$
-\frac{\partial sign(W) * \frac{1}{mn}||W||_1}{\partial W} = \\
-\frac{\partial sign(W)}{\partial W} \frac{1}{mn}||W||_1 + \frac{\partial \frac{1}{mn}||W||_1}{\partial W} sign(W)
+\frac{\partial (sign(W) * \frac{1}{mn}||W||_1)_j}{\partial W_i} = \\
+\frac{\partial sign(W)_j}{\partial W_i} \frac{1}{mn}||W||_1 + \frac{\partial \frac{1}{mn}||W||_1}{\partial W_i} sign(W)_j
 $$
+
+Now, 
 
 
 # Approaches to Implement XNORNet
