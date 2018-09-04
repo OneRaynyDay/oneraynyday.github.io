@@ -247,10 +247,10 @@ $$
 
 This function is not differentiable from the right at the point $x = 0$, and the gradient is 0 everywhere else. How can we properly backpropagate on this function?
 
-Well, the answer is we can't. However, Hinton(2012)'s lectures introduced the idea of a **straight-through estimator (STE)**, which is essentially saying:
+Well, the answer is we can't. However, Hinton(2012, Using noise as a regularizer)'s lectures introduced the idea of a **straight-through estimator (STE)**, which is essentially arguing that the below approximation will work as a proxy for the gradient.
 
 $$
-\frac{\partial sign(x)}{\partial x} = 1
+\frac{\partial sign(x)}{\partial x} \approx 1
 $$
 
 So therefore, if we're performing backpropagation:
