@@ -310,6 +310,7 @@ $$
 The final gradient should be:
 
 $$
+\frac{\partial C(binarize(W))}{\partial W_i} = \\
 \sum_j \frac{\partial C(binarize(W))}{\partial binarize(W)_j} \frac{\partial sign(W)_j * \frac{1}{m}||W||_1}{\partial W_i} = \\
 \frac{\partial C(binarize(W))}{\partial binarize(W)_i} \frac{\partial sign(W)_i}{\partial W_i} \frac{1}{m}||W||_1 + \sum_j \frac{\partial C(binarize(W))}{\partial binarize(W)_j}\frac{\partial \frac{1}{m}||W||_1}{\partial W_i} sign(W)_j = \\
 \frac{\partial C(binarize(W))}{\partial binarize(W)_i} 1_{|W_i| \leq 1} \frac{1}{m}||W||_1 + \sum_j \frac{\partial C(binarize(W))}{\partial binarize(W)_j}\frac{1}{m} sign(W)_i sign(W)_j
