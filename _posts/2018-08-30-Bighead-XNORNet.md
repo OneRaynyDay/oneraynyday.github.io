@@ -250,19 +250,23 @@ This function is not differentiable from the right at the point $x = 0$, and the
 Well, the answer is we can't. However, Hinton(2012, Using noise as a regularizer)'s lectures introduced the idea of a **straight-through estimator (STE)**, which is essentially arguing that the below approximation will work as a proxy for the gradient.
 
 $$
-\frac{\partial sign(x)}{\partial x} \approx 1
+\frac{\partial sign(x)_j}{\partial x_i} \approx
+\begin{cases}
+0 & \text{if $j != i$} \\
+1 & \text{if $j = i$}
+\end{cases}
 $$
 
 So therefore, if we're performing backpropagation:
 
 $$
-\frac{\partial f(sign(x))}{\partial x} = \frac{\partial f(sign(x))}{\partial sign(x)} * 1
+\frac{\partial f(sign(x))}{\partial x_i} = \frac{\partial f(sign(x))}{\partial sign(x)_i} * 1
 $$
 
 However, for practical purposes, we perform gradient clipping at this stage, and we clip with respect to the input's magnitude, so really our gradient through the $signum$ function looks like:
 
 $$
-\frac{\partial sign(x_i)}{\partial x_i} = 1_{|x_i| < 1}
+\frac{\partial sign(x)_i}{\partial x_i} = 1_{|x_i| < 1}
 $$
 
 Suppose we have some cost function $C$, which we are ultimately backpropagating from, then we want to know the gradient of $W$ for updates. Without loss of generality, we assume $W$ is a 2d tensor. We discretize $W \in \Re^{mxn}$:
@@ -276,7 +280,7 @@ Our gradient becomes:
 $$
 \frac{\partial C(binarize(W))}{\partial W_i} = \\
 \sum_j \frac{\partial C(binarize(W))}{\partial binarize(W)_j} \frac{\partial binarize(W)_j}{\partial W_i} = \\
-\sum_j \frac{\partialC(binarize(W))}{\partial binarize(W)_j} \frac{\partial (sign(W) * \frac{1}{mn}||W||_1)_j}{\partial W_i}
+\sum_j \frac{\partial C(binarize(W))}{\partial binarize(W)_j} \frac{\partial (sign(W) * \frac{1}{mn}||W||_1)_j}{\partial W_i}
 $$
 
 By product rule:
