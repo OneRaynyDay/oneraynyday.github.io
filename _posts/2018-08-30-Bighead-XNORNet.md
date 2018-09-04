@@ -219,7 +219,73 @@ But caveat about this model is that simply doing the same conversion process as 
 
 ## Training and Backpropagation of an XNORNet
 
-TODO.
+Where XNORNet shines is inference time. Because of the quantization of the weights and input, the forward pass of the architecture is theoretically extremely fast. However, training it is a different problem altogether.
+
+To train an XNORNet, we actually consider the binarization function as some sort of activation function:
+
+$$
+binarize(x) = sign(x) * \frac{1}{N}||x||_1
+$$
+
+This means that we are actually **training with floating point numbers, discretizing them in the process, and retrieving real-valued gradients for update.**
+
+This means that our backpropagation process is not going to be as fast as inference! In fact, it may be slower than normal backpropagation with floating point weights.
+
+### Difficulty of training an XNORNet
+
+The difficult of training an XNORNet arises from the problem of discretization. Naturally, functions that discretize real values will not be continuous, and therefore it is not differentiable at every point.
+
+Let's look at a slightly modified sign function $sign$ or $signum$ (absorbing the case where $x$ is zero):
+
+$$
+sign(x) = 
+\begin{cases}
+-1 & \text{if $n \leq 0$} \\
+1 & \text{if $x > 0$}
+\end{cases}
+$$
+
+This function is not differentiable from the right at the point $x = 0$, and the gradient is 0 everywhere else. How can we properly backpropagate on this function?
+
+Well, the answer is we can't. However, Hinton(2012)'s lectures introduced the idea of a **straight-through estimator (STE)**, which is essentially saying:
+
+$$
+\frac{\partial sign(x)}{\partial x} = 1
+$$
+
+So therefore, if we're performing backpropagation:
+
+$$
+\frac{\partial f(sign(x))}{\partial x} = \frac{\partial f(sign(x))}{\partial sign(x)} * 1
+$$
+
+However, for practical purposes, we perform gradient clipping at this stage, and we clip with respect to the input's magnitude, so really our gradient through the $signum$ function looks like:
+
+$$
+\frac{\partial sign(x_i)}{\partial x_i} = 1_{|x_i| < 1}
+$$
+
+Suppose we have some cost function $C$, which we are ultimately backpropagating from, then we want to know the gradient of $W$ for updates. Without loss of generality, we assume $W$ is a 2d tensor. We discretize $W \in \Re^{mxn}$:
+
+$$
+C(binarize(W)) = C(sign(W) * \frac{1}{mn}||W||_1)
+$$
+
+Our gradient becomes:
+
+$$
+\frac{\partial C(binarize(W))}{\partial W} = \\
+\frac{\partial C(binarize(W))}{\partial binarize(W)} \frac{\partial binarize(W)}{\partial W} = \\
+\frac{\partialC(binarize(W))}{\partial binarize(W)} \frac{\partial sign(W) * \frac{1}{mn}||W||_1}{\partial W}
+$$
+
+By product rule:
+
+$$
+\frac{\partial sign(W) * \frac{1}{mn}||W||_1}{\partial W} = \\
+\frac{\partial sign(W)}{\partial W} \frac{1}{mn}||W||_1 + \frac{\partial \frac{1}{mn}||W||_1}{\partial W} sign(W)
+$$
+
 
 # Approaches to Implement XNORNet
 
