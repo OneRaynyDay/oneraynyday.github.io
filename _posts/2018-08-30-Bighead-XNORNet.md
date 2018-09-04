@@ -436,6 +436,10 @@ xt::xarray<float> transform(const xt::xarray<float>& batch, const std::string& p
 } // extern "C"
 ```
 
+One advantage that a C++ transpiler has over something like tensorflow's LLVM compiler is that we can easily inspect the C++ code for bugs during a model-building iteration cycle.
+
+Because C++ is an easier barrier to entry, others could easily implement layers that would compile C++ code as long as they knew how to use the linear algebra backend(for e.x. `xtensor`). The fact that the layers could technically emit anything means that fellow python/C++ programmers can expand the backend emitter usage to more than just deep learning applications, but rather other parts of the data processing pipeline. In the future, we hope to compile all parts of the bighead pipeline into C++ wherever possible, so we can offer blazing fast performance after a single `fit()` call.
+
 
 
 
