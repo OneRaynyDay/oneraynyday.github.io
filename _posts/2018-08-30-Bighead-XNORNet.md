@@ -269,10 +269,10 @@ $$
 \frac{\partial sign(x)_i}{\partial x_i} = 1_{|x_i| < 1}
 $$
 
-Suppose we have some cost function $C$, which we are ultimately backpropagating from, then we want to know the gradient of $W$ for updates. Without loss of generality, we assume $W$ is a 2d tensor. We discretize $W \in \Re^{mxn}$:
+Suppose we have some cost function $C$, which we are ultimately backpropagating from, then we want to know the gradient of $W$ for updates. Without loss of generality, we assume $W$ is a 1-dimensional tensor. We discretize $W \in \Re^{m}$:
 
 $$
-C(binarize(W)) = C(sign(W) * \frac{1}{mn}||W||_1)
+C(binarize(W)) = C(sign(W) * \frac{1}{m}||W||_1)
 $$
 
 Our gradient becomes:
@@ -280,17 +280,31 @@ Our gradient becomes:
 $$
 \frac{\partial C(binarize(W))}{\partial W_i} = \\
 \sum_j \frac{\partial C(binarize(W))}{\partial binarize(W)_j} \frac{\partial binarize(W)_j}{\partial W_i} = \\
-\sum_j \frac{\partial C(binarize(W))}{\partial binarize(W)_j} \frac{\partial (sign(W) * \frac{1}{mn}||W||_1)_j}{\partial W_i}
+\sum_j \frac{\partial C(binarize(W))}{\partial binarize(W)_j} \frac{\partial sign(W)_j * \frac{1}{m}||W||_1}{\partial W_i}
 $$
 
 By product rule:
 
 $$
-\frac{\partial (sign(W) * \frac{1}{mn}||W||_1)_j}{\partial W_i} = \\
-\frac{\partial sign(W)_j}{\partial W_i} \frac{1}{mn}||W||_1 + \frac{\partial \frac{1}{mn}||W||_1}{\partial W_i} sign(W)_j
+\frac{\partial sign(W)_j * \frac{1}{mn}||W||_1}{\partial W_i} = \\
+\frac{\partial sign(W)_j}{\partial W_i} \frac{1}{m}||W||_1 + \frac{\partial \frac{1}{m}||W||_1}{\partial W_i} sign(W)_j
 $$
 
-Now, 
+Let's tackle each piece:
+
+$$
+\frac{\partial sign(W)_j}{\partial W_i} = 
+\begin{cases}
+0 & \text{if $j != i$} \\
+1 & \text{if $j = i$}
+\end{cases}
+$$
+
+$$
+\frac{\partial \frac{1}{m}||W||_1|}{\partial W_i} = \\
+\frac{\partial \frac{1}{m} \sum_{j} |W_{j}|}{\partial W_i} = \\
+\frac{1}{m}
+$$
 
 
 # Approaches to Implement XNORNet
