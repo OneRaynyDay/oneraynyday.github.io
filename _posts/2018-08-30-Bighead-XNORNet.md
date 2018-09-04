@@ -286,7 +286,7 @@ $$
 By product rule:
 
 $$
-\frac{\partial sign(W)_j * \frac{1}{mn}||W||_1}{\partial W_i} = \\
+\frac{\partial sign(W)_j * \frac{1}{m}||W||_1}{\partial W_i} = \\
 \frac{\partial sign(W)_j}{\partial W_i} \frac{1}{m}||W||_1 + \frac{\partial \frac{1}{m}||W||_1}{\partial W_i} sign(W)_j
 $$
 
@@ -304,14 +304,13 @@ And for the L-1 norm:
 
 $$
 \frac{\partial \frac{1}{m}||W||_1|}{\partial W_i} = \\
-\frac{\partial \frac{1}{m} \sum_{j} |W_{j}|}{\partial W_i} = \\
-\frac{1}{m}
+\frac{\partial \frac{1}{m} \sum_{j} |W_{j}|}{\partial W_i} = \frac{1}{m}
 $$
 
 The final gradient should be:
 
 $$
-\sum_j \frac{\partial C(binarize(W))}{\partial binarize(W)_j} \frac{\partial sign(W)_j * \frac{1}{mn}||W||_1}{\partial W_i} = \\
+\sum_j \frac{\partial C(binarize(W))}{\partial binarize(W)_j} \frac{\partial sign(W)_j * \frac{1}{m}||W||_1}{\partial W_i} = \\
 \frac{\partial C(binarize(W))}{\partial binarize(W)_j} (\frac{\partial sign(W)_i}{\partial W_i} \frac{1}{m}||W||_1 + \sum_j \frac{\partial \frac{1}{m}||W||_1}{\partial W_i} sign(W)_j)
 $$
 
