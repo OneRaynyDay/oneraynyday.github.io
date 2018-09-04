@@ -319,14 +319,14 @@ $$
 
 # Approaches to Implement XNORNet
 
-`BLAS` is a very ancient, and established linear algebra framework. It stands for :
+`BLAS` is a very ancient, and established linear algebra framework interface. It stands for :
 
 - `B`asic 
 - `L`inear 
 - `A`lgebra 
 - `S`ubprograms
 
-, and many libraries implement their subroutines based off of `BLAS`'s interface. Some of the fastest variants of `BLAS` are `MKL` from Intel, `ATLAS`, and `OpenBLAS`. The most common subprograms deep learning uses are:
+and many libraries implement their subroutines based off of `BLAS`'s interface. Some of the fastest variants of `BLAS` are `MKL` from Intel, `ATLAS`, and `OpenBLAS`. The most common subprograms deep learning uses are:
 
 - `dot` (dot product between 2 vectors)
 - `gemv`/`gevm`, `ge`neral `m`atrix `v`ector
@@ -355,9 +355,86 @@ So now we have decided on our linear algebra library and language of choice, how
 
 ### Python to C++ Transpiler
 
-As a primary goal of usability, we wanted the end-user to not spend too much time learning about our framework, but rather use their familiar Python Keras/MXNet/Tensorflow/Pytorch high-level layers, which are all similar in API. Just like how MXNet compiles its python graph into NNVM, and Tensorflow compiles its graph into LLVM, we compile our python graph into C++. Transpiling something that looks like:
+As a primary goal of usability, we wanted the end-user to not spend too much time learning about our framework, but rather use their familiar Python Keras/MXNet/Tensorflow/Pytorch high-level layers, which are all similar in API. Just like how MXNet compiles its python graph into NNVM, and Tensorflow compiles its graph into LLVM, we compile our python graph into C++. 
 
-TODO: Add example here
+For example, we can transpile a graph in PyTorch that looks like:
+
+```python
+ConvNet(
+  (conv): Sequential(
+    (0): BinaryConvolution2d()
+    (1): ReLU()
+    (2): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+    (3): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BinaryConvolution2d()
+    (5): ReLU()
+    (6): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+    (7): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (fc): BinaryLinear()
+)
+```
+
+into some C++ code that looks like:
+
+```c++
+...
+
+extern "C" {
+auto&& Block__0BinaryConv2d__weight = getParameter<float>("Block__0BinaryConv2d__weight");
+auto&& Block__0BinaryConv2d__bias = getParameter<float>("Block__0BinaryConv2d__bias");
+auto&& Block__3BatchNorm__gamma = getParameter<float>("Block__3BatchNorm__gamma");
+auto&& Block__3BatchNorm__beta = getParameter<float>("Block__3BatchNorm__beta");
+auto&& Block__3BatchNorm__running_mean = getParameter<float>("Block__3BatchNorm__running_mean");
+auto&& Block__3BatchNorm__running_var = getParameter<float>("Block__3BatchNorm__running_var");
+static constexpr float Block__3BatchNorm__epsilon = 1e-05;
+auto&& Block__4BinaryConv2d__weight = getParameter<float>("Block__4BinaryConv2d__weight");
+auto&& Block__4BinaryConv2d__bias = getParameter<float>("Block__4BinaryConv2d__bias");
+auto&& Block__7BatchNorm__gamma = getParameter<float>("Block__7BatchNorm__gamma");
+auto&& Block__7BatchNorm__beta = getParameter<float>("Block__7BatchNorm__beta");
+auto&& Block__7BatchNorm__running_mean = getParameter<float>("Block__7BatchNorm__running_mean");
+auto&& Block__7BatchNorm__running_var = getParameter<float>("Block__7BatchNorm__running_var");
+static constexpr float Block__7BatchNorm__epsilon = 1e-05;
+auto&& Block__9BinaryDense__weight = getParameter<float>("Block__9BinaryDense__weight");
+auto&& Block__9BinaryDense__bias = getParameter<float>("Block__9BinaryDense__bias");
+
+xt::xarray<float> transform(const xt::xarray<float>& batch, const std::string& prefix){
+	xt::xarray<float> result;
+	auto in_shape = batch.shape()[0];
+	auto rows = std::min(in_shape, decltype(in_shape)(60000));
+	result.resize({ rows, 10 });
+	#pragma omp parallel for
+	for(auto i = 0; i < rows; i++){
+		auto&& data = xt::view(batch, xt::range(i, i+1));
+		auto&& Block__0BinaryConv2d__binConv2d = bighead::linalg::conv::binConv2d(data, Block__0BinaryConv2d__weight, 1, 0);
+		auto&& Block__0BinaryConv2d__binConv2d_bias = Block__0BinaryConv2d__binConv2d + xt::view(Block__0BinaryConv2d__bias, xt::newaxis(), xt::all(), xt::newaxis(), xt::newaxis());
+		auto&& Block__1ReLU__relu = Block__0BinaryConv2d__binConv2d_bias * xt::cast<float>(0 < Block__0BinaryConv2d__binConv2d_bias);
+		auto&& Block__2MaxPool2d__maxPool2d = bighead::linalg::pool::maxPool2d(Block__1ReLU__relu, 2, 2, 0);
+		auto&& Block__3BatchNorm__batchNormgamma = xt::view(Block__3BatchNorm__gamma, xt::newaxis(), xt::all(), xt::newaxis(), xt::newaxis());
+		auto&& Block__3BatchNorm__batchNormbeta = xt::view(Block__3BatchNorm__beta, xt::newaxis(), xt::all(), xt::newaxis(), xt::newaxis());
+		auto&& Block__3BatchNorm__batchNormrunning_mean = xt::view(Block__3BatchNorm__running_mean, xt::newaxis(), xt::all(), xt::newaxis(), xt::newaxis());
+		auto&& Block__3BatchNorm__batchNormrunning_var = xt::view(Block__3BatchNorm__running_var, xt::newaxis(), xt::all(), xt::newaxis(), xt::newaxis());
+		auto&& Block__3BatchNorm__batchNorm = Block__3BatchNorm__batchNormgamma * (Block__2MaxPool2d__maxPool2d - Block__3BatchNorm__batchNormrunning_mean) / xt::sqrt(Block__3BatchNorm__batchNormrunning_var + Block__3BatchNorm__epsilon) + Block__3BatchNorm__batchNormbeta;
+		auto&& Block__4BinaryConv2d__binConv2d = bighead::linalg::conv::binConv2d(Block__3BatchNorm__batchNorm, Block__4BinaryConv2d__weight, 1, 0);
+		auto&& Block__4BinaryConv2d__binConv2d_bias = Block__4BinaryConv2d__binConv2d + xt::view(Block__4BinaryConv2d__bias, xt::newaxis(), xt::all(), xt::newaxis(), xt::newaxis());
+		auto&& Block__5ReLU__relu = Block__4BinaryConv2d__binConv2d_bias * xt::cast<float>(0 < Block__4BinaryConv2d__binConv2d_bias);
+		auto&& Block__6MaxPool2d__maxPool2d = bighead::linalg::pool::maxPool2d(Block__5ReLU__relu, 2, 2, 0);
+		auto&& Block__7BatchNorm__batchNormgamma = xt::view(Block__7BatchNorm__gamma, xt::newaxis(), xt::all(), xt::newaxis(), xt::newaxis());
+		auto&& Block__7BatchNorm__batchNormbeta = xt::view(Block__7BatchNorm__beta, xt::newaxis(), xt::all(), xt::newaxis(), xt::newaxis());
+		auto&& Block__7BatchNorm__batchNormrunning_mean = xt::view(Block__7BatchNorm__running_mean, xt::newaxis(), xt::all(), xt::newaxis(), xt::newaxis());
+		auto&& Block__7BatchNorm__batchNormrunning_var = xt::view(Block__7BatchNorm__running_var, xt::newaxis(), xt::all(), xt::newaxis(), xt::newaxis());
+		auto&& Block__7BatchNorm__batchNorm = Block__7BatchNorm__batchNormgamma * (Block__6MaxPool2d__maxPool2d - Block__7BatchNorm__batchNormrunning_mean) / xt::sqrt(Block__7BatchNorm__batchNormrunning_var + Block__7BatchNorm__epsilon) + Block__7BatchNorm__batchNormbeta;
+		auto&& Block__8Flatten__reshape = xt::eval(Block__7BatchNorm__batchNorm);
+		Block__8Flatten__reshape.reshape({ Block__8Flatten__reshape.shape()[0], 512 });
+		auto&& Block__9BinaryDense__xnorAffine = bighead::linalg::xnor::xnormatmul(Block__8Flatten__reshape, Block__9BinaryDense__weight);
+		auto&& Block__9BinaryDense__xnorAffine_bias = Block__9BinaryDense__xnorAffine + xt::view(Block__9BinaryDense__bias, xt::newaxis(), xt::all());
+		xt::view(result, xt::range(i,i+1)) = std::forward<decltype(Block__9BinaryDense__xnorAffine_bias)>(Block__9BinaryDense__xnorAffine_bias);
+	}
+	return result;
+}
+...
+} // extern "C"
+```
 
 
 
