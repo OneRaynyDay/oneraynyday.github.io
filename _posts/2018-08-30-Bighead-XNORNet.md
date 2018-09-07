@@ -316,6 +316,24 @@ $$
 \frac{\partial C(binarize(W))}{\partial binarize(W)_i} 1_{|W_i| \leq 1} \frac{1}{m}||W||_1 + \sum_j \frac{\partial C(binarize(W))}{\partial binarize(W)_j}\frac{1}{m} sign(W)_i sign(W)_j
 $$
 
+We have observed some properties of XNORNets through 
+
+1. For input $X \approx \mathcal{B}^X * \alpha$, we can remove $\alpha$ and still yield similar accuracy. There is a roughly 3% accuracy gap.
+2. For the gradient, we can replace the complicated equation derived above with a simple pass-through $\frac{\partial C(binarize(W))}{\partial W_i} \approx \frac{\partial C(binarize(W))}{\partial binarize(W)_i} 1_{|W_i| \leq 1}$ and it would work just as well, but it takes longer to converge. We currently use this for inputs, but have the exact precise gradient for weights.
+3. As the depth of the neural network increase, the harder it is to train an XNORNet to convergence. By clipping the gradient at all $|X_i| \leq 1$, there may be insufficient gradient information arriving at the beginning of the neural networks. This is why several studies suggest widening the layers in an XNORNet, and why the original paper's ResNet accuracy drops by a whopping 20% as opposed to the XNORNet version of AlexNet, which loses 10%.
+4. Catastrophic forgetting is a real problem in XNOR-Networks. At times it would fall up to 40% accuracy using the same learning rate, and does not easily recover. My intuitive guess is that small perturbations in the weights of the neural network drastically changes magnitude (from $-\alpha$ to $\alpha$, and vice versa), and perturbations on important parts of the weight that generate good convolution filters will cause a huge degradation in performance.
+5. In reality, although the optimal magnitude for approximating the matrix $W$ is expressed as follows from the least squared equation:
+
+$$
+\alpha^* = \frac{1}{m}||W||_1
+$$
+
+We have found that using $\alpha$ as a parameter for $W$ to backpropagate into also yields a similar accuracy, and reduces catastrophic forgetting (the learned $\alpha$ is usually very small).
+6. XNORNets are very sensitive to hyperparameters, and optimal performance requires careful handtuning or fairly exhaustive hyperparameter search, for example on the learning rate(`1e-3`), batch size(`1024`), learning rate decay(`0.95`), and etc.
+7. One can interpret discretization as some form of regularization, and thus there is no necessary dropout layer that is further required (i.e. training accuracy usually corresponds to cross-validation accuracy).
+8. Clamping the weights before a forward pass between $[-1, 1]$ is a forced method of regularizing gradient explosion in an XNORNet. L2 regularization on the weights can work as well. This is also known as BinaryConnect.
+
+Although there are no proofs or bounds for why the above "hacks" yield good results and YMMV, we ended up with a test 83% accuracy on CIFAR 10 in roughly 50 epochs of 1024 batch size.
 
 # Approaches to Implement XNORNet
 
