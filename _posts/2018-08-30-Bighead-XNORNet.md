@@ -316,7 +316,7 @@ $$
 \frac{\partial C(binarize(W))}{\partial binarize(W)_i} 1_{|W_i| \leq 1} \frac{1}{m}||W||_1 + \sum_j \frac{\partial C(binarize(W))}{\partial binarize(W)_j}\frac{1}{m} sign(W)_i sign(W)_j
 $$
 
-We have observed some properties of XNORNets through 
+### Training Tips
 
 1. For input $X \approx \mathcal{B}^X * \alpha$, we can remove $\alpha$ and still yield similar accuracy. There is a roughly 3% accuracy gap.
 2. For the gradient, we can replace the complicated equation derived above with a simple pass-through $\frac{\partial C(binarize(W))}{\partial W_i} \approx \frac{\partial C(binarize(W))}{\partial binarize(W)_i} 1_{|W_i| \leq 1}$ and it would work just as well, but it takes longer to converge. We currently use this for inputs, but have the exact precise gradient for weights.
