@@ -519,7 +519,7 @@ The rationale behind the algorithm is that it is computing, at every iteration, 
 
 For example, in the above transpilation, we transpiled the `BinaryConvolution2d` into `bighead::linalg::conv::binConv2d` in C++. For all functions within the namespace `bighead`, they are functions implemented by the Bighead team. `binConv2d` is a function that performs convolutions with binary weights and inputs, like so:
 
-![binconv]( {{ site.url }}/assets/xnornet/binconv2d.png )
+![binconv]( {{ site.url }}/assets/xnornet/xnorconv2d.png )
 
 In the XNORNet paper, the authors suggested to take the average magnitude of each convolution input and multiply the resulting filters element-wise against the magnitudes. However, the authors of DoReFa networks and ReBNetworks show that a single scalar of the average magnitude of the entire input, multiplied via broadcasting will work just as well. We adopt the latter approach in our implementation.
 
