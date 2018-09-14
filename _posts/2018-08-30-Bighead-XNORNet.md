@@ -338,6 +338,7 @@ We have found that using $\alpha$ as a parameter for $W$ to backpropagate into a
 - XNORNets are very **sensitive to hyperparameters**, and optimal performance requires careful handtuning or fairly exhaustive hyperparameter search, for example on the learning rate(`1e-3`), batch size(`1024`), learning rate decay(`0.95`), and etc. Attempts to train XNORNet without proper hyperparameters will fail to converge at all.
 - One can interpret **discretization as some form of regularization**, and thus there is no necessary dropout layer that is further required (i.e. training accuracy usually corresponds to cross-validation accuracy).
 - Clamping the weights before a forward pass between $[-1, 1]$ is a **regularizer and controls gradient explosion in an XNORNet**. This is also known as **BinaryConnect**.
+- During convolution, the authors suggest averaging up each chunk of the convolution input and doing an element-wise multiplication against the final result. We found that by simply using the total average L-1 norm (a scalar), we were able to reach the same accuracy.
 
 Although there are no proofs or bounds for why the above "hacks" yield good results and YMMV, we ended up with a test 83% accuracy on CIFAR 10 in roughly 50 epochs of 1024 batch size.
 
@@ -364,6 +365,8 @@ Because many deep learning frameworks are glued to `BLAS` libraries, we are face
 ## Forward-inference Framework
 
 ### Linear Algebra Backend
+
+![xtensor]({{ site.url }}/assets/xnornet/xtensor.svg )
 
 We wanted our library to interface directly with `NumPy`, which is the standard general numerical computing stack in Python along with `SciPy`. However, directly using `NumPy` will incur huge copy costs and reduced optimization, as well as the curse of GIL locking in Python.
 
@@ -463,6 +466,62 @@ xt::xarray<float> transform(const xt::xarray<float>& batch, const std::string& p
 One advantage that a C++ transpiler has over something like tensorflow's LLVM compiler is that we can easily inspect the C++ code for bugs during a model-building iteration cycle.
 
 Because C++ is an easier barrier to entry, others could easily implement layers that would compile C++ code as long as they knew how to use the linear algebra backend(for e.x. `xtensor`). The fact that the layers could technically emit anything means that fellow python/C++ programmers can expand the backend emitter usage to more than just deep learning applications, but rather other parts of the data processing pipeline. In the future, we hope to compile all parts of the bighead pipeline into C++ wherever possible, so we can offer blazing fast performance after a single `fit()` call.
+
+## Custom XNOR BLAS functionalities
+
+### `xnormatmul`
+
+`bighead::linalg::xnor::xnormatmul` is our level 3 BLAS routine that takes in any lazily evaluated `xt::xexpression<T>` matrix `A` and `xt::xexpression<O>` matrix `B`. The multiplication between the two is done via special compiler intrinsics. For our purposes, we implemented it with vectorized instructions in mind, specifically `AVX2`. It consists of 3 stages:
+
+1. quantization stage - taking floating point numbers inside of a matrix and compressing it into signed bits (`0` for -1, `1` for 1).
+2. multiplication stage - instead of performing floating point multiplications, we use vectorized XNOR on all elements.
+3. accumulation stage - perform a popcount (pop stands for population) on the resulting xnor'd vector and write it into the resulting matrix.
+
+#### Floating point packing
+
+A floating point number consists of 3 parts: sign bit, exponent, fraction. The sign bit is a 0 if the number is negative, and 1 if the number is positive. If we can extract this part of every floating point number, then our life would be very easy.
+
+Luckily, we even have a vectorized instruction (in AVX2) for this:
+
+`_mm256_movemask_ps`, which roughly gets compiled to `vpmovmskb <reg> <ymm reg>` where `reg` means register.
+
+The above instruction takes the first bit of the next eight single precision floating points and packs them into a single byte. This is exactly what we need in order to pack the data.
+
+We also make sure that the container of which we use to pack the data is aligned. We use the `xsimd::aligned_allocator<std::uint8_t, 32>` to align the pointer of our array so that  the condition `std::reinterpret_cast<intptr_t>(ptr) % 32` is always true for any bitmap we use. We need aligned instructions so that we can have safe loading for our consequent instructions below. (Note that aligned vs. unaligned instructions for loading may have very marginal difference depending on the architecture, but we decided to force alignment regardless)
+
+#### Vectorized xnors
+
+Given the bit-packed data, we can perform a bit-flip operation(`~a`) on the xor result(`a^b`). We can use `_mm256_load_si256` and `_mm256_store_si256` to perform these operators on 256 bits of data at once.
+
+#### Accumulating bits
+
+After xnor'ing the two operands, we can scan through the resulting matrix and return the total number of `1`'s we see. There is a routine called `popcount` that performs exactly what we want. However, this only exists in AVX512, specifically the `_mm512_popcnt_epi32` and its corresponding variants. In this case, we implement the Hamming weight (or Harley-Seal) algorithm 
+which performs the following to compute number of bits in AVX2:
+
+```c++
+...
+// For purposes of illustration, we express ints as binary
+int x = 00100110; // result should be 3
+temp0 = x & 01010101; // 00000100
+temp1 = (x >> 1) & 01010101; // 00010001 
+res = temp0 + temp1; // 00010101
+temp0 = res & 00110011; // 00010001
+temp1 = (res >> 2) & 00110011; // 00000001
+res = temp0 + temp1; // 00010010
+temp0 = res & 00001111; // 00000010
+temp1 = (res >> 4) & 00001111; // 00000001
+res = temp0 + temp1; // 00000011 = 3 bits.
+```
+
+The rationale behind the algorithm is that it is computing, at every iteration, a container that holds 4 2-bit numbers, 2 4-bit numbers, and 1 8-bit number, each of which contains number of bits which added up together into the 8-bit number is the popcount. We use a total of 12 operations, all of which are inexpensive. We have vectorized instructions for addition, AND, and shifting, so we are effectively using 12 operations on 256 bits at once.
+
+### `binConv2d`
+
+For example, in the above transpilation, we transpiled the `BinaryConvolution2d` into `bighead::linalg::conv::binConv2d` in C++. For all functions within the namespace `bighead`, they are functions implemented by the Bighead team. `binConv2d` is a function that performs convolutions with binary weights and inputs, like so:
+
+![binconv]( {{ site.url }}/assets/xnornet/binconv2d.png )
+
+In the XNORNet paper, the authors suggested to take the average magnitude of each convolution input and multiply the resulting filters element-wise against the magnitudes. However, the authors of DoReFa networks and ReBNetworks show that a single scalar of the average magnitude of the entire input, multiplied via broadcasting will work just as well. We adopt the latter approach in our implementation.
 
 
 
