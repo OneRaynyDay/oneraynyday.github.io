@@ -192,8 +192,8 @@ The reason I added the number example is because matrix multiplication can be ex
 If we had a number in `float32`:
 
 ```
-a = [sign of a | mantissa of a | exponent of a]
-a * b = [sign a XNOR sign b | mantissa a * mantissa b | exp a + exp b]
+a = [sign of a | exponent of a | mantissa of a]
+a * b = [sign a XNOR sign b | exp a + exp b | mantissa a * mantissa b]
 ```
 
 If we had a number in ${-1, +1}$, and mapped $-1$ to $0$, and $1$ to $1$ in bits:
@@ -473,9 +473,9 @@ Because C++ is an easier barrier to entry, others could easily implement layers 
 
 `bighead::linalg::xnor::xnormatmul` is our level 3 BLAS routine that takes in any lazily evaluated `xt::xexpression<T>` matrix `A` and `xt::xexpression<O>` matrix `B`. The multiplication between the two is done via special compiler intrinsics. For our purposes, we implemented it with vectorized instructions in mind, specifically `AVX2`. It consists of 3 stages:
 
-1. quantization stage - taking floating point numbers inside of a matrix and compressing it into signed bits (`0` for -1, `1` for 1).
-2. multiplication stage - instead of performing floating point multiplications, we use vectorized XNOR on all elements.
-3. accumulation stage - perform a popcount (pop stands for population) on the resulting xnor'd vector and write it into the resulting matrix.
+1. _quantization stage_ - taking floating point numbers inside of a matrix and compressing it into signed bits (`0` for -1, `1` for 1).
+2. _multiplication stage_ - instead of performing floating point multiplications, we use vectorized XNOR on all elements.
+3. _accumulation stage_ - perform a popcount (pop stands for population) on the resulting xnor'd vector and write it into the resulting matrix.
 
 #### Floating point packing
 
@@ -487,7 +487,7 @@ Luckily, we even have a vectorized instruction (in AVX2) for this:
 
 The above instruction takes the first bit of the next eight single precision floating points and packs them into a single byte. This is exactly what we need in order to pack the data.
 
-We also make sure that the container of which we use to pack the data is aligned. We use the `xsimd::aligned_allocator<std::uint8_t, 32>` to align the pointer of our array so that  the condition `std::reinterpret_cast<intptr_t>(ptr) % 32` is always true for any bitmap we use. We need aligned instructions so that we can have safe loading for our consequent instructions below. (Note that aligned vs. unaligned instructions for loading may have very marginal difference depending on the architecture, but we decided to force alignment regardless)
+We also make sure that the container of which we use to pack the data is aligned. We use the `xsimd::aligned_allocator<std::uint8_t, 32>` to align the pointer of our array so that  the condition `std::reinterpret_cast<intptr_t>(ptr) % 32` is always true for any bitmap we use. We need aligned instructions so that we can have **safe loading for our consequent instructions below**. (Note that aligned vs. unaligned instructions for loading may have very marginal difference depending on the architecture, but we decided to force alignment regardless)
 
 #### Vectorized xnors
 
@@ -513,7 +513,7 @@ temp1 = (res >> 4) & 00001111; // 00000001
 res = temp0 + temp1; // 00000011 = 3 bits.
 ```
 
-The rationale behind the algorithm is that it is computing, at every iteration, a container that holds 4 2-bit numbers, 2 4-bit numbers, and 1 8-bit number, each of which contains number of bits which added up together into the 8-bit number is the popcount. We use a total of 12 operations, all of which are inexpensive. We have vectorized instructions for addition, AND, and shifting, so we are effectively using 12 operations on 256 bits at once.
+The rationale behind the algorithm is that it is computing, at every iteration, a container that holds _4 2-bit numbers, 2 4-bit numbers, and 1 8-bit number_, each of which contains number of bits which added up together into the 8-bit number is the popcount. We use a total of 12 operations, all of which are inexpensive. We have vectorized instructions for addition, AND, and shifting, so we are effectively using 12 operations on 256 bits at once.
 
 ### `binConv2d`
 
@@ -521,7 +521,7 @@ For example, in the above transpilation, we transpiled the `BinaryConvolution2d`
 
 ![binconv]( {{ site.url }}/assets/xnornet/xnorconv2d.png )
 
-In the XNORNet paper, the authors suggested to take the average magnitude of each convolution input and multiply the resulting filters element-wise against the magnitudes. However, the authors of DoReFa networks and ReBNetworks show that a single scalar of the average magnitude of the entire input, multiplied via broadcasting will work just as well. We adopt the latter approach in our implementation.
+In the XNORNet paper, the authors suggested to take the average magnitude of each convolution input and multiply the resulting filters element-wise against the magnitudes. However, the authors of `DoReFa` networks and `ReBNetworks` show that a single scalar of the average magnitude of the entire input, multiplied via broadcasting will work just as well. We adopt the latter approach in our implementation.
 
 
 
