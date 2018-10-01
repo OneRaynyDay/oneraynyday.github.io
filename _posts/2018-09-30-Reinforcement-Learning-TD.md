@@ -32,13 +32,13 @@ $$
 
 where #s is the total number of times we saw state $s$ throughout all episodes. In other words, if a state occurs more than once, we will add those occurences into our value approximation and average all the rewards values to get $V(s)$.
 
-In many cases, $V(s)$ is stationary, and both methods (first-visit and every-visit) will converge to the optimal answer. However, in a nonstationary environment, we do not want our "update magnitude" to approach 0. The below is an update rule suitable for a nonstationary, every-visit MC:
+In many cases, $V(s)$ is stationary, and both methods (first-visit and every-visit) will converge to the optimal answer. However, in a nonstationary environment, we do not want our "update magnitude" to approach 0. The below is an update rule suitable for a nonstationary, every-visit MC (eq. 0):
 
 $$
-V(S_t) = V(S_t) + \alpha [ G_t - V(S_t) ] & \text{(0)}
+V(S_t) = V(S_t) + \alpha [ G_t - V(S_t) ]
 $$
 
-for some constant $alpha > 0$.
+for some constant $\alpha > 0$.
 
 # Temporal Difference Prediction
 
@@ -93,7 +93,7 @@ $TD(0)$ is considered a _bootstrapping_ method because it uses previous approxim
 
 #### Similarity between TD and DP
 
-Recall that dynamic programming approaches to solve reinforcement learning problems uses the Bellman backup operator. This allows efficient incremental computation of $V(s)$, and we previously proved that $lim_{k \to \inf} v_k(s) = v_\pi(s)$. In this way, we are effectively getting more and more accurate approximations of $v$.
+Recall that dynamic programming approaches to solve reinforcement learning problems uses the Bellman backup operator. This allows efficient incremental computation of $V(s)$, and we previously proved that $lim_{k \to \infty} v_k(s) = v_\pi(s)$. In this way, we are effectively getting more and more accurate approximations of $v$.
 
 In a similar nature, _our approximation of $V(S_t)$ in the equation above is also iterative, and bootstraps off of the previous estimation_, because $V(S_t)$ as a function is not known.
 
@@ -101,9 +101,15 @@ In a similar nature, _our approximation of $V(S_t)$ in the equation above is als
 
 Recall that Monte Carlo requires us to estimate the expected value, because we're taking samples of episodes and trying to approximate the underlying expected value from each action. In this way, TD acts like a every-visit MC due to its $V(S_t)$ being an approximation to the expected value of $G_t$.
 
-Thus, TD and Monte Carlo both _approximate $V(S_t)$ via sampling because the expectation is not known._ However, Monte Carlo does not attempt to use previous estimations of $V$ in its convergence.
+Thus, TD and Monte Carlo both _approximate $V(S_t)$ via sampling because the expectation is not known._ However, Monte Carlo does not attempt to use previous estimations of $V$ in its convergence; instead, it takes the complete sample trajectory to estimate.
 
+![tdvsmc]( {{ site.url }}/assets/tdvsmc.png )
 
+# Optimality of TD(0)
+
+One might expect TD(0) to converge to the same value as monte carlo methods. However, this is not true. Sutton's pathological example explains this very clearly:
+
+TODO
 
 
 
