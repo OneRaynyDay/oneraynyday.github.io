@@ -107,10 +107,55 @@ Thus, TD and Monte Carlo both _approximate $V(S_t)$ via sampling because the exp
 
 # Optimality of TD(0)
 
-One might expect TD(0) to converge to the same value as monte carlo methods. However, this is not true. Sutton's pathological example explains this very clearly:
+One might expect TD(0) to converge to the same value as monte carlo methods. However, this is **not true**. Sutton's pathological example explains this very clearly:
 
-TODO
+| Trials | Rewards |
+|-------|----------|
+|A, B   |0, 0      |
+|B      |0         |
+|B      |1         |
+|B      |1         |
+|B      |1         |
+|B      |1         |
+|B      |1         |
+|B      |1         |
 
+For these episodes, we have 6 episodes where `B` resulted in a reward of 1, and 2 episodes where it resulted in 0. Therefore, we can safely say that $V(B) = \frac{3}{4}$.
+
+We can make 2 "reasonable" suggestions about `A`:
+
+1. When `A` occurred, the resulting accumulated reward $G$ is 0. Therefore, $V(A) = 0$.
+2. When `A` occurred, the resulting next state is always `B`. Therefore, since $V(A) = E(R_{t+1} + \gamma R_{t+2} + ... ) \approx 0 + \gamma V(B)$, since the only next state is $B$, and our current reward is 0 from the single sample we have, the result should be $0 + \gamma V(B) = \frac{3 \gamma}{4} \neq 0$. **This makes sense from the Markovian assumption, since $S_t \perp R_{t+2}$, so the fact that $A$ happened before $B$ should not cause $B$ to yield a reward of $0$.**
+
+In a sense, **Monte Carlo minimizes the value function approximation's mean squared error**, meanwhile **TD converges towards the _certainty-equivalence estimate_**. The certainty-equivalence estimate is the maximum likelihood estimate of the value function under the assumption that the process is MDP.
+
+# On-policy: Sarsa
+
+In an on-policy setting, we learn an action-value function $q(s,a)$ rather than $v(s)$ discussed above. The generalization is quite straightforward:
+
+$$
+Q(S_t, A_t) = Q(S_t, A_t) + \alpha [ R_{t+1} + \gamma Q(S_{t+1}, A_{t+1}) - Q(S_t, A_t)]
+$$
+
+As opposed to:
+
+$$
+V(S_t) = V(S_t) + \alpha [ R_{t+1} + \gamma V(S_{t+1}) - V(S_t)]
+$$
+
+The reason we call this algorithm **Sarsa** is because it is a sequence of _State, Action, Reward, State, Action_. Just like any on-policy RL algorithm, we estimate $q_\pi$ for some $\pi$. This $\pi$ is some policy that outputs probability of actions based off of the current state.
+
+As always, on-policy algorithms may not explore enough of the search space and lead to a suboptimal answer, or get stuck in its current policy forever and fail to terminate. As a result, we usually use $\epsilon$-greedy policy $\pi$, to select all other actions with a small probability $\epsilon$.
+
+# Off-policy: Q-learning
+
+The corresponding off-policy variant of Sarsa is called Q-learning, and it is defined by the update rule:
+
+$$
+Q(S_t, A_t) = Q(S_t, A_t) + \alpha [ R_{t+1} + \gamma max_a Q(S_{t+1}, a) - Q(S_t, A_t) ]
+$$
+
+The only difference here is that instead of approximating $G_t$ with $R_{t+1} + \gamma Q(S_{t+1}, A_{t+1})$, in which $A_{t+1}$ is picked from an $\epsilon$-greedy policy, we are picking the actual optimal action which is $max_a Q(S_{t+1}, a)$. This is an _off-policy_ TD control algorithm because we are using $\epsilon$-greedy for simulation, but we are approximating $Q$ with the actual $argmax$.
 
 
 
