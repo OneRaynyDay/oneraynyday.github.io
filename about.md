@@ -16,7 +16,6 @@ chill and learn some fun stuff that's probably not useful.
 
 ![management]({{ site.url }}/assets/xkcdtimemanagement.png)
 
-I'm currently doing an internship for Citadel LLC, and I am going to work at Airbnb during the summer,
-working on ML.
+I previously interned at some companies including Airbnb, Citadel, Bloomberg and Symantec.
 
 If you have questions about what I wrote in my blog, don't hesitate to shoot me a message at rayzhang@g.ucla.edu.
