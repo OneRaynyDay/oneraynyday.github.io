@@ -157,8 +157,201 @@ $$
 
 The only difference here is that instead of approximating $G_t$ with $R_{t+1} + \gamma Q(S_{t+1}, A_{t+1})$, in which $A_{t+1}$ is picked from an $\epsilon$-greedy policy, we are picking the actual optimal action which is $max_a Q(S_{t+1}, a)$. This is an _off-policy_ TD control algorithm because we are using $\epsilon$-greedy for simulation, but we are approximating $Q$ with the actual $argmax$.
 
+# Example: Cliff Walking
+
+Once again, let's take the [previous **Cliff Walking** gym we used for Monte Carlo methods](https://github.com/OneRaynyDay/RLEngine). As we had previously observed, the converged path on the graph was:
+
+![mccliffwalk]( {{ site.url }}/assets/cliffwalking.png )
+
+This was for an **on-policy Monte Carlo method**. The reason for the path being so conservative, and the actor moving all the way up to the edge was due to the fact that there was $\epsilon$ probability that the actor would've moved in a random direction, one which will kill the actor. Even as $\epsilon$ approached 0, the strategy is not optimal, but extremely safe.
+
+Now, I have added the TD functionality in the same Monte Carlo repository (now named RLModels), and refactored most of the core functionality. We directly translate the update rules above into the `update_Q()` function, and we pass in the tuple `(state, action, reward, state, action)` instead of an episode, i.e. `[(state, action, reward), ...]`:
+
+## Sarsa Model
+
+For Sarsa, we use the update rule:
+
+$$
+Q(S_t, A_t) = Q(S_t, A_t) + \alpha [ R_{t+1} + \gamma Q(S_{t+1}, A_{t+1}) - Q(S_t, A_t)]
+$$
+
+per event in an episode. We reflect that in our model below.
+
+```python
+class FiniteSarsaModel(FiniteModel):
+    def __init__(self, state_space, action_space, gamma=1.0, epsilon=0.1, alpha=0.01):
+        """SarsaModel takes in state_space and action_space (finite)
+        Arguments
+        ---------
+
+        state_space: int OR list[observation], where observation is any hashable type from env's obs.
+        action_space: int OR list[action], where action is any hashable type from env's actions.
+        gamma: float, discounting factor.
+        epsilon: float, epsilon-greedy parameter.
+
+        If the parameter is an int, then we generate a list, and otherwise we generate a dictionary.
+        >>> m = FiniteSarsaModel(2,3,epsilon=0)
+        >>> m.Q
+        [[0, 0, 0], [0, 0, 0]]
+        >>> m.Q[0][1] = 1
+        >>> m.Q
+        [[0, 1, 0], [0, 0, 0]]
+        >>> m.pi(1, 0)
+        1
+        >>> m.pi(1, 1)
+        0
+        """
+        super(FiniteSarsaModel, self).__init__(state_space, action_space, gamma, epsilon)
+        self.alpha = alpha
 
 
+    def update_Q(self, sarsa):
+        """Performs a TD(0) action-value update using a single step.
+        Arguments
+        ---------
 
+        sarsa: (state, action, reward, state, action), an event in an episode.
+        """
+        # Generate returns, return ratio
+        p_state, p_action, reward, n_state, n_action = sarsa
+        q = self.Q[p_state][p_action]
+        self.Q[p_state][p_action] = q + self.alpha * \
+            (reward + self.gamma * self.Q[n_state][n_action] - q)
+
+
+    def score(self, env, policy, n_samples=1000):
+        """Evaluates a specific policy with regards to the env.
+        Arguments
+        ---------
+
+        env: an openai gym env, or anything that follows the api.
+        policy: a function, could be self.pi, self.b, etc.
+        """
+        rewards = []
+        for _ in range(n_samples):
+            observation = env.reset()
+            cum_rewards = 0
+            while True:
+                action = self.choose_action(policy, observation)
+                observation, reward, done, _ = env.step(action)
+                cum_rewards += reward
+                if done:
+                    rewards.append(cum_rewards)
+                    break
+        return np.mean(rewards)
+```
+
+## Q-Learning Model
+
+For Q-learning, we use an argmax variant of Sarsa, to make it an off-policy model. The update rule looks like:
+
+$$
+Q(S_t, A_t) = Q(S_t, A_t) + \alpha [ R_{t+1} + \gamma max_a Q(S_{t+1}, a) - Q(S_t, A_t) ]
+$$
+
+Here is the model in python:
+
+```python
+class FiniteQLearningModel(FiniteModel):
+    def __init__(self, state_space, action_space, gamma=1.0, epsilon=0.1, alpha=0.01):
+        """FiniteQLearningModel takes in state_space and action_space (finite)
+        Arguments
+        ---------
+
+        state_space: int OR list[observation], where observation is any hashable type from env's obs.
+        action_space: int OR list[action], where action is any hashable type from env's actions.
+        gamma: float, discounting factor.
+        epsilon: float, epsilon-greedy parameter.
+
+        If the parameter is an int, then we generate a list, and otherwise we generate a dictionary.
+        >>> m = FiniteQLearningModel(2,3,epsilon=0)
+        >>> m.Q
+        [[0, 0, 0], [0, 0, 0]]
+        >>> m.Q[0][1] = 1
+        >>> m.Q
+        [[0, 1, 0], [0, 0, 0]]
+        >>> m.pi(1, 0)
+        1
+        >>> m.pi(1, 1)
+        0
+        """
+        super(FiniteQLearningModel, self).__init__(state_space, action_space, gamma, epsilon)
+        self.alpha = alpha
+
+
+    def update_Q(self, sars):
+        """Performs a TD(0) action-value update using a single step.
+        Arguments
+        ---------
+
+        sars: (state, action, reward, state, action) or (state, action, reward, state),
+            an event in an episode.
+
+        NOTE: For Q-Learning, we don't actually use the next action, since we argmax.
+        """
+        # Generate returns, return ratio
+        if len(sars) > 4:
+            sars = sars[:4]
+
+        p_state, p_action, reward, n_state = sars
+        q = self.Q[p_state][p_action]
+        max_q = max(self.Q[n_state].values()) if isinstance(self.Q[n_state], dict) else max(self.Q[n_state])
+        self.Q[p_state][p_action] = q + self.alpha * \
+            (reward + self.gamma * max_q - q)
+
+
+    def score(self, env, policy, n_samples=1000):
+        """Evaluates a specific policy with regards to the env.
+        Arguments
+        ---------
+
+        env: an openai gym env, or anything that follows the api.
+        policy: a function, could be self.pi, self.b, etc.
+        """
+        rewards = []
+        for _ in range(n_samples):
+            observation = env.reset()
+            cum_rewards = 0
+            while True:
+                action = self.choose_action(policy, observation)
+                observation, reward, done, _ = env.step(action)
+                cum_rewards += reward
+                if done:
+                    rewards.append(cum_rewards)
+                    break
+        return np.mean(rewards)
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
+```
+
+## Cliffwalking Maps
+
+By running the two models above, we get different cliffwalking maps:
+
+**For SARSA:**
+
+![sarsacliffwalk]( {{ site.url }}/assets/cliffwalking_sarsa.png )
+
+As we can see, it is similar to that of Monte Carlo's map. The action is conservative because it does not assume any markovian structure of the process. The Monte Carlo process is actively aware of the stochasticity in the environment and tries to move to the safest corner before proceeding to the right and ultimately to the end.
+
+**For Q-learning:**
+
+![qlearncliffwalk]( {{ site.url }}/assets/cliffwalking_qlearning.png )
+
+_This is a very different map compared to SARSA and Monte Carlo._ Q-Learning understands the underlying markovian assumption and thus ignores the stochasticity in choosing its actions, hence why it picks **the optimal route** (the reason it understands the markovian assumption is that it picks the greedy action, which is optimal under the Strong Markov Property of the MDP). The off-policy approach allows Q-Learning to have a policy that is optimal while its $\epsilon$-greedy simulations allows it to explore.
+
+In my opinion, Q-learning wins this round.
+
+## Learning Curves
+
+![learningcurves]( {{ site.url }}/assets/cliffwalking_learning_plot.png)
+_We run all three models in tandem, and we record the total reward per episode for each of the techniques as epochs increase._ It appears that **SARSA**, although producing approximately the same solution as Monte Carlo (recall that it is not exact), converges to a higher reward **much faster**. This is due to the fact that its value function was able to be updated per step rather than per episode. **This method of bootstrapping allows the model to learn a lot faster than Monte Carlo.**
+
+Another observation we can see is that **Q-learning's average reward is bad**. This is due to the fact that Q-learning tries to take the **optimal action**, but gets screwed over by the $\epsilon$ probability of falling off a cliff due to the stochasticity of the $\epsilon$-greedy policy that it uses to explore.
+
+Another interesting phenomenon observed in the above diagram is that _Monte Carlo actually starts to degrade in performance near the end._ This... I have no explanation for (and I'd love to discuss it!).
 
 
