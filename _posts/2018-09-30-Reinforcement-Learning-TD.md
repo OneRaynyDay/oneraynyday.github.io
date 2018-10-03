@@ -348,7 +348,8 @@ In my opinion, Q-learning wins this round.
 ## Learning Curves
 
 ![learningcurves]( {{ site.url }}/assets/cliffwalking_learning_plot.png)
-_We run all three models in tandem, and we record the total reward per episode for each of the techniques as epochs increase._ It appears that **SARSA**, although producing approximately the same solution as Monte Carlo (recall that it is not exact), converges to a higher reward **much faster**. This is due to the fact that its value function was able to be updated per step rather than per episode. **This method of bootstrapping allows the model to learn a lot faster than Monte Carlo.**
+
+_We run all three models in tandem, and we record the total reward per episode for each of the techniques as epochs increase. The `*_interp` are moving averages of the log rewards._ It appears that **SARSA**, although producing approximately the same solution as Monte Carlo (recall that it is not exact), converges to a higher reward **much faster**. This is due to the fact that its value function was able to be updated per step rather than per episode. **This method of bootstrapping allows the model to learn a lot faster than Monte Carlo.**
 
 Another observation we can see is that **Q-learning's average reward is bad**. This is due to the fact that Q-learning tries to take the **optimal action**, but gets screwed over by the $\epsilon$ probability of falling off a cliff due to the stochasticity of the $\epsilon$-greedy policy that it uses to explore.
 
