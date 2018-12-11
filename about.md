@@ -16,6 +16,6 @@ chill and learn some fun stuff that's probably not useful.
 
 ![management]({{ site.url }}/assets/xkcdtimemanagement.png)
 
-I previously interned at some companies including Airbnb, Citadel, Bloomberg and Symantec.
+I previously interned at some companies including Airbnb, Citadel, Bloomberg and Symantec. I'm going to Airbnb for fulltime next year.
 
 If you have questions about what I wrote in my blog, don't hesitate to shoot me a message at rayzhang@g.ucla.edu.

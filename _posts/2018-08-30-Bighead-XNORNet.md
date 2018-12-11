@@ -1,5 +1,5 @@
 ---
-published: false
+published: true
 title: Airbnb Bighead - Speeding Up Inference
 use_math: true
 category: ML
