@@ -61,18 +61,22 @@ In order to prove $A \not\in \mathcal{R}_p$, we take an arbitrary function $f \i
 
 This result will be useful for later.
 
-To start off, our inductive hypothesis will be that for any $f \in R_p$, $f(x_1,...,x_m) < A_n(max\{x_1,...,x_m\})$.
+To start off, our inductive hypothesis will be that for any $f \in R_p$, $f(x_1,...,x_m) < A_n(max\{x_1,...,x_m\}$ for some $n \in \mathbb{N}$.
 
-If $f$ is the successor function, then $f(x) = A_0(x) <^* A_1(x)$. If $f$ is the constant function that returns $q \in \mathbb{N}$, then $f(x_1,...,x_m) = q <^* A_q(0) \leq A_q(max\{x_1,...,x_m\})$.  If $f$ is the projection function, then $f(x_1,...,x_n) = x_i \leq A_0(max \{x_1,...,x_n\})$.
+If $f$ is the **successor function**, then $f(x) = A_0(x) <^* A_1(x)$. If $f$ is the **constant function** that returns $q \in \mathbb{N}$, then $f(x_1,...,x_m) = q <^* A_q(0) \leq A_q(max\{x_1,...,x_m\})$.  If $f$ is the **projection function**, then $f(x_1,...,x_n) = x_i \leq A_0(max \{x_1,...,x_n\})$.
 
-We have established the base cases. For more interesting functions, if $f$ is a composition of functions, i.e. $$f(x1,...,x_n) = h(g_1(x_1,...,x_m),...,g_m(x_1,...,x_m))$$, and by inductive hypothesis we can assume $g_1,...,g_m,h$ are bounded by some $A_k(max\{x_1,...,x_n\})$ (just take the max $k$ for all of the functions). Then the composition is bounded by $A_k(A_k(x)) < A_{k+2}(x)$, using the claim above.  
+We have established the base cases. For more interesting functions, if $f$ is a **composition of functions**, i.e. $$f(x1,...,x_n) = h(g_1(x_1,...,x_m),...,g_m(x_1,...,x_m))$$, and by inductive hypothesis we can assume $g_1,...,g_m,h$ are bounded by some $A_k(max\{x_1,...,x_n\})$ (just take the max $k$ for all of the functions). Then the composition is bounded by $A_k(A_k(x)) < A_{k+2}(x)$, using the claim above.  
 
-Finally, for some $f(n,\bar{x})$ defined like (5) in the primitive recursive section above, it is slightly trickier. By the inductive hypothesis, we can assume $g, h < A_{k-1}$. Then we claim the following: $f(n,\bar{x}) < A_k(n+max\{\bar{x}\}) $. We denote $x := max\{\bar{x}\}$ for the proof. 
+Finally, for some $f(n,\bar{x})$ defined like (5) in the **primitive recursive** section above, it is slightly trickier. By the inductive hypothesis, we can assume $g, h < A_{k-1}$. Then we claim the following: $f(n,\bar{x}) < A_k(n+max\{\bar{x}\}) $. We denote $x := max\{\bar{x}\}$ for the proof. 
 
 - **Base:** $f(0,\bar{x}) = g(\bar{x}) < A_{k-1}(x) < A_k(x) = A_k(x+0)$ as given.
 - **Induction**: Suppose $f(n,\bar{x}) < A_k(x+n)$ . Then $f(n+1, \bar{x}) = h(f(n,\bar{x}), \bar{x}, n) < h(A_k(x+n), \bar{x}, n)$. Since $A_k(x+n) > x+n \forall k \in \mathbb{N}$, we see that the growth of arguments in $h$ is dominated by $A_k(x+n)$, so  $h(A_k(x+n), \bar{x}, n)\leq A_{k-1}(A_k(x+n)) = A_k(x+n+1)$.  
 
 Take $z = max\{x, n\} = max\{x_1,...,x_m,n\}$, then $f(n,\bar{x}) < A_k(x+n) \leq A_k(2z) < A_k(2z+1) = A_k(A_2(z-1)) < A_k(A_{k+1}(z-1)) = A_{k+1}(z)$. And so we have that $f(n,\bar{x})$ is bounded by another Ackerman function section. 
 
-The above is a sufficient proof to show that $f \in \mathcal{R}_p \implies \exists k \in \mathbb{N}, f < A_k$. Now, suppose $A$ is primitive recursive, then that means $h(n, x) = S(A(n,x)) = A(n,x) + 1$. Then there must exist some $k$ such that $h < A_k​$, which is absurd and concludes our proof.  
+The above is a sufficient proof to show that $f \in \mathcal{R}_p \implies \exists k \in \mathbb{N}, f < A_k$. **Now, suppose $A$ is primitive recursive, then that means $h(n, x) = S(A(n,x)) = A(n,x) + 1$ must also be primitive recursive. Then there must exist some $k$ such that $h < A_k$, which is absurd and concludes our proof.**  
+
+It seems intuitive that if something grows faster than all of the primitive recursive functions, then it cannot be primitive recursive. It grows so fast that at $A(4,2)$, it returns an integer with 19729 digits. And as far as I know, Ackerman belongs to the class of functions $\mu$-recursive, which are the most general class of functions our computers can solve.
+
+Then I guess that begs the question - *What can't our computers solve?* We will discuss that next time.
 
