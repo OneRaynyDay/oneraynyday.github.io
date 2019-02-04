@@ -35,17 +35,17 @@ An example of a recursive function that is **not primitively recursive** is the 
 
 $$A(0,x) = x + 1, \\ A(n+1, 0) = A(n,1), \\ A(n+1, x+1) = A(n, A(n+1, x))$$
 
-It is not clear at first that $A$ has a unique solution; the proof is done via *double induction*. We first suppose there exists $f, g$ which are solutions to $A$ for some inductively increasing subdomain, and then we show that they must be equal.
+It is not clear at first that $A​$ has a unique solution; the proof is done via *double induction*. We first suppose there exists $f, g​$ which are solutions to $A​$ for some inductively increasing subdomain, and then we show that they must be equal.
 
 - **Sub-induction**: $A(0, 0) = 1$. Then $f(0,0) = g(0,0) = 1$. And it is clear that $\forall x, f(0,x+1) = g(0,x+1) = x+2$, so they are unique.
 - **Base**:  Suppose $\forall x, A(n, x)$ has a unique solution $\implies A(n+1, 0)$ unique as well. This is true since $A(n+1, 0) = A(n, 1)$, which we know is unique, so $f(n+1,0) = g(n+1,0) = f(n,1)$.
-- **Inductive**: Suppose $\forall n \geq 1, \forall x, A(n-1,x)$ has a unique solution, as well as $A(n, x)$ by the inductive hypothesis. Then, $A(n, x+1) = A(n, A(n+1, x)) = f(n, f(n+1, x)) = g(n, g(n+1, x))$ must be unique.
+- **Inductive**: Suppose $\forall n \geq 1, \forall x, A(n-1,x)$ has a unique solution, as well as $A(n, k)$ by the inductive hypothesis. Then, $A(n, k+1) = A(n, A(n+1, k)) = f(n, f(n+1, k)) = g(n, g(n+1, k))$ must be unique.
 
 # Why Ackermann isn't Primitive Recursive
 
 Intuitively, if you fix Ackermann's sections, $A_n(x) := A(n,x)$, you can inspect the value to see that it is growing extremely quickly. *One can think of the growth like the following: the 0-th section is successor, 1st section is addition, 2nd section is multiplication, 3rd section is exponentiation, 4th section is hyperexponentiation, etc.* The rate of growth from every section to the next is growing so fast that you can't really use big $O$ bound using any common functions. 
 
-In order to prove $A \not\in \mathcal{R}_p​$, we take an arbitrary function $f \in R_p​$, and show that $f < A_n​$ for some $n \in \mathbb{N}​$. This rough sketch on growth shows that every $f​$ that is primitive recursive is bounded by $A​$, so $A​$ cannot be in $\mathcal{R}_p​$. I opted for this to be easier to digest so the trivial claims I make without proof are marked with $*​$ , and we will concern ourselves with single-argument functions for the sake of clarity (multi-arguments' proof is not different). One claim we will make is the following:
+In order to prove $A \not\in \mathcal{R}_p$, we take an arbitrary function $f \in R_p$, and show that $f < A_n$ for some $n \in \mathbb{N}$. This rough sketch on growth shows that every $f$ that is primitive recursive is bounded by $A$, so $A$ cannot be in $\mathcal{R}_p$. I opted for this to be easier to digest so the trivial claims I make without proof are marked with $*$ , and we will concern ourselves with single-argument functions for the sake of clarity (multi-arguments' proof is not different). One claim we will make is the following:
 
 **The nested Ackerman call is bounded by itself, i.e. $A_n(A_n(x)) < A_{n+2}(x)$**. 
 
