@@ -2,10 +2,12 @@
 published: true
 title: Computability Theory - Introduction
 use_math: true
-category: Math
+category: math
 layout: default
 
 ---
+
+I haven't been writing blogposts as often as I'd like to, but mostly for the reason that I don't have a lot of time to goof around lately. Tiffany Kanamaru (here is her linkedin please hire her: https://www.linkedin.com/in/tiffany-kanamaru/) has requested that I write a blog and give her a shoutout so here it is. I will write more about this subject when I have the chance.
 
 # What is Computability Theory?
 
