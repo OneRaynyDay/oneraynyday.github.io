@@ -35,7 +35,7 @@ An example of a recursive function that is **not primitively recursive** is the 
 
 $$A(0,x) = x + 1, \\ A(n+1, 0) = A(n,1), \\ A(n+1, x+1) = A(n, A(n+1, x))$$
 
-It is not clear at first that $A​$ has a unique solution; the proof is done via *double induction*. We first suppose there exists $f, g​$ which are solutions to $A​$ for some inductively increasing subdomain, and then we show that they must be equal.
+It is not clear at first that $A$ has a unique solution; the proof is done via *double induction*. We first suppose there exists $f, g$ which are solutions to $A$ for some inductively increasing subdomain, and then we show that they must be equal.
 
 - **Sub-induction**: $A(0, 0) = 1$. Then $f(0,0) = g(0,0) = 1$. And it is clear that $\forall x, f(0,x+1) = g(0,x+1) = x+2$, so they are unique.
 - **Base**:  Suppose $\forall x, A(n, x)$ has a unique solution $\implies A(n+1, 0)$ unique as well. This is true since $A(n+1, 0) = A(n, 1)$, which we know is unique, so $f(n+1,0) = g(n+1,0) = f(n,1)$.
@@ -45,7 +45,7 @@ It is not clear at first that $A​$ has a unique solution; the proof is done vi
 
 Intuitively, if you fix Ackermann's sections, $A_n(x) := A(n,x)$, you can inspect the value to see that it is growing extremely quickly. *One can think of the growth like the following: the 0-th section is successor, 1st section is addition, 2nd section is multiplication, 3rd section is exponentiation, 4th section is hyperexponentiation, etc.* The rate of growth from every section to the next is growing so fast that you can't really use big $O$ bound using any common functions. 
 
-In order to prove $A \not\in \mathcal{R}_p$, we take an arbitrary function $f \in R_p$, and show that $f < A_n$ for some $n \in \mathbb{N}$. This rough sketch on growth shows that every $f$ that is primitive recursive is bounded by $A$, so $A$ cannot be in $\mathcal{R}_p$. I opted for this to be easier to digest so the trivial claims I make without proof are marked with $*$ , and we will concern ourselves with single-argument functions for the sake of clarity (multi-arguments' proof is not different). One claim we will make is the following:
+In order to prove $A \not\in \mathcal{R}_p$, we take an arbitrary function $f \in R_p$, and show that $f < A_n$ for some $n \in \mathbb{N}$. This rough sketch on growth shows that every $f$ that is primitive recursive is bounded by $A$, so $A$ cannot be in $\mathcal{R}_p$. I opted for this to be easier to digest so the trivial claims I make without proof are marked with $*$ . One claim we will make is the following:
 
 **The nested Ackerman call is bounded by itself, i.e. $A_n(A_n(x)) < A_{n+2}(x)$**. 
 
@@ -61,6 +61,18 @@ In order to prove $A \not\in \mathcal{R}_p$, we take an arbitrary function $f \i
 
 This result will be useful for later.
 
-If $f$ is the successor function, then $f(x) = A_0(x) <^* A_1(x)$. If $f$ is the constant function that returns $q \in \mathbb{N}$, then $f(x) = q <^* A_q(0)$.  If $f$ is the projection function, then $f(x_1,...,x_n) = x_i \leq max \{x_1,...,x_n\} := x < A_0(x)$.
+To start off, our inductive hypothesis will be that for any $f \in R_p$, $f(x_1,...,x_m) < A_n(max\{x_1,...,x_m\})$.
 
-We have established the base cases. For more interesting functions, if $f$ is a composition of functions, i.e. $$f(x) = h(g_1(x),...,g_m(x))$$, and by inductive hypothesis we can assume $g_1,...,g_m,h < A_k$. Then the composition is bounded by $A_k(A_k(x)) < A_{k+2}(x)$, using the claim above.  
+If $f$ is the successor function, then $f(x) = A_0(x) <^* A_1(x)$. If $f$ is the constant function that returns $q \in \mathbb{N}$, then $f(x_1,...,x_m) = q <^* A_q(0) \leq A_q(max\{x_1,...,x_m\})$.  If $f$ is the projection function, then $f(x_1,...,x_n) = x_i \leq A_0(max \{x_1,...,x_n\})$.
+
+We have established the base cases. For more interesting functions, if $f$ is a composition of functions, i.e. $$f(x1,...,x_n) = h(g_1(x_1,...,x_m),...,g_m(x_1,...,x_m))$$, and by inductive hypothesis we can assume $g_1,...,g_m,h$ are bounded by some $A_k(max\{x_1,...,x_n\})$ (just take the max $k$ for all of the functions). Then the composition is bounded by $A_k(A_k(x)) < A_{k+2}(x)$, using the claim above.  
+
+Finally, for some $f(n,\bar{x})$ defined like (5) in the primitive recursive section above, it is slightly trickier. By the inductive hypothesis, we can assume $g, h < A_{k-1}$. Then we claim the following: $f(n,\bar{x}) < A_k(n+max\{\bar{x}\}) $. We denote $x := max\{\bar{x}\}$ for the proof. 
+
+- **Base:** $f(0,\bar{x}) = g(\bar{x}) < A_{k-1}(x) < A_k(x) = A_k(x+0)$ as given.
+- **Induction**: Suppose $f(n,\bar{x}) < A_k(x+n)$ . Then $f(n+1, \bar{x}) = h(f(n,\bar{x}), \bar{x}, n) < h(A_k(x+n), \bar{x}, n)$. Since $A_k(x+n) > x+n \forall k \in \mathbb{N}$, we see that the growth of arguments in $h$ is dominated by $A_k(x+n)$, so  $h(A_k(x+n), \bar{x}, n)\leq A_{k-1}(A_k(x+n)) = A_k(x+n+1)$.  
+
+Take $z = max\{x, n\} = max\{x_1,...,x_m,n\}$, then $f(n,\bar{x}) < A_k(x+n) \leq A_k(2z) < A_k(2z+1) = A_k(A_2(z-1)) < A_k(A_{k+1}(z-1)) = A_{k+1}(z)$. And so we have that $f(n,\bar{x})$ is bounded by another Ackerman function section. 
+
+The above is a sufficient proof to show that $f \in \mathcal{R}_p \implies \exists k \in \mathbb{N}, f < A_k$. Now, suppose $A$ is primitive recursive, then that means $h(n, x) = S(A(n,x)) = A(n,x) + 1$. Then there must exist some $k$ such that $h < A_k​$, which is absurd and concludes our proof.  
+
