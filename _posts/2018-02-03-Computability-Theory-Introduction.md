@@ -43,15 +43,21 @@ It is not clear at first that $A$ has a unique solution; the proof is done via *
 
 # Why Ackermann isn't Primitive Recursive
 
-Intuitively, if you fix Ackermann's sections, $A_n(x) := A(n,x)​$, you can inspect the value to see that it is growing extremely quickly. *One can think of the growth like the following: the 0-th section is successor, 1st section is addition, 2nd section is multiplication, 3rd section is exponentiation, 4th section is hyperexponentiation, etc.* The rate of growth from every section to the next is growing so fast that you can't really use big $O​$ bound using any common functions. 
+Intuitively, if you fix Ackermann's sections, $A_n(x) := A(n,x)$, you can inspect the value to see that it is growing extremely quickly. *One can think of the growth like the following: the 0-th section is successor, 1st section is addition, 2nd section is multiplication, 3rd section is exponentiation, 4th section is hyperexponentiation, etc.* The rate of growth from every section to the next is growing so fast that you can't really use big $O$ bound using any common functions. 
 
-In order to prove $A \not\in \mathcal{R}_p$, we take an arbitrary function $f \in R_p$, and show that $f < A_n$ for some $n \in \mathbb{N}$. This rough sketch on growth shows that every $f$ that is primitive recursive is bounded by $A$, so $A$ cannot be in $\mathcal{R}_p$. I opted for this to be easier to digest so the trivial claims I make without proof are marked with $*$ , and we will concern ourselves with single-argument functions for the sake of clarity (multi-arguments' proof is not different). One claim we will make is the following:
+In order to prove $A \not\in \mathcal{R}_p​$, we take an arbitrary function $f \in R_p​$, and show that $f < A_n​$ for some $n \in \mathbb{N}​$. This rough sketch on growth shows that every $f​$ that is primitive recursive is bounded by $A​$, so $A​$ cannot be in $\mathcal{R}_p​$. I opted for this to be easier to digest so the trivial claims I make without proof are marked with $*​$ , and we will concern ourselves with single-argument functions for the sake of clarity (multi-arguments' proof is not different). One claim we will make is the following:
 
 **The nested Ackerman call is bounded by itself, i.e. $A_n(A_n(x)) < A_{n+2}(x)$**. 
 
 - **Sub-induction:** $A_0(A_0(x)) = x + 2 < A_2(x) =^* 2x+3 \forall x \in \mathbb{N}$. A simple induction proof shows the latter equality.
-- **Base:** Suppose $A_n(A_n(x)) < A_{n+2}(x)$. Then $A_{n+3}(0) \\ = A_{n+2}(1) \\ = A_{n+1}(A_{n+2}(0)) \\ = A_{n+1}(A_{n+1}(1)) > A_{n+1}(A_{n+1}(0))$
-- **Induction**: Suppose $A_n(A_n(x)) < A_{n+2}(x) \forall x$ and $A_{n+1}(A_{n+1}(k)) < A_{n+3}(k)$, then $A_{n+1}(A_{n+1}(k+1)) < A_{n+3}(k+1)$ since $A_{n+3}(k+1) = A_{n+2}(A_{n+3}(k)) \\ > A_{n+2}(A_{n+1}(A_{n+1}(k))) \\ > A_{n+2}(A_n(A_{n+1}(k))) \\ = A_{n+2}(A_{n+1}(k+1)) >^* A_{n+1}(A_{n+1}(k+1))$
+
+- **Base:** Suppose $A_n(A_n(x)) < A_{n+2}(x)$. Then:
+
+  $$A_{n+3}(0) \\ = A_{n+2}(1) \\ = A_{n+1}(A_{n+2}(0)) \\ = A_{n+1}(A_{n+1}(1)) > A_{n+1}(A_{n+1}(0))$$
+
+- **Induction**: Suppose $A_n(A_n(x)) < A_{n+2}(x) \forall x$ and $A_{n+1}(A_{n+1}(k)) < A_{n+3}(k)$, then $A_{n+1}(A_{n+1}(k+1)) < A_{n+3}(k+1)$ since 
+
+  $$A_{n+3}(k+1) = A_{n+2}(A_{n+3}(k)) \\ > A_{n+2}(A_{n+1}(A_{n+1}(k))) \\ > A_{n+2}(A_n(A_{n+1}(k))) \\ = A_{n+2}(A_{n+1}(k+1)) >^* A_{n+1}(A_{n+1}(k+1))$$
 
 This result will be useful for later.
 
