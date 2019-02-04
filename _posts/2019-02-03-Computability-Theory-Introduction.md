@@ -7,7 +7,7 @@ layout: default
 
 ---
 
-I haven't been writing blogposts as often as I'd like to, but mostly for the reason that I don't have a lot of time to goof around lately. Tiffany Kanamaru (here is her linkedin please hire her: https://www.linkedin.com/in/tiffany-kanamaru/) has requested that I write a blog and give her a shoutout so here it is. I will write more about this subject when I have the chance.
+I haven't been writing blogposts as often as I'd like to, but mostly for the reason that I don't have a lot of time to goof around. Now that I have some free time, Tiff reminded me that I should write something. I will write more about this subject when I have the chance.
 
 # What is Computability Theory?
 
@@ -80,5 +80,8 @@ The above is a sufficient proof to show that $f \in \mathcal{R}_p \implies \exis
 
 It seems intuitive that if something grows faster than all of the primitive recursive functions, then it cannot be primitive recursive. It grows so fast that at $A(4,2)$, it returns an integer with 19729 digits. And as far as I know, Ackerman belongs to the class of functions $\mu$-recursive, which are the most general class of functions our computers can solve.
 
-Then I guess that begs the question - *What can't our computers solve?* We will discuss that next time.
+# What else is out there?
 
+Though Ackermann is not something we can practically compute for high digits, it is still in theory, "computable". Then, I guess that begs the question - *What can't our computers compute?* The results we will explore don't only influence computer science, but answers* questions about philosophy, abstract mathematics, and many other things in our world.
+
+\*: _By answer, I don't mean that answer to the universe and to life is 42, but rather, a concrete answer detailing why "there's no way we will ever find out"._
