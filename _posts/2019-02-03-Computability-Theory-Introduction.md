@@ -1,6 +1,6 @@
 ---
 published: true
-title: Computability Theory - Introduction
+title: Computability Theory - Primitive Recursive Functions
 use_math: true
 category: math
 layout: default
