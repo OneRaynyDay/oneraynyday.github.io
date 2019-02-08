@@ -2,7 +2,7 @@
 published: true
 title: Computability Theory - On the Halting Problem
 use_math: true
-category: Math
+category: math
 layout: default
 
 ---
