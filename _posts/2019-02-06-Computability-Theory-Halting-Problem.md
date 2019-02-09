@@ -13,7 +13,7 @@ layout: default
 {:toc}
 # Recap of Ackermann and $\mu$-recursive
 
-Recall that our previous result was that $A(n,x)$, the Ackermann function, is not primitive recursive, which means it's not in $\mathcal{R}_p$, but it is a recursive function. It turns out that it is in the class $\mu$-recursive functions. This $\mu$ means the "least" operator, and $\mathcal{R}_\mu$ is the set of functions that not only holds all properties of primitive recursive functions but also closed under composition of the $\mu$ operator, which is defined as the following: 
+Recall that our previous result was that $A(n,x)$, the Ackermann function, is not primitive recursive, which means it's not in $\mathcal{R}\_p$, but it is a recursive function. It turns out that it is in the class $\mu$-recursive functions. This $\mu$ means the "least" operator, and $\mathcal{R}_\mu$ is the set of functions that not only holds all properties of primitive recursive functions but also closed under composition of the $\mu$ operator, which is defined as the following: 
 $$
 (\mu i\geq y)R(i,\vec{x}) = \text{least i} \geq y \text{, such that } R(i,\vec{x}) \text{ holds.}
 $$
@@ -70,22 +70,26 @@ E \equiv p_0(x) = p_0(x)
 $$
 Then we won't reach an end state - we have reached a cycle in our directed acyclic graph $\mathcal{T}$ .
 
-In fact, just by observation, this looks like a programming language, and it is underneath the hood. Its similarities tie in more with functional languages like Haskell and OCaml more than C or Python. Then since it's a programming language, the ability for us to parse $R(\textbf{N}_0)$ in a compiler allows us to express our compilable expressions as 0's and 1's. The proof that states we are able to do this is quite long and it is based off of 5-10 pages of Gödel codings, which are essentially injective mappings of some tuple $(x_1,...,x_m) = \Pi_{i=1}^m p_i^{x_1+1} \in \mathbb{N}$, where $p_i$ is the $i$-th prime. This is the unique prime factorization of some number and thus the tuples' codings must be unique. We can associate symbols with some unique tuple, which then maps to some natural number. We then create nested tuple codings to create programs injective to $\mathbb{N}$ which can be expressed in binary. 
+In fact, just by observation, this looks like a programming language, and it is underneath the hood. Its similarities tie in more with functional languages like Haskell and OCaml more than C or Python. Then since it's a programming language, the ability for us to parse $R(\textbf{N}\_0)$ in a compiler allows us to express our compilable expressions as 0's and 1's. The proof that states we are able to do this is quite long and it is based off of 5-10 pages of Gödel codings, which are essentially injective mappings of some tuple $(x_1,...,x_m) = \Pi_{i=1}^m p_i^{x_1+1} \in \mathbb{N}$, where $p_i$ is the $i$-th prime. This is the unique prime factorization of some number and thus the tuples' codings must be unique. We can associate symbols with some unique tuple, which then maps to some natural number. We then create nested tuple codings to create programs injective to $\mathbb{N}$ which can be expressed in binary. 
 
 The compiler gives us some code, and our machine can take the input and return to us the result of the computation (if it doesn't run into an infinite loop). Mathematically, we define the function $\phi(e,x)$ where $e$ is the coding for some program that calculates some partial system of equation(s). We will present the results of the code-ability of the program below.
 
 # Normal Form and Enumeration Theorem
 
 (A part of) Kleene's normal form states that there exists a primitive recursive function $U(y)$ and primitive recursive relation $T_n(e,x_1,...,x_n,y)$ such that a recursive partial function $f(x_1,...,x_n)$ is recursive **if and only if there is some number e** (the code of f) such that:
+
 $$
 \exists e \in \mathbb{N}, f(\vec{x}) = U(\mu y T_n(e,\vec{x},y)) := \phi_e(x)
 $$
+
 One can read $T_n$ as the relation "$e$ is a program, $\vec{x}$ is the input, and $y$ is the set of states in the transition system we take until we hit a terminal state", and one can read $U(y)$ as "$y$ is the set of states in transition system after taking in some input for some program, and $U$ retrieves the numerical value that is the output of the program".
 
 Recall the $\mu$ operator. This theorem conjectures that, with two primitive recursive functions and a $\mu$ operator, we are able to create any recursive partial function from its coding, feed in the inputs, get the states of computation from the transition system, and recover the output of the function. Then, obviously, all recursive functions must be in $\mathcal{R}_\mu$. One can thus enumerate the recursive partial functions like:
+
 $$
 \phi_1(x),\phi_2(x),...
 $$
+
 where if $e$ is not a program, $\phi_e(x) = \uparrow \forall x \in \mathbb{N}$. (It diverges because its domain is defined nowhere)
 
 The above result shows that the set of recursive enumerable functions are countable (note at bottom*). There is one more part of the theorem but that is not important for us to prove the Halting relation's properties.
@@ -93,18 +97,24 @@ The above result shows that the set of recursive enumerable functions are counta
 # The Halting Problem
 
 Suppose we have the halting relation $H(e,x)$ defined as:
+
 $$
 X_H(e,\vec{x}) = \begin{cases}1 \quad\text{if } \phi_e(\vec{x})\downarrow \\ 0 \quad \text{else}\end{cases}
 $$
+
 In other words, the relation will tell us whether the program coded as $e$ in the input of $\vec{x}$ will return a result, or will diverge from endless looping or because the input was not in the domain of some partial function in the middle of the computation. Then we have the following result: **The halting relation is not recursive**.
 
 Why is this true? Suppose we have an enumeration of our programs $\phi_1(\vec{x}),\phi_2(\vec{x})...$, then if $X_H(e,\vec{x})$ is recursive, then we can make a recursive function that uses it in its composition. Then let's define one such function:
+
 $$
 f(x) = \begin{cases}\phi_x(x) + 1 \quad \text{if } H(x,x) \\0 \quad \text{else}\end{cases}
 $$
+
 This function is obviously total, and assumed to be recursive. Then, $f$ can be coded up by a recursive program, which has some code $e$. What does this mean? We can feed $f$ 's program code, $e$, into $f$ itself, and what do we get?
 
-$f(e) = \phi_e(e) + 1 = f(e) + 1$
+$$
+f(e) = \phi_e(e) + 1 = f(e) + 1
+$$
 
 A contradiction! So then therefore $H(e,x)$ cannot be recursive, since everything else was dependent on it. This was all because we could *diagonalize* on all possible functions, and make this $f(x)$ different from every $g \in \mathcal{R}_\mu$. **If $f$ is recursive, then $f$ would be different from itself.**
 
