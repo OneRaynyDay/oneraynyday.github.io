@@ -11,10 +11,6 @@ layout: default
 
 * TOC
 {:toc}
-
-
-WIP
-
 # Recap of Ackermann and $\mu$-recursive
 
 Recall that our previous result was that $A(n,x)$, the Ackermann function, is not primitive recursive, which means it's not in $\mathcal{R}_p$, but it is a recursive function. It turns out that it is in the class $\mu$-recursive functions. This $\mu$ means the "least" operator, and $\mathcal{R}_\mu$ is the set of functions that not only holds all properties of primitive recursive functions but also closed under composition of the $\mu$ operator, which is defined as the following: 
@@ -31,7 +27,7 @@ $$\textbf{Q}_1 = (\mathbb{Q}, 0, 1, +, -, \times, \div) \qquad \text{(0, 1 can b
 
 By definition, all functions in this algebra must be a mapping $: \mathbb{Q} \to \mathbb{Q}$. The operators $+, -, \times$ can be applied to any number in $\mathbb{Q}$. However, $\div$ cannot. This is an example of a **_partial function_**, as in only part of the domain of $\div$ can be evaluated. We denote $\div : \mathbb{Q} \rightharpoonup \mathbb{Q}$. Our normal functions that maps every element in its domain to some value is called a **total function** in this context. A **partial algebra** is just an algebra that allows us to have partial functions. We denote undefined-ness as divergence with $\uparrow$, for example $\div(x,0) = \uparrow$. In addition to functions, and numbers, we also have _variables_ in algebra. We can have any arbitrary $v_1,v_2,...$ as symbols in our expressions. To make equations, we have $=$ as a valid symbol as well. To allow branching conditionals, we have $\text{if, then, else}$ as symbols. To allow for multiple symbols in a function call, we have $,$ to separate arguments.  
 
-#### Examples
+**Examples**:
 
 - $\div\text{if}3))$
 - $3,23\times$
@@ -41,7 +37,7 @@ Intuitively, the first two don't really "evaluate" to anything, and the last one
 
 In computer science, we can usually express most of our operations using the simple partial algebra:
 
-$\textbf{N}_0 = (\mathbb{N}, 0, 1, S, Pd), \\S(x) = x + 1, \\Pd(x) = \begin{cases}x - 1 & \text{if } x \geq 1, \\ 0 & \text{else}\end{cases}$
+$\textbf{N}_0 = (\mathbb{N}, 0, 1, S, Pd), \\ S(x) = x + 1, \\ Pd(x) = \begin{cases}x - 1 & \text{if } x \geq 1, \\ 0 & \text{else}\end{cases}$
 
 ## Expansion to Recursion
 
@@ -80,7 +76,7 @@ The compiler gives us some code, and our machine can take the input and return t
 
 # Normal Form and Enumeration Theorem
 
-(A part of) Kleene's normal form states that there exists a primitive recursive function $U(y)$ and primitive recursive relation $T_n(e,x_1,...,x_n,y)$ such that a recursive partial function $f(x1,...,x_n)$ is recursive **if and only if there is some number e** (the code of f) such that:
+(A part of) Kleene's normal form states that there exists a primitive recursive function $U(y)$ and primitive recursive relation $T_n(e,x_1,...,x_n,y)$ such that a recursive partial function $f(x_1,...,x_n)$ is recursive **if and only if there is some number e** (the code of f) such that:
 $$
 \exists e \in \mathbb{N}, f(\vec{x}) = U(\mu y T_n(e,\vec{x},y)) := \phi_e(x)
 $$
@@ -94,7 +90,29 @@ where if $e$ is not a program, $\phi_e(x) = \uparrow \forall x \in \mathbb{N}$. 
 
 The above result shows that the set of recursive enumerable functions are countable (note at bottom*). There is one more part of the theorem but that is not important for us to prove the Halting relation's properties.
 
+# The Halting Problem
 
+Suppose we have the halting relation $H(e,x)$ defined as:
+$$
+X_H(e,\vec{x}) = \begin{cases}1 \quad\text{if } \phi_e(\vec{x})\downarrow \\ 0 \quad \text{else}\end{cases}
+$$
+In other words, the relation will tell us whether the program coded as $e$ in the input of $\vec{x}$ will return a result, or will diverge from endless looping or because the input was not in the domain of some partial function in the middle of the computation. Then we have the following result: **The halting relation is not recursive**.
+
+Why is this true? Suppose we have an enumeration of our programs $\phi_1(\vec{x}),\phi_2(\vec{x})...$, then if $X_H(e,\vec{x})$ is recursive, then we can make a recursive function that uses it in its composition. Then let's define one such function:
+$$
+f(x) = \begin{cases}\phi_x(x) + 1 \quad \text{if } H(x,x) \\0 \quad \text{else}\end{cases}
+$$
+This function is obviously total, and assumed to be recursive. Then, $f$ can be coded up by a recursive program, which has some code $e$. What does this mean? We can feed $f$ 's program code, $e$, into $f$ itself, and what do we get?
+
+$f(e) = \phi_e(e) + 1 = f(e) + 1$
+
+A contradiction! So then therefore $H(e,x)$ cannot be recursive, since everything else was dependent on it. This was all because we could *diagonalize* on all possible functions, and make this $f(x)$ different from every $g \in \mathcal{R}_\mu$. **If $f$ is recursive, then $f$ would be different from itself.**
+
+# Why Do You Care?
+
+The **Church-Turing** thesis states that **a function is computable if and only if it is recursive**. That means, there does not exist an algorithm to solve specific math problems and/or philosophical problems. The expressivity of our recursive functions is very limited compared to the whole space of functions, and some age old questions are simply beyond the realm of our current model of mathematics to answer.
+
+---
 
 Note: Technically, this is an injection into $\mathbb{N}$, and to prove that it is countable we need to show that there exists an injection from $\mathbb{N}$ to $\mathcal{R}_\mu$ via Schroder-Bernstein Theorem, or to construct a bijective mapping instead into $\mathbb{N}$ instead, but since the set of recursive functions is obviously infinite, and it has to be at most countable, it's countable.
 
