@@ -47,6 +47,8 @@ It is not clear at first that $A$ has a unique solution; the proof is done via *
 
 Intuitively, if you fix Ackermann's sections, $A_n(x) := A(n,x)$, you can inspect the value to see that it is growing extremely quickly. *One can think of the growth like the following: the 0-th section is successor, 1st section is addition, 2nd section is multiplication, 3rd section is exponentiation, 4th section is hyperexponentiation, etc.* The rate of growth from every section to the next is growing so fast that you can't really use big $O$ bound using any common functions. 
 
+![ackermann_proof]({{ site.url }}/assets/ackermann_proof.jpg)
+
 In order to prove $A \not\in \mathcal{R}_p$, we take an arbitrary function $f \in R_p$, and show that $f < A_n$ for some $n \in \mathbb{N}$. This rough sketch on growth shows that every $f$ that is primitive recursive is bounded by $A$, so $A$ cannot be in $\mathcal{R}_p$. I opted for this to be easier to digest so the trivial claims I make without proof are marked with $*$ . One claim we will make is the following:
 
 **The nested Ackerman call is bounded by itself, i.e. $A_n(A_n(x)) < A_{n+2}(x)$**. 
@@ -78,10 +80,17 @@ Take $z = max\\{x, n\\} = max\\{x_1,...,x_m,n\\}$, then $f(n,\bar{x}) < A_k(x+n)
 
 The above is a sufficient proof to show that $f \in \mathcal{R}_p \implies \exists k \in \mathbb{N}, f < A_k$. **Now, suppose $A$ is primitive recursive, then that means $h(n, x) = S(A(n,x)) = A(n,x) + 1$ must also be primitive recursive. Then there must exist some $k$ such that $h < A_k$, which is absurd and concludes our proof.**  
 
-It seems intuitive that if something grows faster than all of the primitive recursive functions, then it cannot be primitive recursive. It grows so fast that at $A(4,2)$, it returns an integer with 19729 digits. And as far as I know, Ackerman belongs to the class of functions $\mu$-recursive, which are the most general class of functions our computers can solve.
+It seems intuitive that if something grows faster than all of the primitive recursive functions, then it cannot be primitive recursive. It grows so fast that at $A(4,2)$, it returns an integer with 19729 digits.
+
+## Quick Aside: $$\mu$$-recursiveness
+
+Then what can we characterize the Ackermann function as? We can, technically, write a (long) while loop and search for the next value of Ackermann. This (albeit neverending) while loop is technically a $$\mu$$ operator, which gives us the _least solution that satisfies some conditions_. This is vague, and I will expand on it on the next blogpost. We call any function that can be written with arbitrary while loops and primitive recursive building blocks as $$\mu$$-recursive, and Ackermann is one of such functions.
+
+![function hierarchy]({{ site.url }}/assets/functions_hierarchy.jpg)
 
 # What else is out there?
 
-Though Ackermann is not something we can practically compute for high digits, it is still in theory, "computable". Then, I guess that begs the question - *What can't our computers compute?* The results we will explore don't only influence computer science, but answers* questions about philosophy, abstract mathematics, and many other things in our world.
+Though Ackermann is not something we can practically compute for high digits, it is still in theory, "computable" by a recursive program. Then, I guess that begs the question - *What can't our computers compute?* The results we will explore don't only influence computer science, but answers* questions about philosophy, abstract mathematics, and many other things in our world.
+
 
 \*: _By answer, I don't mean that answer to the universe and to life is 42, but rather, a concrete answer detailing why "there's no way we will ever find out"._
