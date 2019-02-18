@@ -60,7 +60,11 @@ $$
 
 ## Compilers
 
-Now, how can we express this system of equations as a **computation**? How can we actually compute this function when we plug in values into the arguments? We have a model that will illustrate this. A **transition system** is a triple $\mathcal{T} = (S, \to, T)$ where $S$ is the set of states, $\to$ is a binary relation on $S$, and $T$ is the terminal states. When thought of as a directed graph, reaching $t \in T$ in a path starting from some node $s \in S$, we terminate the traversal. Consequently, $t \not\to s \forall t \in T, s \in S$. This is also a _deterministic transition system_, so that $t \to s \implies s$ is unique. This details of this transition system can be found elsewhere, as it's not the central point of the blog. The main take-away is that for some program 
+Now, how can we express this system of equations as a **computation**? How can we actually compute this function when we plug in values into the arguments? We have a model that will illustrate this. A **transition system** is a triple $\mathcal{T} = (S, \to, T)$ where $S$ is the set of states, $\to$ is a binary relation on $S$, and $T$ is the terminal states. When thought of as a directed graph, reaching $t \in T$ in a path starting from some node $s \in S$, we terminate the traversal. Consequently, $t \not\to s \forall t \in T, s \in S$. This is also a _deterministic transition system_, so that $t \to s \implies s$ is unique. Here's an intuitive view:
+
+![transition system]({{ site.url }}/assets/transition_system.jpg)
+
+This details of this transition system can be found elsewhere, as it's not the central point of the blog. The main take-away is that for some program 
 
 $$E \equiv \begin{cases}p_0(\vec{x}) = E_0\\p_1(\vec{x}) = E_1\\...\\p_n(\vec{x}) = E_n \end{cases}$$
 
