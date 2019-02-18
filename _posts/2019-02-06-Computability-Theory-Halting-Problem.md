@@ -114,7 +114,11 @@ $$
 f(x) = \begin{cases}\phi_x(x) + 1 \quad \text{if } H(x,x) \\0 \quad \text{else}\end{cases}
 $$
 
-This function is obviously total, and assumed to be recursive. Then, $f$ can be coded up by a recursive program, which has some code $e$. What does this mean? We can feed $f$ 's program code, $e$, into $f$ itself, and what do we get?
+This function is obviously total, and assumed to be recursive. Here's an illustration of what $$f$$ would yield on the diagonal of this program/input matrix: 
+
+![halting problem]({{ site.url }}/assets/halting_problem.jpg)
+
+Then, $f$ can be coded up by a recursive program, which has some code $e$. What does this mean? We can feed $f$ 's program code, $e$, into $f$ itself, and what do we get?
 
 $$
 f(e) = \phi_e(e) + 1 = f(e) + 1
