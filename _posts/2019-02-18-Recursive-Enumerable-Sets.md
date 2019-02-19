@@ -51,9 +51,11 @@ Some important closure properties of semirecursive relations:
 5. **Recursive Characteristic Functions**: $$Q(x) \iff P(f_1(x),...,f_m(x))$$ 
 
 However, note that it is **not closed under unbounded universal quantifiers**. Intuitively, if you had to make sure for every number, some relation is true, you'd have to run your program infinitely many times, without termination. Meanwhile, for a semirecursive relation, it must give us a positive answer in finite time. Consequently, it must also not be closed under **negation**, i.e.
+
 $$
 H(e,x) \iff (\exists y)T(e,x,y)
 $$
+
 is the halting relation, and $$\lnot H(e,x) \iff (\forall y)[\lnot T(e,x,y)]$$.
 
 # Recursive Sets
