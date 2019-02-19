@@ -54,7 +54,7 @@ However, note that it is **not closed under unbounded universal quantifiers**. I
 $$
 H(e,x) \iff (\exists y)T(e,x,y)
 $$
-is the halting relation, and $$\lnot H(e,x) \iff (\forall y)[\lnot T(e,x,y)]$$. 
+is the halting relation, and $$\lnot H(e,x) \iff (\forall y)[\lnot T(e,x,y)]$$.
 
 # Recursive Sets
 
@@ -74,7 +74,7 @@ Then $$A = \{0,2,...\}$$ for this specific example.
 
  then the definition is defined rigorously as the following:
 
-**A set $$A \subset \mathbb{N}$$ is recursively enumerable (r.e.) if $$A = \emptyset$$ or $$A = \{f(0),f(1),f(2),f(3),...\}$$, where $$f : \mathbb{N} \to \mathbb{N}$$ is a total recursive function.**
+**A set $$A \subset \mathbb{N}$$ is recursively enumerable (r.e.) if $$A = \emptyset$$ or $$A = \{f(0),f(1),f(2),f(3),...\}$$, where $$f : \mathbb{N} \to \mathbb{N}$$ is a total recursive function.** Similarly, a **set  $$A$$ is co-recursively enumerable (co-r.e.) if $$A^c$$ is r.e.$$.**
 
 We will prove some properties about them below:
 
@@ -83,7 +83,7 @@ We will prove some properties about them below:
 3. **The relation $$x \in A$$ is semirecursive**. This is true since $$x \in A \iff \exists n [ f(n) = x ]$$.  Since $$f$$ is recursive, this is by definition a semirecursive relation. This has some implications. Given $$A,B$$ recursive enumerable, 
    1. $$A \cup B$$ is also r.e.
    2. $$A \cap B$$ is also r.e.
-   3. $$A^c$$ is not r.e.
+   3. $$A^c$$ is not always r.e. - it is **co-recursively enumerable**. If $$A$$ and $$A^c$$ are both recursively enumerable, then $$A$$ is recursive.
    4.  $$f[A]$$, and $$f^{-1}[A]$$, i.e. the image and inverse image of $$A$$ under $$f$$ is r.e.
 
 For sake of brevity, I'll list out a few properties without proofs (which can be found online):
@@ -92,11 +92,23 @@ For sake of brevity, I'll list out a few properties without proofs (which can be
 2. **The halting set** defined as $$H' = \{x \mid H((x)_0, (x)_1\}$$ *is recursive enumerable, but not recursive*. Recall $$H(e,x)$$ is true if the partial function coded by $$e$$,taking in the input $$x$$, converges, i.e. $$\phi_e(x) \downarrow$$. (Think about what it would imply if $$H$$ was recursive)
 3. **Post's Diagonal** is defined as $$K = \{x \mid \phi_x(x) \downarrow\}$$. This is slightly more elegant than the halting set, but it is also recursive enumerable but not recursive.
 
+From what we learned so far, we can classify the sets into three sets: 
+1. Recursive enumerable sets, we denote these $$\Sigma^0_1$$.
+2. Co-recursively enumerable sets, we denote these $$\Pi^0_1$$.
+3. Recursive sets, we denote these $$\Delta^0_1$$.
+
+Then we have constructed the first level of a hierarchy of sets, where the intersection of recursive enumerable sets and co-recursively enumerable is the recursive set. Here's an illustration of what I mean:
+
+![arithmetic hierarchy]({{ site.url }}/assets/arithmetic_hierarchy.jpg)
+
+We will explore what the sets are in $$\Sigma^0_2$$ and etc. later.
+
+
 # Reductions and r.e. completeness
 
-In algorithms courses offered in CS, where one briefly visits the NP class of problems, the topic of **NP complete** problems show up. An NP complete problem is one which every other problem in NP can be reduced to. What is reduction? It means that we can use another problem in order to solve this problem. A quick example is, we can reduce the problem of Clique to a problem of Independent Set by inverting the edge set of the input graph, and if independent set returns some $K$, then we have a $K$ clique in our graph. Recall we cannot increase our input size exponentially or call the reduction exponential number of times, for it to be a reduction in that sense.
+In algorithms courses offered in CS, where one briefly visits the NP class of problems, the topic of **NP complete** problems show up. An NP complete problem is one which every other problem in NP can be reduced to. What is reduction? It means that we can use another problem in order to solve this problem. A quick example is, we can reduce the problem of Clique to a problem of Independent Set by inverting the edge set of the input graph, and if independent set returns some $K​$, then we have a $K​$ clique in our graph. Recall we cannot increase our input size exponentially or call the reduction exponential number of times, for it to be a reduction in that sense.
 
-What does reductions and r.e. complete mean then? Well, basically the same, but applied to r.e. sets. Formally, a **reduction** from a set $$A​$$ to $$B​$$ is such that we can ask questions about membership in $$B​$$ to determine membership in $$A​$$. There is a hierarchy of "ease" of reduction by the following classifications:
+What does reductions and r.e. complete mean then? Well, basically the same, but applied to r.e. sets. Formally, a **reduction** from a set $$A$$ to $$B$$ is such that we can ask questions about membership in $$B$$ to determine membership in $$A$$. There is a hierarchy of "ease" of reduction by the following classifications:
 
 1. The reduction is $$A \leq_T B \iff \mathcal{X}_A \in \mathcal{R}(\textbf{N}_0, \mathcal{X}_B)$$. In other words, the characteristic function of $$x \in A$$ can be composed as a recursive (total) function which includes $$\mathcal{X}_B, S, Pd$$ on $$\mathbb{N}$$.  We call this **Turing reducibility**.
 2. The reduction is $$A \leq_m B \iff [x \in A \iff f(x) \in B]$$ if $$f$$ is arbitrary.
