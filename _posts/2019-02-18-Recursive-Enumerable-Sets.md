@@ -14,7 +14,7 @@ From the set of natural numbers, $$\mathbb{N}$$, we can generate a lot of subset
 
 ## Aside: $|P(\mathbb{N})| = \aleph_1$
 
-We prove this by stating a more powerful claim: **there does not exist a bijection between a set and its powerset****. For set $$S = \emptyset$$ , it is trivial: $$|S| = 0 \neq |P(S)| = |\{\{\}\}| = 1$$ . So suppose it's non-empty, and it does have a bijection by contradiction, $$f : S \to P(S)$$. Then, we look at the following set,
+We prove this by stating a more powerful claim: **there does not exist a bijection between a set and its powerset**. For set $$S = \emptyset$$ , it is trivial: $$|S| = 0 \neq |P(S)| = |\{\{\}\}| = 1$$ . So suppose it's non-empty, and it does have a bijection by contradiction, $$f : S \to P(S)$$. Then, we look at the following set,
 $$
 B = \{s \in S : s \not\in f(s)\} \subset S
 $$
@@ -23,7 +23,7 @@ This is obviously a well constructed set $$B$$. It contains all elements $s$ suc
 1. $$b \in B$$. Then by definition, $$b \in f(b) \implies b \not\in B$$. Contradiction.
 2. $$b \not\in B$$. Then by definition, $$b \not\in f(b) \implies b \in B$$. Contradiction.
 
-Both cases give us contradiction, then the bijection is absurd and $$|S| \neq |P(S)|$$ for any arbitrary set $$S$$. Furthermore, we can take the powerset of any uncountable set and reach a higher uncountable ordinal.
+Both cases give us contradiction, then the bijection is absurd for any arbitrary set $$S$$. Furthermore, we can take the powerset of any uncountable set and reach a higher uncountable ordinal.
 
 **This is important because although $$\mathbb{N}$$ may be countable, analyzing the subsets of $$\mathbb{N}$$ can prove to be much more complicated, and yields surprising results.**
 
@@ -64,9 +64,9 @@ Then $$A = \{0,2,...\}$$ for this specific example.
 
 We will prove some properties about them below:
 
-1. $$A$$ is r.e. $$\implies A = \{x | g(x)\downarrow\}$$ . What this means is that $$A$$ is the domain of some partial recursive function $$g$$. We know $$A$$ is the enumeration of $$f$$, then $$\forall x, \exists y, T(\hat{f}, x, y)$$ by Kleene's Normal Form theorem. Then, we define the partial $$g(y) := \mu_z [ T(\hat{f}, (z)_0, (z)_1) \& U((z)_1) = y] $$. By definition, $$g$$ will only converge on some $$y$$ if it is the result of some computation where the input is $$(z)_0$$, and the output computation state is $$(z)_1$$. We solved for both unknowns using Godel coding to dovetail.
-2. We can further allow $$f$$ to be injective if $$A$$ is infinite. We define $$B = \{ z \in \mathbb{N} \mid T(\hat{f}, (z)_0, (z)_1) \& \forall n < z,[T(\hat{f}, (n)_0, (n)_1) \implies (z)_1 \neq (n)_1]]\}$$. This set $$B$$ is a set that contains all inputs and outputs of $$f$$ such that the output cannot be the same for two different inputs, i.e. the definition of injection. $$B$$ is recursively enumerated by some recursive total function $$g$$, since it is clear that we can write a function that asks for $$\mu_z$$ of that giant predicate describing the set, then simply define $$\bar{f}(n) = (g(n))_1$$ then $$\bar{f}$$ enumerates the outputs of the original function $$f$$ injectively.
-3. The relation $$x \in A$$ is semirecursive. This is true since $$x \in A \iff \exists n [ f(n) = x ]$$.  Since $$f$$ is recursive, this is by definition a semirecursive relation.
+1. **$$A$$ is r.e. $$\implies A = \{x \mid g(x)\downarrow\}$$ .** What this means is that $$A$$ is the domain of some partial recursive function $$g$$. We know $$A$$ is the enumeration of $$f$$, then $$\forall x, \exists y, T(\hat{f}, x, y)$$ by Kleene's Normal Form theorem. Then, we define the partial $$g(y) := \mu_z [ T(\hat{f}, (z)_0, (z)_1) \& U((z)_1) = y] $$. By definition, $$g$$ will only converge on some $$y$$ if it is the result of some computation where the input is $$(z)_0$$, and the output computation state is $$(z)_1$$. We solved for both unknowns using Godel coding to dovetail.
+2. **We can further allow $$f$$ to be injective if $$A$$ is infinite.** We define $$B = \{ z \in \mathbb{N} \mid T(\hat{f}, (z)_0, (z)_1) \& \forall n < z,[T(\hat{f}, (n)_0, (n)_1) \implies (z)_1 \neq (n)_1]]\}$$. This set $$B$$ is a set that contains all inputs and outputs of $$f$$ such that the output cannot be the same for two different inputs, i.e. the definition of injection. $$B$$ is recursively enumerated by some recursive total function $$g$$, since it is clear that we can write a function that asks for $$\mu_z$$ of that giant predicate describing the set, then simply define $$\bar{f}(n) = (g(n))_1$$ then $$\bar{f}$$ enumerates the outputs of the original function $$f​$$ injectively.
+3. **The relation $$x \in A$$ is semirecursive**. This is true since $$x \in A \iff \exists n [ f(n) = x ]$$.  Since $$f$$ is recursive, this is by definition a semirecursive relation.
 
 
 
