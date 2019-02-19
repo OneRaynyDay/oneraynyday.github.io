@@ -10,9 +10,9 @@ layout: default
 
 * TOC
 {:toc}
-From the set of natural numbers, $$\mathbb{N}$$, we can generate a lot of subsets $$S \subset \mathbb{N}$$. In fact, the number of subsets we can have of $$\mathbb{N}$$ is so large that it's uncountable.
+From the set of natural numbers, $$\mathbb{N}$$, we can generate a lot of subsets $$S \subset \mathbb{N}$$. In fact, the number of subsets we can have of $$\mathbb{N}$$ is so large that it's uncountable. This study of subsets on $$\mathbb{N}$$ is a complicated branch of mathematics and logic, and it serves to describe and answer questions in computer science on computability.
 
-## Aside: $|P(\mathbb{N})| = \aleph_1$
+## Why You Care: $|P(\mathbb{N})| = \aleph_1$
 
 We prove this by stating a more powerful claim: **there does not exist a bijection between a set and its powerset**. For set $$S = \emptyset$$ , it is trivial: $$|S| = 0 \neq |P(S)| = |\{\{\}\}| = 1$$ . So suppose it's non-empty, and it does have a bijection by contradiction, $$f : S \to P(S)$$. Then, we look at the following set,
 $$
@@ -25,7 +25,7 @@ This is obviously a well constructed set $$B$$. It contains all elements $s$ suc
 
 Both cases give us contradiction, then the bijection is absurd for any arbitrary set $$S$$. Furthermore, we can take the powerset of any uncountable set and reach a higher uncountable ordinal.
 
-**This is important because although $$\mathbb{N}$$ may be countable, analyzing the subsets of $$\mathbb{N}$$ can prove to be much more complicated, and yields surprising results.**
+**This is important because although $$\mathbb{N}$$ may be countable, analyzing the subsets of $$\mathbb{N}$$ can prove to be much more complicated, and yields surprising results.** The fact that we have countable recursive functions that we can program in C, but uncountable number of functions with arbitrary domain and range means there are some unexplored complexity in computability. We aim to analyze this uncountable set, which turns out to have some interesting results, and we will eventually arrive at theorems of Tarski, Godel, and Church.
 
 # Semirecursive Relations
 
@@ -90,13 +90,13 @@ For sake of brevity, I'll list out a few properties without proofs (which can be
 
 1. A set is recursive iff it can be enumerated by a total, monotonically increasing $$f : \mathbb{N} \to \mathbb{N}$$ .
 2. **The halting set** defined as $$H' = \{x \mid H((x)_0, (x)_1\}$$ *is recursive enumerable, but not recursive*. Recall $$H(e,x)$$ is true if the partial function coded by $$e$$,taking in the input $$x$$, converges, i.e. $$\phi_e(x) \downarrow$$. (Think about what it would imply if $$H$$ was recursive)
-3. **Post's Diagonal** is defined as $$K = \{x \mid \phi_x(x) \downarrow\}​$$. This is slightly more elegant than the halting set, but it is also recursive enumerable but not recursive.
+3. **Post's Diagonal** is defined as $$K = \{x \mid \phi_x(x) \downarrow\}$$. This is slightly more elegant than the halting set, but it is also recursive enumerable but not recursive.
 
 # Reductions and r.e. completeness
 
 In algorithms courses offered in CS, where one briefly visits the NP class of problems, the topic of **NP complete** problems show up. An NP complete problem is one which every other problem in NP can be reduced to. What is reduction? It means that we can use another problem in order to solve this problem. A quick example is, we can reduce the problem of Clique to a problem of Independent Set by inverting the edge set of the input graph, and if independent set returns some $K$, then we have a $K$ clique in our graph. Recall we cannot increase our input size exponentially or call the reduction exponential number of times, for it to be a reduction in that sense.
 
-What does reductions and r.e. complete mean then? Well, basically the same, but applied to r.e. sets. Formally, a **reduction** from a set $$A$$ to $$B$$ is such that we can ask questions about membership in $$B$$ to determine membership in $$A$$. There is a hierarchy of "ease" of reduction by the following classifications:
+What does reductions and r.e. complete mean then? Well, basically the same, but applied to r.e. sets. Formally, a **reduction** from a set $$A​$$ to $$B​$$ is such that we can ask questions about membership in $$B​$$ to determine membership in $$A​$$. There is a hierarchy of "ease" of reduction by the following classifications:
 
 1. The reduction is $$A \leq_T B \iff \mathcal{X}_A \in \mathcal{R}(\textbf{N}_0, \mathcal{X}_B)$$. In other words, the characteristic function of $$x \in A$$ can be composed as a recursive (total) function which includes $$\mathcal{X}_B, S, Pd$$ on $$\mathbb{N}$$.  We call this **Turing reducibility**.
 2. The reduction is $$A \leq_m B \iff [x \in A \iff f(x) \in B]$$ if $$f$$ is arbitrary.
