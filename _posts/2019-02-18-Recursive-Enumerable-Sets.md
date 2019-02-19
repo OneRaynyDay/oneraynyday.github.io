@@ -14,7 +14,7 @@ From the set of natural numbers, $$\mathbb{N}$$, we can generate a lot of subset
 
 ## Aside: $|P(\mathbb{N})| = \aleph_1$
 
-We prove this by stating a more powerful claim: **there does not exist a bijection between a set and its powerset**. For set $$S = \emptyset​$$ , it is trivial: $$|S| = 0 \neq |P(S)| = |\{\{\}\}| = 1​$$ . So suppose it's non-empty, and it does have a bijection by contradiction, $$f : S \to P(S)​$$. Then, we look at the following set,
+We prove this by stating a more powerful claim: **there does not exist a bijection between a set and its powerset**. For set $$S = \emptyset$$ , it is trivial: $$|S| = 0 \neq |P(S)| = |\{\{\}\}| = 1$$ . So suppose it's non-empty, and it does have a bijection by contradiction, $$f : S \to P(S)$$. Then, we look at the following set,
 $$
 B = \{s \in S : s \not\in f(s)\} \subset S
 $$
@@ -90,7 +90,7 @@ For sake of brevity, I'll list out a few properties without proofs (which can be
 
 1. A set is recursive iff it can be enumerated by a total, monotonically increasing $$f : \mathbb{N} \to \mathbb{N}$$ .
 2. **The halting set** defined as $$H' = \{x \mid H((x)_0, (x)_1\}$$ *is recursive enumerable, but not recursive*. Recall $$H(e,x)$$ is true if the partial function coded by $$e$$,taking in the input $$x$$, converges, i.e. $$\phi_e(x) \downarrow$$. (Think about what it would imply if $$H$$ was recursive)
-3. **Post's Diagonal** is defined as $$K = \{x | \phi_x(x) \downarrow\}$$. This is slightly more elegant than the halting set, but it is also recursive enumerable but not recursive.
+3. **Post's Diagonal** is defined as $$K = \{x \mid \phi_x(x) \downarrow\}​$$. This is slightly more elegant than the halting set, but it is also recursive enumerable but not recursive.
 
 # Reductions and r.e. completeness
 
