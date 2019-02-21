@@ -12,6 +12,10 @@ layout: default
 {:toc}
 From the set of natural numbers, $$\mathbb{N}$$, we can generate a lot of subsets $$S \subset \mathbb{N}$$. In fact, the number of subsets we can have of $$\mathbb{N}$$ is so large that it's uncountable. This study of subsets on $$\mathbb{N}$$ is a complicated branch of mathematics and logic, and it serves to describe and answer questions in computer science on computability.
 
+Note: We will be alternating some commonly used notations.
+
+- $$\phi_e(x) \equiv \{e\}(x)$$
+
 ## Why You Care: $|P(\mathbb{N})| = \aleph_1$
 
 We prove this by stating a more powerful claim: **there does not exist a bijection between a set and its powerset**. For set $$S = \emptyset$$ , it is trivial: $$|S| = 0 \neq |P(S)| = |\{\{\}\}| = 1$$ . So suppose it's non-empty, and it does have a bijection by contradiction, $$f : S \to P(S)$$. Then, we look at the following set,
@@ -40,7 +44,7 @@ Additionally, it is equivalent to saying, "would there exist an output from the 
 $$
 R(x) \iff \exists y P(x,y)
 $$
-Basically, semirecursive relations are ones that have a positive answer and may not have a decidable answer otherwise.
+Basically, semirecursive relations are ones that have a positive answer and may not have a decidable answer otherwise. We also denote these relations to be $$\Sigma_1^0$$ relations.
 
 Some important closure properties of semirecursive relations:
 
@@ -117,9 +121,27 @@ What does reductions and r.e. complete mean then? Well, basically the same, but 
 3. The reduction is $$A \leq_1 B$$ if $$f$$ in 2) is injective. 
 4. The reduction is $$A \equiv B$$ if $$f$$ in 2) is bijective.
 
+An **r.e. complete set, denote A, has the property that** every r.e set is 1-reducible to it, formally:
 
+$$
+B \text{ is r.e.} \implies B \leq_1 A
+$$
 
+Intuitively, we must then assume that $$A$$ must be a set that is bigger than or equal to any r.e. set, otherwise the injection won't work. Then obviously $$A$$ is infinite. For example, post's diagonal $$K = \{e \mid \phi_e(e)\downarrow\}$$  is r.e. complete. Here's a proof.
 
+For arbitrary r.e. set $$B$$, it is defined as the domain of some recursive function $$f$$, then $$x \in B \iff f(x) \downarrow$$. Then, we define $$g(x,y) = f(x)$$, so that it is independent of $$y$$. Then there exists some code for $$g$$, call it $$\hat{g}$$, so that $$g(x) = \{\hat{g}\}(x)$$. By the $$S^m_n$$ theorem,  $$S^1_1(\hat{g}, x)\}(y) = f(x) \forall y$$. Then since any $$y$$ applies, we ask $$\{S^1_1(\hat{g}, x)\}(S^1_1(\hat{g}, x))$$ in $$K$$. In other words:
+
+$$
+x \in B \iff f(x)\downarrow \iff g(x,y)\downarrow \iff \{S^1_1(\hat{g},x)\}(S^1_1(\hat{g},x))\downarrow \iff h(x) = S^1_1(\hat{g}, x) \in K
+$$
+
+The $$S^m_n$$ theorem states that $$S^1_1$$ is injective, then it is obvious that $$h$$ is injective, then $$B \leq_1 K$$. Since $$B$$ is arbitrary, $$K$$ must be r.e. complete.
+
+# Post's Problem
+
+Emil Post, one of the founders of computability theory, asked a question that could not be solved until more than 20 years later. The question asks the following: **does there exist r.e. but not recursive sets $$A$$ such that for all $$B$$ is r.e. complete, $$A <_T B​$$?**
+
+The answer is yes. However, before we show this, we must dig further to find properties of recursive enumerable sets.
 
 
 

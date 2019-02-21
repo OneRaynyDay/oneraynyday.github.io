@@ -88,7 +88,7 @@ $$
 
 One can read $T_n$ as the relation "$e$ is a program, $\vec{x}$ is the input, and $y$ is the set of states in the transition system we take until we hit a terminal state", and one can read $U(y)$ as "$y$ is the set of states in transition system after taking in some input for some program, and $U$ retrieves the numerical value that is the output of the program".
 
-Recall the $\mu$ operator. This theorem conjectures that, with two primitive recursive functions and a $\mu$ operator, we are able to create any recursive partial function from its coding, feed in the inputs, get the states of computation from the transition system, and recover the output of the function. Then, obviously, all recursive functions must be in $\mathcal{R}_\mu$. One can thus enumerate the recursive partial functions like:
+Recall the $\mu$ operator. This theorem states that, with two primitive recursive functions and a $\mu$ operator, we are able to create any recursive partial function from its coding, feed in the inputs, get the states of computation from the transition system, and recover the output of the function. Then, obviously, all recursive functions must be in $\mathcal{R}_\mu$. One can thus enumerate the recursive partial functions like:
 
 $$
 \phi_1(x),\phi_2(x),...
@@ -96,7 +96,15 @@ $$
 
 where if $e$ is not a program, $\phi_e(x) = \uparrow \forall x \in \mathbb{N}$. (It diverges because its domain is defined nowhere)
 
-The above result shows that the set of recursive enumerable functions are countable (note at bottom*). There is one more part of the theorem but that is not important for us to prove the Halting relation's properties.
+The above result shows that the set of recursive enumerable functions are countable (note at bottom*).
+
+## $S^m_n$ Theorem
+
+The $$S^m_n$$ theorem states that there exists functions $$S^m_n$$ that "hardcodes" inputs into functions and returns a new function code that works as if it was hardcoded. Concretely:
+
+$$\text{1. } \forall e, y, \bar{z} = z_1,...,z_m, \bar{x} = x_1,...,x_n \\ \text{2. } U(\mu y T_{m+n}(e,\bar{z}, \bar{x}, y)) = U(\mu yT_n(S^m_n(e,\bar{z}), \bar{x}, y)) \\ \text{3. } S^m_n\text{ is injective for all $$m, n}$$
+
+The proof of these theorems are difficult to explain without formal construction of the transition system and pages and pages of proofs, so just take it for face value. They're _very_ powerful, surprisingly. We will use the normal form's enumerability to prove the halting problem is not recursive.
 
 # The Halting Problem
 
