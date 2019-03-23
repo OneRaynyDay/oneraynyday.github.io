@@ -139,7 +139,7 @@ The $$S^m_n$$ theorem states that $$S^1_1$$ is injective, then it is obvious tha
 
 # Post's Problem
 
-Emil Post, one of the founders of computability theory, asked a question that could not be solved until more than 20 years later. The question asks the following: **does there exist r.e. but not recursive sets $$A$$ such that for all $$B$$ is r.e. complete, $$A <_T B​$$?**
+Emil Post, one of the founders of computability theory, asked a question that could not be solved until more than 20 years later. The question asks the following: **does there exist r.e. sets $A$ and $B$ that are not turing reducible to each other?**
 
 The answer is yes. However, before we show this, we must dig further to find properties of recursive enumerable sets.
 

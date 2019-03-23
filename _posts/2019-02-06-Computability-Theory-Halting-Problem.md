@@ -102,7 +102,9 @@ The above result shows that the set of recursive enumerable functions are counta
 
 The $$S^m_n$$ theorem states that there exists functions $$S^m_n$$ that "hardcodes" inputs into functions and returns a new function code that works as if it was hardcoded. Concretely:
 
-$$\text{1. } \forall e, y, \bar{z} = z_1,...,z_m, \bar{x} = x_1,...,x_n \\ \text{2. } U(\mu y T_{m+n}(e,\bar{z}, \bar{x}, y)) = U(\mu yT_n(S^m_n(e,\bar{z}), \bar{x}, y)) \\ \text{3. } S^m_n\text{ is injective for all $$m, n}$$
+1. $$\forall e, y, \bar{z} = z_1,...,z_m, \bar{x} = x_1,...,x_n$$
+2. $$U(\mu y T_{m+n}(e,\bar{z}, \bar{x}, y)) = U(\mu yT_n(S^m_n(e,\bar{z}), \bar{x}, y))$$
+3. $$S^m_n\text{ is injective for all $$m, n}$$
 
 The proof of these theorems are difficult to explain without formal construction of the transition system and pages and pages of proofs, so just take it for face value. They're _very_ powerful, surprisingly. We will use the normal form's enumerability to prove the halting problem is not recursive.
 
