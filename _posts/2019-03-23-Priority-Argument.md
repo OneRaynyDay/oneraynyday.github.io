@@ -22,7 +22,7 @@ This time, we will give an ambitious attempt to prove the famous **Post's Proble
 
 Since Turing reducibility allows us to ask arbitrary number of questions about $$x \in B$$. What sets are computable, now that we have this oracle? If $$B$$ is something boring like $$\mathbb{N}$$ or $$\emptyset$$, in which case it would output true or false always, then we intuitively would not add any complexity to recursive programs. However, if $$B$$ tells us whether $$\phi_e(x)\downarrow$$, for any $$e, x$$, then it gets a little more interesting. 
 
-## Enumeration & Normal Form for Oracle Machines
+# Enumeration & Normal Form for Oracle Machines
 
 Recall that our previous theorem from Kleene ([here](https://oneraynyday.github.io/math/2019/02/06/Computability-Theory-Halting-Problem/#normal-form-and-enumeration-theorem)) that states the following:
 
