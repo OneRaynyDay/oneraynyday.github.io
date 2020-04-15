@@ -1,6 +1,6 @@
 ---
-published: false
-title: Queueing Theory - Part 1
+published: true
+title: [WIP] Queueing Theory - Part 1
 use_math: true
 category: math
 layout: default
