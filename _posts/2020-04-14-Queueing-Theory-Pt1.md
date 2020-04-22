@@ -74,17 +74,22 @@ So now we know what the long run proportion of time the store has $j$ people in 
 
 In queueing theory, the most basic system consists of a **single server** with arrival of customers modeled as an i.i.d process. You can imagine this as a sequence of independent **cycles**, defined by a period of inactivity (the store has noone coming in), and a period of activity (the store is serving a customer, with possibly more customers arriving during the interim period). To be precise, at the end of the period of activity, there should be no customers currently in the queue. *Intuitively, it makes sense that each cycle should be independent, as we return to 0 customers and the arrival of customers are not independently distributed.* 
 
-Suppose the number of customers that arrive **during the busy period** in an arbitrary cycle is a random variable $$N$$, then below is an interesting result:
+Suppose the number of customers that arrive **during the busy period** in an arbitrary cycle is a random variable $N$, then below is an interesting result:
+
 $$
 P(\{\text{customer is blocked}\}) = \frac{E(N)}{1+E(N)}
 $$
+
 Intuitively, this makes sense. If we consider each cycle, the number of customers is $E(N) + 1$ since the first customer arrived during the inactive period, and the number of blocked customers are $E(N)$ because each one had to wait for the previous customer to finish being served. However, let's prove this:
 
 First, let's use the law of total probability here to make this a little easier. We define a **customer to be of type $i$** if they arrived when $i$ people arrived in a cycle. Note that the first customer who arrived and was served immediately is also a customer of type $i$ in this event.
+
 $$
 P(\text{customer is blocked}) = \sum_{i=1}^\infty P(\text{customer is blocked} | \text{customer is of type i})P(\text{customer is of type i})
 $$
+
 Well... This is good and all, but how do we get $P(\text{customer is of type i})$ to express $E(N)$? For there to be a customer of type $i$ we must have $N = i-1$, since there must be $i-1$ waiting customers in this cycle. We thus have the following probability:
+
 $$
 P(\text{customer is of type i}) \\
 = \frac{i P(N=i-1)}{\sum_{k=1}^\infty kP(N=k-1)} \\
@@ -92,16 +97,19 @@ P(\text{customer is of type i}) \\
 = \frac{i P(N=i-1)}{E(N) + \sum_{k=0}^\infty P(N=k)} \\
 = \frac{i P(N=i-1)}{E(N) + 1}
 $$
+
 *NOTE: If you're intimidated by the denominator, this is setup from the [ball-and-urn](https://en.wikipedia.org/wiki/Urn_problem) type model where the i-th urn is associated with* $\{N=i\}$, *and the probability that a random ball chosen from the population belongs to the i-th urn is equivalent to* $\{\text{customer arrived when N=i}\}$. *The ball and urn set-up is added in the appendix*.
 
-We know that $P(\text{customer is blocked} | \text{customer is of type i}) = \frac{i-1}{i}$ since there is a $\frac{i-1}{i}$ chance that this customer is not the first customer (which is the only one not blocked).
+We know that $P(\text{customer is blocked} \| \text{customer is of type i}) = \frac{i-1}{i}$ since there is a $\frac{i-1}{i}$ chance that this customer is not the first customer (which is the only one not blocked).
 
 When we substitute these quantities into the above total probability equation, we get:
+
 $$
 \sum_{i=1}^\infty P(\text{customer is blocked} | \text{customer is of type i})P(\text{customer is of type i}) \\
 = \sum_{i=1}^\infty (\frac{i-1}{i})(\frac{i P(N=i-1)}{E(N) + 1}) \\
 = \frac{\sum_{i=0} i P(N=i)}{E(N) + 1} \\ = \frac{E(N)}{E(N)+1}
 $$
+
 QED.
 
 # Appendix
@@ -109,7 +117,9 @@ QED.
 ## Ball-and-Urn Reference
 
 This is a problem from intro to probability classes. Suppose we have finite or countably many urns, indexed by $1,2,...$ where each $i$th urn includes $n_i$ balls. We want to know whats the probability of getting a ball from the $i$th urn w.r.t to the probability  of picking the $i$th urn. We denote $P(Y=j)$ as the probability of the $j$th urn being chosen from the population of urns, and $P(X=j)$ as the probability that a ball from the $j$th urn is chosen from the population of balls. We have the following result:
+
 $$
 P(X=j) = \frac{n_j P(Y=j)}{\sum_i n_i P(Y=i)}
 $$
+
 Since in our queueing theory example, $n_j \approx j$ ($\pm$ some constants), we were able to express the bottom sum as $E(Y) + C$.
