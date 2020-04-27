@@ -24,6 +24,10 @@ In the above example, we define the **input process** as the distribution of the
 
 This field of mathematics employs a very important concept, called **conservation of flow**. The CS undergrads would recall the problem *max flow/min cut*, and how it uses the idea of conservation of flow as well. In this context, we assume in the long run the supermarket will achieve an equilibrium with the number of people inside the store at any point in time. This means that the number of customers coming in will be the same as the number of customers going out.
 
+## Probability Review
+
+TODO
+
 ## Simple queueing system problem
 
 Let's say we have a ***poisson process*** occurring with the above supermarket example. By this I mean the following:
@@ -77,7 +81,7 @@ In queueing theory, the most basic system consists of a **single server** with a
 Suppose the number of customers that arrive **during the busy period** in an arbitrary cycle is a random variable $N$, then below is an interesting result:
 
 $$
-P(\{\text{customer is blocked}\}) = \frac{E(N)}{1+E(N)}
+P(\text{customer is blocked}) = \frac{E(N)}{1+E(N)}
 $$
 
 Intuitively, this makes sense. If we consider each cycle, the number of customers is $E(N) + 1$ since the first customer arrived during the inactive period, and the number of blocked customers are $E(N)$ because each one had to wait for the previous customer to finish being served. However, let's prove this:
@@ -109,8 +113,6 @@ $$
 = \sum_{i=1}^\infty (\frac{i-1}{i})(\frac{i P(N=i-1)}{E(N) + 1}) \\
 = \frac{\sum_{i=0} i P(N=i)}{E(N) + 1} \\ = \frac{E(N)}{E(N)+1}
 $$
-
-QED.
 
 # Appendix
 
