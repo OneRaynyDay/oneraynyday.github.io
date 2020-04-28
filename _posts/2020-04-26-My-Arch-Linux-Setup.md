@@ -1,8 +1,8 @@
 ---
 published: true
-title: Reinforcement Learning - Markov Decision Process
+title: Arch Linux `i3` is Amazing!
 use_math: true
-category: ML
+category: dev
 layout: default
 ---
 
@@ -54,6 +54,96 @@ for_window [class="^.*"] border pixel 0
 gaps inner 10
 gaps outer 0
 ```
+
+### `i3` Container Manipulation
+
+By container, we mean windows of processes here. For starters, `$mod+h/j/k/l` will change the focus of your screen to the adjacent container depending on the direction (like vim bindings), and `$mod+shift+h/j/k/l` will *move* the selected window, swapping positions with the window in the respective direction.
+
+When a window is spawned (let's say from `$mod+enter` to create a terminal emulator), the window can spawn horizontally or vertically from your existing focus window. I binded them to `$mod+c` for horizontal and `$mod+v` for vertical.
+
+```
++---------+    +---------+
+|         |    |    x    |
+|    x    | -> +---------+  (From $mod+v)
+|         |    |    y    |
++---------+    +---------+
+
++---------+    +----+----+
+|         |    |    |    |
+|    x    | -> | x  |  y |  (From $mod+c)
+|         |    |    |    |
++---------+    +----+----+
+```
+
+Sometimes, you want a floating window, that you can control with `$mod + mouse`. This is achievable by using `$mod + shift + space`.
+
+Sometimes, you don't necessarily want a binary partition of the screen, and you want one window to be a bit smaller. You can set `i3` to resizing mode with `$mod + r` and `h/j/k/l` will be resizing the current focused window.
+
+These are the settings:
+
+```
+# change focus
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+# move focused window
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# split in horizontal orientation
+bindsym $mod+c split h
+# split in vertical orientation
+bindsym $mod+v split v
+
+# toggle tiling / floating
+bindsym $mod+Shift+space floating toggle
+
+mode "resize" {
+        bindsym h resize shrink width 10 px or 10 ppt
+        bindsym j resize grow height 10 px or 10 ppt
+        bindsym k resize shrink height 10 px or 10 ppt
+        bindsym l resize grow width 10 px or 10 ppt
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+        bindsym $mod+r mode "default"
+}
+bindsym $mod+r mode "resize"
+```
+
+### `i3` Workspaces
+
+This is my favorite feature of `i3`. On the top left corner of our `i3` bar, we have numbers associated with the workspaces we can navigate to. We can usually designate a few of them to be for special purpose. In a later example, I show that I always put the spotify app running in workspace 10.
+
+To navigate to the $n$-th workspace, use `$mod + n` where `n` is from 0 to 9. To move the current container to that workspace, use `$mod + shift + n`:
+
+```
+# Define names for default workspaces for which we configure key bindings later on.
+# We use variables to avoid repeating the names in multiple places.
+set $ws1 "Terminal (1)"
+set $ws2 "2"
+...
+.set $ws9 "Browser (9)"
+set $ws10 "Spotify (0)"
+
+# switch to workspace
+bindsym $mod+1 workspace $ws1
+...
+.bindsym $mod+0 workspace $ws10
+
+# move focused container to workspace
+bindsym $mod+Shift+1 move container to workspace $ws1
+...
+bindsym $mod+Shift+0 move container to workspace $ws10
+```
+
+The configuration is shortened above.
+
+NOTE: Operations like stacking containers(navigable through up focus/down focus) are cool but not covered here. I like using workspaces better.
 
 ## Setting Backgrounds
 
