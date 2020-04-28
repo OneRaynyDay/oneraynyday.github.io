@@ -209,7 +209,11 @@ label=<?>
 separator=true
 ```
 
-I can't display the characters denoted by `<?>` on my blog because I'm not using a patched version for fonts that support glyphs. You can just replace them with text if you want!
+I can't display the characters denoted by `<?>` on my blog because I'm not using a patched version for fonts that support glyphs. You can just replace them with text if you want! The spotify script is obtained from [this repo](https://github.com/firatakandere/i3blocks-spotify).
+
+It looks like this:
+
+![i3blocks]({{ site.url }}/assets/i3blocks.png)
 
 ## Setting Backgrounds
 
