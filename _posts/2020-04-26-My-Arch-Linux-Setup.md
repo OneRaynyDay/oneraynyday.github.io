@@ -347,3 +347,7 @@ Note that if you want to use the same font (`powerline` family fonts), install i
 ##  Login Manager
 
 We want to have a sexy login manager to greet us for logins. Let's use `lightdm` along with its greeter in the Aether theme by installing `sudo pacman -S lightdm lightdm-webkit2-greeter lightdm-webkit-theme-aether`. No need to change anything in `~/.config/i3/config`.
+
+---
+
+There are of course, different offerings for each of these tools. Feel free to use your own! It's a constant learning experience so I'll also be trying to change things up once in a while.
