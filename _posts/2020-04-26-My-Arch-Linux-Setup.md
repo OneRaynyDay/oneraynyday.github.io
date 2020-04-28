@@ -1,10 +1,23 @@
+---
+published: true
+title: Reinforcement Learning - Markov Decision Process
+use_math: true
+category: ML
+layout: default
+---
+
+# Table of Contents
+
+* TOC
+{:toc}
+
 # My Arch Linux Setup
 
-I've set up my Arch Linux environment for over a year now and I haven't made significant changes to it due to the fact that all of my work is through my company's Macbooks (with SSH into remote compute resources, of course). I figured since the next few C++ blogs I'll be writing are going to be done with `gcc` instead of `clang`, and I will be dissecting the C++ into assembly using `objdump` instead of `otool`, I'll be using my workstation more often.
+I've set up my Arch Linux environment for over a year now and I haven't made significant changes to it due to the fact that all of my work is through my company's Macbooks (with SSH into remote compute resources, of course). I figured since the next few C++ blogs I'll be writing are going to be done with the linux toolchain, I'd start using my workstation again.
 
 
 
-This blog is meant to illustrate how I set up my Arch Linux environment **after** I've set up the appropriate UEFI, swap, and filesystem partitions. I'm not going to explain how boot loaders work, how to set up Pacman (the package manager for Arch), setting up locale, etc. With that said, let's dive in!
+This blog is meant to illustrate how I set up my Arch Linux environment **after** I've set up the appropriate UEFI, swap, and filesystem partitions. I'm not going to explain how boot loaders work, how to set up Pacman (the package manager for Arch), setting up locale, etc. I also won't cover my `vim` and `zsh` setup. With that said, let's dive in!
 
 ## Preliminary
 
@@ -16,7 +29,7 @@ archlinux% cd yay
 archlinux% makepkg -si
 ```
 
-# `i3`
+## `i3`
 
 What is `i3`? It's a **tiling window manager** that allows you to place windows efficiently on your screen, allow simple navigation through keystrokes, separating windows into workspaces, and much more. Below is a screenshot of my setup:
 
@@ -24,63 +37,75 @@ What is `i3`? It's a **tiling window manager** that allows you to place windows 
 
 As you can see, I have multiple terminal windows open, as well as Spotify, neatly tiled into bifurcated windows (as I'll explain later, you can adjust the size of the windows beyond the fixed $\frac{1}{2^n}$ sizes as well). In addition, you can see the status bar above, showing the metrics on the top right and workspace on the left. We'll explain how to set this up.
 
-## Installing `i3`
+### Installing `i3`
 
-So there are two versions of `i3` as far as I know. The windows manager I'm using has gaps in between the processes and is called `i3-gaps`, and the default one is called `i3-gaps`. Install either of these with `pacman -S <i3 package>`. `i3` prompts you to generate a default config file. If you decide to go this route, it'll ask you to set the modifier key to Alt or the super key (the key itself says "Win", "Command", or some random logo). I set it to Alt. Here are some things you can do with the `i3` config to make it aesthetic but still functional:
+So there are two versions of `i3` as far as I know. The windows manager I'm using has gaps in between the processes and is called `i3-gaps`, and the default one is called `i3-gaps`. Install either of these with `pacman -S <i3 package>`. `i3` prompts you to generate a default config file. If you decide to go this route, it'll ask you to set the modifier key to Alt or the super key (the key itself says "Win", "Command", or some random logo). I set it to Alt. Here are some things you can do with the `i3` config(located at `~/.config/i3/config`) to make it aesthetic but still functional:
 
 You can add gaps to the windows:
 
 ```
-TODO
+##
+## i3-gaps
+##
+
+# Run i3-gaps instead of i3 by default
+# i3-gaps will have black bar on top if you have description borders
+for_window [class="^.*"] border pixel 0
+gaps inner 10
+gaps outer 0
 ```
 
+## Setting Backgrounds
 
-
-### Setting Backgrounds
-
-You can set a background image using `feh`. First install an image viewing tool with `sudo pacman -S feh`, and use the below command to set a background for `i3`:
+You can set a background image using `feh`. First install an image viewing tool with `sudo pacman -S feh`, and use the below command to set a background in the `i3` config :config
 
 ```
-TODO
+# run feh to set background image
+exec_always feh --bg-scale ~/wallpapers/wallpaper5.png
 ```
 
 I save all of my backgrounds in my github repo [here](https://github.com/OneRaynyDay/wallpapers).
 
-### Using a File Manager
+## Using a File Manager
 
 If you want to be a supreme `vim` overlord and have bindings on everything, I suggest using `ranger`, installable via `sudo pacman -S ranger`. If you want to just have a typical gnome-like experience, try `SpaceFM` or `PCManFM`, which are two great GUI file managers. Add this into your config if you want to trigger `ranger` with hotkeys:
 
 ```
-
+# Open file explorer (ranger)
+bindsym $mod+Shift+f exec urxvt -e ranger
 ```
 
-We want to have image preview for `ranger`, since by itself it's fairly lightweight. To do this, `sudo pacman -S w3m terminator` and add the following file into the ranger config file:
+We want to have image preview for `ranger`, since by itself it's fairly lightweight. To do this, `sudo pacman -S w3m terminator` and add the following file into the ranger config file at `~/.config/ranger/rc.conf`:
 
 ```
-# i3 ❯ echo ~/.config/ranger/rc.conf
+# Enable previewing images
 set preview_images true 
 ```
 
-TODO PICTURE FOR RANGER
+![screenshot1]({{ site.url }}/assets/ranger.png)
 
-### Reading PDF's
+## Reading PDF's
 
-In the theme of `vim` overlord, install `zathura` if you want to have a nice pdf viewer with vim-like bindings with `sudo pacman -S zathura`. I like to alias it to `pdf` because who would remember to write `zathura` when they want to read a pdf?
+In the theme of `vim` overlord, install `zathura` if you want to have a nice pdf viewer with vim-like bindings with `sudo pacman -S zathura`. I like to alias it to `pdf` because who would remember to write `zathura` when they want to read a pdf? (I put this in `.zshrc`)
 
 ```
-
+# Zathura (pdf viewer)
+alias pdf=zathura
 ```
 
 Some things I found useful: `s` for fitting to the width of the document, `r` for rotating documents, `d` for two-page view.
 
-TODO PICTURE FOR ZATHURA
+![screenshot1]({{ site.url }}/assets/zathura.png)
 
-### Spotify
+## Spotify
 
-Everyone listens to music via spotify now, so let's streamline the operation by setting the last workspace to have spotify upon start-up. To do this, you need the spotify client: `sudo yay -S spotify`. This is what we add into the config file:
+Everyone listens to music via spotify now, so let's streamline the operation by setting the last workspace to have spotify upon start-up. To do this, you need the spotify client: `sudo yay -S spotify`. This is what we add into the `i3` config file:
 
 ```
-
+# spotify
+for_window [class="spotify"] move to workspace $ws10
+exec --no-startup-id i3-msg 'workspace $ws10; exec spotify'
+bindsym $mod+shift+s exec spotify
 ```
 
  ### Program Launcher (`dmenu` replacement)
@@ -88,12 +113,13 @@ Everyone listens to music via spotify now, so let's streamline the operation by 
 `dmenu` is an easy way for users to run applications without having to go into the directory it lives in, and executing it like an uncultured savage. However, it's really ugly. Let's use a `dmenu` replacement like `rofi` by downloading via `sudo pacman -S rofi`, and we set the following config:
 
 ```
-
+# start rofi (a program launcher, better than dmenu)
+bindsym $mod+d exec rofi -show run
 ```
 
-TODO FIGURE FOR ROFI
+I haven't found an `Alfred` replacement, but you can use `rofi -show window` to switch to whichever window you want. You can also use `rofi -show ssh` to ssh to any box you have in your `~/.ssh/config` file.
 
-### Terminal Emulator
+## Terminal Emulator
 
 We want to install `urxvt`, which is a terminal emulator. It's aesthetic because we can change the opacity of the terminal itself, has nice color support, and has multiple font types it can support. To do this, run `sudo pacman -S rxvt-unicode`. To verify this, simply run:
 
@@ -104,13 +130,88 @@ rxvt-unicode-256color
 
 You should not yet have a `~/.Xresources` file, and that's fine. Below are some things I added into mine:
 
+### Solarized Colorscheme
+
+```
+! Solarized colorscheme
+!-------------------------------------------------------------------------------
+! URxvt settings
+! Colours lifted from Solarized (http://ethanschoonover.com/solarized)
+! More info at:
+! http://pod.tst.eu/http://cvs.schmorp.de/rxvt-unicode/doc/rxvt.1.pod
+!-------------------------------------------------------------------------------
+
+!!Source http://github.com/altercation/solarized
+
+*background: #002b36
+*foreground: #657b83
+!!*fading: 40
+*fadeColor: #002b36
+*cursorColor: #93a1a1
+*pointerColorBackground: #586e75
+*pointerColorForeground: #93a1a1
+
+!! black dark/light
+*color0: #073642
+*color8: #002b36
+
+!! red dark/light
+*color1: #dc322f
+*color9: #cb4b16
+
+!! green dark/light
+*color2: #859900
+*color10: #586e75
+
+!! yellow dark/light
+*color3: #b58900
+*color11: #657b83
+
+!! blue dark/light
+*color4: #268bd2
+*color12: #839496
+
+!! magenta dark/light
+*color5: #d33682
+*color13: #6c71c4
+
+!! cyan dark/light
+*color6: #2aa198
+*color14: #93a1a1
+
+!! white dark/light
+*color7: #eee8d5
+*color15: #fdf6e3
+```
+
+### Aesthetics
+
+```
+! Fonts
+URxvt.font: xft:Source Code Pro for Powerline:size=12
+URxvt.letterSpace: 0
+
+! Adding transparency
+urxvt*transparent: true
+urxvt*shading: 30
+```
+
+Note that if you want to use the same font (`powerline` family fonts), install it using `sudo yay -S powerline-fonts-git`.
+
+### General
+
+```
+! General settings
+URxvt.saveLines: 2000
+URxvt.scrollBar: False
+URxvt.scrollstyle: rxvt
+URxvt.termName: xterm-256color
+URxvt.urgentOnBell: True
+URxvt.cursorBlink: False
+```
 
 
-Note that if you want to use the same font (powerline family fonts), install it using `sudo yay -S powerline-fonts-git`.
 
-###  Login Manager
+##  Login Manager
 
 We want to have a sexy login manager to greet us for logins. Let's use `lightdm` along with its greeter in the Aether theme by installing `sudo pacman -S lightdm lightdm-webkit2-greeter lightdm-webkit-theme-aether`. No need to change anything in `~/.config/i3/config`.
-
-
-
