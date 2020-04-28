@@ -39,9 +39,9 @@ As you can see, I have multiple terminal windows open, as well as Spotify, neatl
 
 ### Installing `i3`
 
-So there are two versions of `i3` as far as I know. The windows manager I'm using has gaps in between the processes and is called `i3-gaps`, and the default one is called `i3-gaps`. Install either of these with `pacman -S <i3 package>`. `i3` prompts you to generate a default config file. If you decide to go this route, it'll ask you to set the modifier key to Alt or the super key (the key itself says "Win", "Command", or some random logo). I set it to Alt. Here are some things you can do with the `i3` config(located at `~/.config/i3/config`) to make it aesthetic but still functional:
+So there are two versions of `i3` as far as I know. The windows manager I'm using has gaps in between the processes and is called `i3-gaps`, and the default one is called `i3-wm`. Install either of these with `pacman -S <i3 package>`. `i3` prompts you to generate a default config file. If you decide to go this route, it'll ask you to set the modifier key to Alt or the super key (the key itself says *"Win"*, *"Command"*, or some random logo). I set it to Alt. You can customize the `i3` config(located at `~/.config/i3/config`) to change the aesthetics and map your hotkeys.
 
-You can add gaps to the windows:
+If you installed `i3-gaps`, you can add gaps to the windows by adding the following into your `i3` configurations:
 
 ```
 ##
@@ -261,7 +261,7 @@ exec --no-startup-id i3-msg 'workspace $ws10; exec spotify'
 bindsym $mod+shift+s exec spotify
 ```
 
- ### Program Launcher (`dmenu` replacement)
+### Program Launcher (`dmenu` replacement)
 
 `dmenu` is an easy way for users to run applications without having to go into the directory it lives in, and executing it like an uncultured savage. However, it's really ugly. Let's use a `dmenu` replacement like `rofi` by downloading via `sudo pacman -S rofi`, and we set the following config:
 
