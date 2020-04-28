@@ -157,14 +157,7 @@ bar {
   	position top
         status_command i3blocks -c /home/ray/.config/i3/i3blocks.conf
 	font pango:FontAwesome 10
-	colors {
-		background $bg-color
-	    	separator #757575
-		#                  border             background         text
-		focused_workspace  $bg-color          $bg-color          $text-color
-		inactive_workspace $inactive-bg-color $inactive-bg-color $inactive-text-color
-		urgent_workspace   $urgent-bg-color   $urgent-bg-color   $text-color
-	}
+	# Other configs here...
 }
 ```
 
