@@ -1,6 +1,6 @@
 ---
 published: true
-title: Arch Linux `i3` is Amazing!
+title: My Arch Linux Setup
 use_math: true
 category: dev
 layout: default
@@ -144,6 +144,72 @@ bindsym $mod+Shift+0 move container to workspace $ws10
 The configuration is shortened above.
 
 NOTE: Operations like stacking containers(navigable through up focus/down focus) are cool but not covered here. I like using workspaces better.
+
+### `i3blocks`
+
+To pimp out your bar, we first install `i3blocks` with `pacman -S i3blocks`, which allows us to display multiple statistics on the right hand side of our bar. It's precious screen space, so why not put it to good use? 
+
+To enable `i3blocks` at the top of our screen, reading the blocks to add from our config file at `~/.config/i3/i3blocks.conf`:
+
+```
+## Setting i3blocks
+bar {
+  	position top
+        status_command i3blocks -c /home/ray/.config/i3/i3blocks.conf
+	font pango:FontAwesome 10
+	colors {
+		background $bg-color
+	    	separator #757575
+		#                  border             background         text
+		focused_workspace  $bg-color          $bg-color          $text-color
+		inactive_workspace $inactive-bg-color $inactive-bg-color $inactive-text-color
+		urgent_workspace   $urgent-bg-color   $urgent-bg-color   $text-color
+	}
+}
+```
+
+We use the `FontAwesome` font to display some crazy icons like the wifi logo, sound logo, temperature logo, etc.
+
+The below is my `i3blocks.conf`:
+
+```
+[spotify]
+command=python /home/ray/.config/i3/spotify.py
+interval=1
+separator=true
+
+[wifi]
+label=<?>
+command=iwgetid -r;[[ -z "${BLOCK_BUTTON}" ]] || urxvt -e sh -c "nmcli d wifi list; printf '\n\n   Type the following to connect to a wireless network: \n\n   $ nmcli dev wifi connect <SSID>\n\n'; bash --norc"
+separator=true
+interval=3
+
+[volume]
+label=<?>
+interval=1
+separator=true
+command=amixer get Master | egrep -o "[0-9]+%" | sed -n '2 p'
+
+[temperature]
+command=T=$(cat /sys/class/thermal/thermal_zone0/temp); echo $(( $T / 1000 ))°C
+label=<?>
+interval=10
+separator=true
+
+[time]
+command=date '+%H:%M:%S'
+interval=2
+label=<?>
+separator=true
+
+[day]
+command=date '+%a %b %e, %Y';[[ -z "${BLOCK_BUTTON}" ]] || gsimplecal &
+interval=2
+label=<?>
+separator=true
+```
+
+I can't display the characters denoted by `<?>` on my blog because I'm not using a patched version for fonts that support glyphs. You can just replace them with text if you want!
 
 ## Setting Backgrounds
 
