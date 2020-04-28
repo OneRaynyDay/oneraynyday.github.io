@@ -261,7 +261,7 @@ exec --no-startup-id i3-msg 'workspace $ws10; exec spotify'
 bindsym $mod+shift+s exec spotify
 ```
 
-### Program Launcher (`dmenu` replacement)
+## Program Launcher (`dmenu` replacement)
 
 `dmenu` is an easy way for users to run applications without having to go into the directory it lives in, and executing it like an uncultured savage. However, it's really ugly. Let's use a `dmenu` replacement like `rofi` by downloading via `sudo pacman -S rofi`, and we set the following config:
 
