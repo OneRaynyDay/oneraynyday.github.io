@@ -286,14 +286,6 @@ You should not yet have a `~/.Xresources` file, and that's fine. Below are some 
 ### Solarized Colorscheme
 
 ```
-! Solarized colorscheme
-!-------------------------------------------------------------------------------
-! URxvt settings
-! Colours lifted from Solarized (http://ethanschoonover.com/solarized)
-! More info at:
-! http://pod.tst.eu/http://cvs.schmorp.de/rxvt-unicode/doc/rxvt.1.pod
-!-------------------------------------------------------------------------------
-
 !!Source http://github.com/altercation/solarized
 
 *background: #002b36
@@ -349,20 +341,7 @@ urxvt*transparent: true
 urxvt*shading: 30
 ```
 
-Note that if you want to use the same font (`powerline` family fonts), install it using `sudo yay -S powerline-fonts-git`.
-
-### General
-
-```
-! General settings
-URxvt.saveLines: 2000
-URxvt.scrollBar: False
-URxvt.scrollstyle: rxvt
-URxvt.termName: xterm-256color
-URxvt.urgentOnBell: True
-URxvt.cursorBlink: False
-```
-
+Note that if you want to use the same font (`powerline` family fonts), install it using `sudo yay -S powerline-fonts-git`. Also, some glyphs are not supported by the powerline font, so it may be better to use a patched monospace font if your use case requires it.
 
 
 ##  Login Manager
