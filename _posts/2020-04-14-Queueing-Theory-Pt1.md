@@ -26,6 +26,120 @@ This field of mathematics employs a very important concept, called **conservatio
 
 ## Probability Review
 
+### Basic Definitions
+
+A **random variable (abbreviated r.v.)** $X$ is a function that maps the sample space to $\mathbb{R}$. We may assign probability to the values of the random variable with a **probability function**, denoted $P_X(x) = P(X=x)$ for discrete cases. For continuous cases, we define the function $f_X(x)$ as the **probability density function**. In the continuous case, it no longer makes sense to ask for the probability of a given event, but rather we measure by intervals:
+$$
+P(a \leq X < b) = \int_a^b f_X(x)dx
+$$
+The **cumulative distribution function (abbreviated cdf)** is defined as $F_x(x) = P(X \leq x)$. It exists for both continuous and discrete cases.
+
+If $X$ is a random variable, then $Y = g(X)$, where $g: \mathbb{R} \to \mathbb{R}$ is also a random variable. By definition, $P_Y(y) = \sum_{x:g(x) = y} P_X(x)$.
+
+### Conditional Probability
+
+By definition, conditional probability $P(X = x | Y = y)$ is the probability that the event $X=x$ occurs under the sample space restricted to when $Y=y$. It is defined as:
+$$
+P(X=x|Y=y) = \frac{P(X=x,Y=y)}{P(Y=y)} \equiv P_{X|Y}(x|y) = \frac{P_{X,Y}(x,y)}{P_Y(y)}
+$$
+The **law of total probability** states the following:
+$$
+P_Y(y) = \sum_x P_{X,Y}(x,y) = \sum_x P_{Y|X}(y|x)P_X(x)
+$$
+which is pretty self-explanatory.
+
+### Independence
+
+Two random variables $U, V$ are considered independent if $$P_{U,V}(u,v) = P_U(u)P_V(v) \; \forall u \in U, v \in V$$. It follows that $P_{U|V}(u|v) = P_U(u)$, since
+$$
+P_{U|V}(u|v) = \frac{P_{U,V}(u,v)}{P_V(v)} = \frac{P_U(u)P_V(v)}{P_V(v)} = P_U(u)
+$$
+
+### Convolution
+
+The sum of two r.v.'s (can be generalized to any sum) is the **convolution** of their probability functions. For two r.v.'s $V_1,V_2$, the probability function for $V := V_1 + V_2$ is equal to:
+$$
+P(V=v) = \sum_{x=-\infty}^\infty P(V_1 = x)P(V_2 = v-x) \qquad\text{(Discrete)} \\
+= \int_{-\infty}^\infty f_{V_1}(x)f_{V_2}(v-x)dx \qquad\text{(Continuous)}
+$$
+
+## Important Discrete Probability Distributions
+
+### Bernoulli
+
+There are two events in the sample space, which map to the set $\{0,1\}$. Parametrized by some number $p \in [0,1]$,  
+$$
+P(X=1) = p \\
+P(X=0) = 1-p
+$$
+
+### Geometric
+
+There are countable events in the sample space, which map to the set $\mathbb{N}^+ = \{1,2,3,...\}$. Parametrized by some number $p \in [0,1]$,
+
+$$
+P(X=i) = (1-p)^{i-1}p
+$$
+
+The countable sum of these probabilities should sum to 1:
+
+$$
+\sum_{i\in\mathbb{N}^+} P_X(i) = p \sum_{i\in\mathbb{N}^+} (1-p)^{i-1} = p \sum_{i\in\mathbb{N}} (1-p)^{i} = p \frac{1}{1-(1-p)} = 1
+$$
+
+One can visualize the geometric variable as the *"number of tries until a bernoulli trial is successful"*. It is important to note that a geometric random variable is **memoryless**. This means
+
+$$
+P(X > m+n | X > m) = P(X > n) \; \forall m,n \in \mathbb{N}
+$$
+
+This will be super useful later on for analyzing stochastic processes.
+
+### Binomial
+
+Parametrized by $p \in [0,1], n \in \mathbb{N}^+$, it is the sum of $n$ bernoulli random variables with parameter $p$. Its distribution is defined as:
+
+$$
+P(X=i) = {n \choose i} p^i (1-p)^{n-i}
+$$
+
+### Poisson
+
+A poisson distribution is parametrized by $\lambda \in \mathbb{R}^+$. It's an approximation to the binomial when $n \to \infty, p \to 0$ and $\lambda \approx np$:
+$$
+P(X = k) = e^{-\lambda} \frac{\lambda^k}{k!}
+$$
+To prove this approximation, we denote $X_n$ as the binomial distribution with parameter $n, p=\lambda/n$. Start with the equation:
+$$
+lim_{n\to\infty} P(X_n = k) = lim_{n\to\infty} {n \choose k}p^k (1-p)^{n-k} \\
+= lim_{n\to\infty} {n \choose k} (\frac{\lambda}{n})^k (1-\frac{\lambda}{n})^{n-k} \\
+= lim_{n\to\infty} {n \choose k} (\frac{\lambda}{n})^k (1-\frac{\lambda}{n})^{n} (1-\frac{\lambda}{n})^{-k}
+$$
+By definition of $e^x = lim_{n\to\infty} (1+\frac{x}{n})^n$ and the fact that $lim_{n\to\infty} (1+\frac{x}{n})^y = 1$, we get
+$$
+= lim_{n\to\infty} {n \choose k} (\frac{\lambda}{n})^k e^{-\lambda}
+$$
+To get $\lim_{n \to \infty}\frac{n!}{k!(n-k)!n^k}$, we see that it expands to:
+$$
+\lim_{n \to \infty} \frac{n(n-1)(n-2)...(n-k+1)}{k! n^k} = \frac{1}{k!}
+$$
+There are exactly $k$ terms above, with the expansion bounded by $n^k + O(n^{k-1})$ (because it is expanded to a polynomial). As $n\to \infty$, we no longer care about the term $\frac{O(n^{k-1})}{n^k}$ as it approaches 0, so we have $\frac{n^k + O(n^{k-1})}{n^k} \to 1$. 
+
+### Pascal
+
+A pascal distribution is parametrized by $k \in \mathbb{N}^+, p \in [0,1]$. It's the sum of $k$ geometric variables, or in other words, *"number of bernoulli trials until $k$ successes"*. The event $X = i$ can be separated into two steps:
+
+1. On the $i$-th trial, we have a success. This is with probability $p$.
+2. In the $i-1$ trials prior, we have had $k-1$ successes. This is the event $Y = k-1$ for the bernoulli distribution parametrized by $i-1, p$.
+
+The these two events are independent because bernoulli trials are independent. We can write it out as:
+$$
+P(X = i) = (p)({i-1 \choose k-1}p^{k-1}(1-p)^{(i-1)-(k-1)}) \\
+= {i-1 \choose k-1}p^{k}(1-p)^{i-k}
+$$
+
+## Important Continuous Probability Distributions
+
 TODO
 
 ## Simple queueing system problem
