@@ -34,9 +34,11 @@ This field of mathematics employs a very important concept, called **conservatio
 
 A **random variable (abbreviated r.v.)** $X$ is a function that maps the sample space to $\mathbb{R}$. We may assign probability to the values of the random variable with a **probability function**, denoted $P_X(x) = P(X=x)$ for discrete cases. For continuous cases, we define the function $f_X(x)$ as the **probability density function**. In the continuous case, it no longer makes sense to ask for the probability of a given event, but rather we measure by intervals:
 
+
 $$
 P(a \leq X < b) = \int_a^b f_X(x)dx
 $$
+
 
 The **cumulative distribution function (abbreviated cdf)** is defined as $F_x(x) = P(X \leq x)$. It exists for both continuous and discrete cases.
 
@@ -46,21 +48,26 @@ If $X$ is a random variable, then $Y = g(X)$, where $g: \mathbb{R} \to \mathbb{R
 
 By definition, conditional probability $P(X = x | Y = y)$ is the probability that the event $X=x$ occurs under the sample space restricted to when $Y=y$. It is defined as:
 
+
 $$
 P(X=x|Y=y) = \frac{P(X=x,Y=y)}{P(Y=y)} \equiv P_{X|Y}(x|y) = \frac{P_{X,Y}(x,y)}{P_Y(y)}
 $$
 
+
 The **law of total probability** states the following:
+
 
 $$
 P_Y(y) = \sum_x P_{X,Y}(x,y) = \sum_x P_{Y|X}(y|x)P_X(x)
 $$
+
 
 which is pretty self-explanatory.
 
 ### Independence
 
 Two random variables $U, V$ are considered independent if $$P_{U,V}(u,v) = P_U(u)P_V(v) \; \forall u \in U, v \in V$$. It follows that $P_{U|V}(u|v) = P_U(u)$, since
+
 
 $$
 P_{U|V}(u|v) = \frac{P_{U,V}(u,v)}{P_V(v)} = \frac{P_U(u)P_V(v)}{P_V(v)} = P_U(u)
@@ -71,9 +78,11 @@ $$
 The sum of two r.v.'s (can be generalized to any sum) is the **convolution** of their probability functions. For two r.v.'s $V_1,V_2$, the probability function for $V := V_1 + V_2$ is equal to:
 
 $$
+
 P(V=v) = \sum_{x=-\infty}^\infty P(V_1 = x)P(V_2 = v-x) \qquad\text{(Discrete)} \\
 = \int_{-\infty}^\infty f_{V_1}(x)f_{V_2}(v-x)dx \qquad\text{(Continuous)}
 $$
+
 
 ## Important Discrete Probability Distributions
 
@@ -81,30 +90,38 @@ $$
 
 There are two events in the sample space, which map to the set $\{0,1\}$. Parametrized by some number $p \in [0,1]$,  
 
+
 $$
 P(X=1) = p \\
 P(X=0) = 1-p
 $$
 
+
 ### Geometric
 
 There are countable events in the sample space, which map to the set $\mathbb{N}^+ = \{1,2,3,...\}$. Parametrized by some number $p \in [0,1]$,
+
 
 $$
 P(X=i) = (1-p)^{i-1}p
 $$
 
+
 The countable sum of these probabilities should sum to 1:
+
 
 $$
 \sum_{i\in\mathbb{N}^+} P_X(i) = p \sum_{i\in\mathbb{N}^+} (1-p)^{i-1} = p \sum_{i\in\mathbb{N}} (1-p)^{i} = p \frac{1}{1-(1-p)} = 1
 $$
 
+
 One can visualize the geometric variable as the *"number of tries until a bernoulli trial is successful"*. It is important to note that a geometric random variable is **memoryless**. This means
+
 
 $$
 P(X > m+n | X > m) = P(X > n) \; \forall m,n \in \mathbb{N}
 $$
+
 
 This will be super useful later on for analyzing stochastic processes.
 
@@ -112,19 +129,24 @@ This will be super useful later on for analyzing stochastic processes.
 
 Parametrized by $p \in [0,1], n \in \mathbb{N}^+$, it is the sum of $n$ bernoulli random variables with parameter $p$. Its distribution is defined as:
 
+
 $$
 P(X=i) = {n \choose i} p^i (1-p)^{n-i}
 $$
+
 
 ### Poisson
 
 A poisson distribution is parametrized by $\lambda \in \mathbb{R}^+$. It's an approximation to the binomial when $n \to \infty, p \to 0$ and $\lambda \approx np$:
 
+
 $$
 P(X = k) = e^{-\lambda} \frac{\lambda^k}{k!}
 $$
 
+
 To prove this approximation, we denote $X_n$ as the binomial distribution with parameter $n, p=\lambda/n$. Start with the equation:
+
 
 $$
 lim_{n\to\infty} P(X_n = k) = lim_{n\to\infty} {n \choose k}p^k (1-p)^{n-k} \\
