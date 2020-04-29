@@ -261,7 +261,7 @@ exec --no-startup-id i3-msg 'workspace $ws10; exec spotify'
 bindsym $mod+shift+s exec spotify
 ```
 
-### Program Launcher (`dmenu` replacement)
+## Program Launcher (`dmenu` replacement)
 
 `dmenu` is an easy way for users to run applications without having to go into the directory it lives in, and executing it like an uncultured savage. However, it's really ugly. Let's use a `dmenu` replacement like `rofi` by downloading via `sudo pacman -S rofi`, and we set the following config:
 
@@ -286,14 +286,6 @@ You should not yet have a `~/.Xresources` file, and that's fine. Below are some 
 ### Solarized Colorscheme
 
 ```
-! Solarized colorscheme
-!-------------------------------------------------------------------------------
-! URxvt settings
-! Colours lifted from Solarized (http://ethanschoonover.com/solarized)
-! More info at:
-! http://pod.tst.eu/http://cvs.schmorp.de/rxvt-unicode/doc/rxvt.1.pod
-!-------------------------------------------------------------------------------
-
 !!Source http://github.com/altercation/solarized
 
 *background: #002b36
@@ -349,22 +341,13 @@ urxvt*transparent: true
 urxvt*shading: 30
 ```
 
-Note that if you want to use the same font (`powerline` family fonts), install it using `sudo yay -S powerline-fonts-git`.
-
-### General
-
-```
-! General settings
-URxvt.saveLines: 2000
-URxvt.scrollBar: False
-URxvt.scrollstyle: rxvt
-URxvt.termName: xterm-256color
-URxvt.urgentOnBell: True
-URxvt.cursorBlink: False
-```
-
+Note that if you want to use the same font (`powerline` family fonts), install it using `sudo yay -S powerline-fonts-git`. Also, some glyphs are not supported by the powerline font, so it may be better to use a patched monospace font if your use case requires it.
 
 
 ##  Login Manager
 
 We want to have a sexy login manager to greet us for logins. Let's use `lightdm` along with its greeter in the Aether theme by installing `sudo pacman -S lightdm lightdm-webkit2-greeter lightdm-webkit-theme-aether`. No need to change anything in `~/.config/i3/config`.
+
+---
+
+There are of course, different offerings for each of these tools. Feel free to use your own! It's a constant learning experience so I'll also be trying to change things up once in a while.
