@@ -8,6 +8,10 @@ layout: default
 
 Apologies for the long delay in posts! I've been caught up with some busy work and only recently did I remember to revisit my blog. This time around we'll be doing some reading for **queueing theory**, which is one of the most relevant mathematical fields for computer science. For the sake of this blog, I will not get into measure theoretic tools required to answer particularly complicated examples. In addition, please bear with me when there is inevitable mathematical rigor lost by applying real life examples and intuition (without this turning into a 10 page tangent on every small detail).
 
+# Table of Contents
+
+* TOC
+{:toc}
 # What is queueing theory?
 
 Instead of giving you a bland introduction, let me illustrate a picture that's relevant to the times.
