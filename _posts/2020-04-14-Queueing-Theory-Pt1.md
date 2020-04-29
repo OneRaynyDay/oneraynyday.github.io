@@ -46,7 +46,7 @@ If $X$ is a random variable, then $Y = g(X)$, where $g: \mathbb{R} \to \mathbb{R
 
 ### Conditional Probability
 
-By definition, conditional probability $P(X = x | Y = y)$ is the probability that the event $X=x$ occurs under the sample space restricted to when $Y=y$. It is defined as:
+By definition, conditional probability $P(X = x \| Y = y)$ is the probability that the event $X=x$ occurs under the sample space restricted to when $Y=y$. It is defined as:
 
 
 $$
@@ -66,7 +66,7 @@ which is pretty self-explanatory.
 
 ### Independence
 
-Two random variables $U, V$ are considered independent if $$P_{U,V}(u,v) = P_U(u)P_V(v) \; \forall u \in U, v \in V$$. It follows that $P_{U|V}(u|v) = P_U(u)$, since
+Two random variables $U, V$ are considered independent if $$P_{U,V}(u,v) = P_U(u)P_V(v) \; \forall u \in U, v \in V$$. It follows that $P_{U\|V}(u\|v) = P_U(u)$, since
 
 
 $$
