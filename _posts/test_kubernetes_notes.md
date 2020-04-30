@@ -73,7 +73,6 @@ However, the above model has an issue with Jupyterhub:
 
 1. It assumes each container in each pod are essentially the same, and stateless. This is not true for jupyterhub users, who like to install different things, use different docker images, etc.
 
-
 ---
 
 Helm is a package manager which allows smooth deployment to install and upgrade kubernetes applications. Jupyterhub provides to us a bunch of **helm charts** which basically are templates for yaml configurations that we can fill in to have a concrete deployment.
@@ -212,3 +211,15 @@ Note that this is still an alpha release! If you have questions, feel free to
   2. Chat with us at https://gitter.im/jupyterhub/jupyterhub
   3. File issues at https://github.com/jupyterhub/zero-to-jupyterhub-k8s/issues
 ```
+
+---
+
+We have these things called PVC (persistent volume claims):
+
+```
+❯ kubectl get pvc --namespace jhub
+NAME         STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+claim-asdf   Bound    pvc-6aca33fd-88e2-11ea-bd82-0af3cf9af059   10Gi       RWO            standard       22h
+hub-db-dir   Bound    pvc-4dc23dcf-88d5-11ea-95f9-0e7c61f269ab   1Gi        RWO            standard       24h
+```
+
