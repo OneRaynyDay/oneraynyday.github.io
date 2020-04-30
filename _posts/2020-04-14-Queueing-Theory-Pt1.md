@@ -78,7 +78,6 @@ $$
 The sum of two r.v.'s (can be generalized to any sum) is the **convolution** of their probability functions. For two r.v.'s $V_1,V_2$, the probability function for $V := V_1 + V_2$ is equal to:
 
 $$
-
 P(V=v) = \sum_{x=-\infty}^\infty P(V_1 = x)P(V_2 = v-x) \qquad\text{(Discrete)} \\
 = \int_{-\infty}^\infty f_{V_1}(x)f_{V_2}(v-x)dx \qquad\text{(Continuous)}
 $$
@@ -184,7 +183,65 @@ $$
 
 ## Important Continuous Probability Distributions
 
-TODO
+### Uniform
+
+The uniform distribution is parametrized by $a, b \in \mathbb{R}, a < b$, with the density function:
+$$
+f(x) = \frac{1}{b-a}  \; \forall x, a \leq x \leq b
+$$
+The probability density is $0$ everywhere else.
+
+### Exponential
+
+The exponential distribution is parametrized by a single parameter $\mu$, with density function:
+$$
+f(x) = \mu e^{-\mu x} \; \forall x \geq 0
+$$
+The cdf is equal to:
+$$
+F(x) = 1-e^{-\mu x} \; \forall x \geq 0
+$$
+And the expected value is equal to $\frac{1}{\mu}$. The exponential distribution is used commonly in the duration between arrivals for stochastic processes, and is also memoryless. As a result, $P(X > s + t \| X> t) = P(X > s) = 1 - (1 - e^{-\mu s}) = e^{- \mu s}$.
+
+A common application of exponential distributions is $X = min(X_1, X_2)$, where $X_1 \sim exp(\mu_1), X_2 \sim exp(\mu_2), X_1 \perp X_2$. The complementary cumulative distribution is equal to:
+$$
+P(X > t) = P(X_1 > t \cap X_2 > t) = P(X_1>t)P(X_2>t) = e^{-\mu_1 t}e^{-\mu_2 t} = e^{-(\mu_1 + \mu_2)t}
+$$
+Taking the derivative of the cdf yields the density function and we see that $X \sim exp(\mu_1 + \mu_2)$.
+
+Another common application, using the same $X_1, X_2$ is to calculate the probability $P(X_1 < X_2)$. We calculate it with:
+$$
+P(X_1 < X_2) = \int_{-\infty}^\infty dP(X_1 = x \cap X_2 > x) \\
+= \int_0^\infty f_{X_1}(x) (1-F_{X_2}(x))dx \\
+= \int_0^\infty \mu_1 e^{-\mu_1 x} e^{-\mu_2 x} dx \\
+= \mu_1 \int_0^\infty \frac{\mu_1 + \mu_2}{\mu_1 + \mu_2} e^{-(\mu_1 + \mu_2) x} dx \\
+= \frac{\mu_1}{\mu_1 + \mu_2}
+$$
+The last part is using law of total probability.
+
+### Erlang
+
+This distribution will be explained in detail later. It has parameters $\lambda, k$ with the density function:
+$$
+f(x) = \frac{\lambda^k x^{k-1}e^{-\lambda x}}{(k-1)!} \; \forall x \geq 0
+$$
+The Erlang distribution is the sum of $k$ independent exponential random variables each parametrized by $\lambda$.
+
+### Gaussian
+
+One of the most common continuous distributions used for applications. The density function is:
+$$
+f(x) = \frac{1}{\sqrt{2\pi}\sigma}e^{-(x-m)^2/2\sigma^2} \; \forall x \in \mathbb{R}
+$$
+It is used in the **central limit theorem**, which states that the average of $N$ random variables $ Y_N := \frac{\sum_i^N X_i}{N}$ approaches a Gaussian distribution with mean $\mu$ and variance $\sigma/\sqrt N$ as $N$ becomes adequately large. Note how it is not dependent on the type of random variable $X_i$. 
+
+### Pareto
+
+Characterized by the parameter $\gamma, \delta$ , the cdf is equal to:
+$$
+P(X < x) = 1 - (x/\delta)^{-\gamma} \; \forall x \geq \delta
+$$
+Although I'm not familiar with using this distribution, it is commonly used in the **Pareto principle** which in one version, states that roughly *"20% of the population has 80% of the wealth"*.  In computer science terms, 80% of memory access is in 20% of the allocated memory, for example. This principle for general workloads has given birth to the LRU cache virtual page replacement policy.
 
 ## Simple queueing system problem
 
