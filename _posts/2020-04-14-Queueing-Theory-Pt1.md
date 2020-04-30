@@ -76,10 +76,17 @@ $$
 ### Convolution
 
 The sum of two r.v.'s (can be generalized to any sum) is the **convolution** of their probability functions. For two r.v.'s $V_1,V_2$, the probability function for $V := V_1 + V_2$ is equal to:
+$$
+P(V=v) = \sum_{x=-\infty}^\infty P(V_1 = x, V_2 = v-x) \qquad\text{(Discrete)} \\
+= \int_{-\infty}^\infty f_{V_1, V_2}(x, v-x)dx \qquad\text{(Continuous)}
+$$
+
+
+For the case where $V_1 \perp V_2$:
 
 $$
-P(V=v) = \sum_{x=-\infty}^\infty P(V_1 = x)P(V_2 = v-x) \qquad\text{(Discrete)} \\
-= \int_{-\infty}^\infty f_{V_1}(x)f_{V_2}(v-x)dx \qquad\text{(Continuous)}
+P(V=v) = \sum_{x=-\infty}^\infty P(V_1 = x)P(V_2 = v-x) \qquad\text{(Discrete, independent)} \\
+= \int_{-\infty}^\infty f_{V_1}(x)f_{V_2}(v-x)dx \qquad\text{(Continuous, independent)}
 $$
 
 
