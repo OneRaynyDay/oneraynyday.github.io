@@ -23,3 +23,5 @@ on teams that focus on scientific computing and performance.
 
 If you have questions about what I wrote in my blog, don't hesitate to shoot me a message at rayzhang@g.ucla.edu. I'm just a human, 
 so I make typos!
+
+Oh - and one more thing. Here's [my linkedin](https://www.linkedin.com/in/oneraynyday/) if you're planning to give me boatloads of money.
