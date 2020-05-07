@@ -305,12 +305,17 @@ The `objdump` command quite literally dumps an object file's information. The co
 
 ```assembly
 0000000000401106 <main>:
-  401106:	55                   	push   rbp # Push prev. caller addr into stackframe
-  401107:	48 89 e5             	mov    rbp,rsp # Put current stack frame into rbp
-  40110a:	b8 00 00 00 00       	mov    eax,0x0 # Put return code 0 into eax
-  40110f:	5d                   	pop    rbp # Get caller addr
-  401110:	c3                   	ret    # Return function
-  # The next two lines are multi-byte no-ops for padding.
+# Push prev. caller addr into stackframe
+  401106:	55                   	push   rbp 
+# Put current stack frame into rbp
+  401107:	48 89 e5             	mov    rbp,rsp 
+# Put return code 0 into eax
+  40110a:	b8 00 00 00 00       	mov    eax,0x0 
+# Get caller addr
+  40110f:	5d                   	pop    rbp 
+# Return function
+  401110:	c3                   	ret    
+# The next two lines are multi-byte no-ops for padding.
   401111:	66 2e 0f 1f 84 00 00 00 00 00 	nop    WORD PTR cs:[rax+rax*1+0x0]
   40111b:	0f 1f 44 00 00       	nop    DWORD PTR [rax+rax*1+0x0]
 ```
@@ -325,18 +330,19 @@ Disassembly of section .init:
 0000000000401000 <_init>:
 # Stands for End Branch (64 bits). 
 # When an indirect jump occurs, it must jump to an endbr64 instruction 
-# or else an exception occurs. This is a part of CET(Control-flow Enforcement Tech)
-# to prevent buffer-overflow or gadget exploits on return addresses.
+# or else an exception occurs. This is a part of 
+# CET(Control-flow Enforcement Tech) to prevent buffer-overflow
+# or gadget exploits on return addresses.
   401000:	f3 0f 1e fa          	endbr64 
   401004:	48 83 ec 08          	sub    rsp,0x8
 # Checks to see whether __gmon_start__ exists. This symbol doesn't exist in our
 # code, because we don't have gmon profiling enabled(used for gprof)
   401008:	48 8b 05 e1 2f 00 00 	mov    rax,QWORD PTR [rip+0x2fe1]        # 403ff0 <__gmon_start__>
-  # Jumps if %rax is equal to 0. Test does an AND operation.
+# Jumps if %rax is equal to 0. Test does an AND operation.
   40100f:	48 85 c0             	test   rax,rax
   401012:	74 02                	je     401016 <_init+0x16>
-  # If we don't jump, then we call the __gmon_start__ function which does
-  # some intrusive profiling setup.
+# If we don't jump, then we call the __gmon_start__ function which does
+# some intrusive profiling setup.
   401014:	ff d0                	call   rax
   401016:	48 83 c4 08          	add    rsp,0x8
   40101a:	c3                   	ret    
