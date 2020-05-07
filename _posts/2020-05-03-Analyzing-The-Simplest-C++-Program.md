@@ -8,14 +8,14 @@ layout: default
 
 Here I have the simplest C++ program in existence:
 
-```
+```c++
 // main.cpp
 int main(){}
 ```
 
 and here is the corresponding Makefile for this program (with some utilities we'll use later):
 
-```
+```makefile
 # Makefile
 # We are running g++-9, v9.3.0
 CC=g++
@@ -87,7 +87,7 @@ If we look at the ELF Header and Program Headers sections, we can get a lot of i
 
 We see the following relevant details in the `ELF Header` section:
 
-```
+```yaml
 ELF Header:
   Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
   Class:                             ELF64
@@ -237,7 +237,7 @@ Well, one way is to make the function information loading _all eager_, and then 
 
 So in the above section `DYNAMIC` we talked a bit about linkers. We also see that there are several sections in our code as well as dynamically loading from `libc.so`, `libstdc++`, etc. Where are the dynamically loaded libraries' data going to be placed in the final layout of our executable? If we use the below flags with verbose linkage, we'll see the **linker script** actually being emitted (major parts redacted):
 
-```
+```json
 ❯ make linker
 g++ -O0 -fverbose-asm -no-pie -o /dev/null -x c main.cpp -Wl,--verbose
 ...
@@ -289,8 +289,150 @@ Understanding the syntax for this linker script is actually not too hard. When w
   .interp         : { *(.interp) }
 ```
 
-This is saying the `.interp` section is laid out by all the `.interp` sections the linker was able to find (in the other shared libraries) in some sequence. The `*` matches all section definitions found and the `(.interp)` selects that particular section specification. Similarly, we see the `.rela.dyn` section being defined by all of the `.rela.init` sub-sections first, and then the `.rela.text` sections laid out after. The reason the linker did not say `.rela.dyn : { *(.rela) }` is because it would've been laid out without the `init` subsections being grouped together.
+This is saying the `.interp` section is laid out by all the `.interp` sections the linker was able to find (in the other shared libraries) in some sequence. The `*` matches all section definitions found and the `(.interp)` selects that particular section specification. Similarly, we see the `.rela.dyn` section being defined by all of the `.rela.init` sub-sections first, and then the `.rela.text` sections laid out after. The reason the linker did not say `.rela.dyn : { *(.rela) }` is because it would've been laid out without the subsections (like `rela.init`) being grouped together.
 
 Then, we see the PLT sections along with the GOT being laid out with `.plt`, `.plt.got` and `.plt.sec` sections defined.
 
-**Then, we see two sections that we weren't familiar with before - `.init_array` and `.fini_array`.** What are these? TODO
+**Then, we see two sections that we weren't familiar with before - `.init_array` and `.fini_array`.** These are actually calling the global constructors for statically initialized objects before the first line of code in `main` is actually executed, and calling the destructors for the same object upon exit of the `main` function. Within each translation unit (by definition, a single `.c/.cpp` file with all of the header files included) we will have `.init_array` sections containing global constructors. 
+
+Recall my [blogpost from a while back](https://oneraynyday.github.io/dev/2017/08/28/Essential-C++-1/#issue-with-static--singleton-design), where I said you can't have static constructors that depend on each other across translation units. This is because the linker can choose to order the calls of global constructors in whichever way it wants. Calling another static variable's methods during static construction will give you undefined behavior *unless you can go into the linker script and force a translation unit to be compiled first.* (Or, just don't do something so stupid)
+
+Now that we've understood what each part of the ELF file does, let's actually look at the emitted assembly code placed in these sections!
+
+# Objdump
+
+The `objdump` command quite literally dumps an object file's information. The command I used is in the Makefile above and can be invoked by `make dump`. We have surprisingly many sections to analyze, but let's see the most obvious: the `main` function.
+
+```assembly
+0000000000401106 <main>:
+  401106:	55                   	push   rbp # Push prev. caller addr into stackframe
+  401107:	48 89 e5             	mov    rbp,rsp # Put current stack frame into rbp
+  40110a:	b8 00 00 00 00       	mov    eax,0x0 # Put return code 0 into eax
+  40110f:	5d                   	pop    rbp # Get caller addr
+  401110:	c3                   	ret    # Return function
+  # The next two lines are multi-byte no-ops for padding.
+  401111:	66 2e 0f 1f 84 00 00 00 00 00 	nop    WORD PTR cs:[rax+rax*1+0x0]
+  40111b:	0f 1f 44 00 00       	nop    DWORD PTR [rax+rax*1+0x0]
+```
+
+Nothing too fancy here. Let's find the more interesting sections of the assembly dump and analyze them.
+
+## `_init`
+
+```assembly
+Disassembly of section .init:
+
+0000000000401000 <_init>:
+# Stands for End Branch (64 bits). 
+# When an indirect jump occurs, it must jump to an endbr64 instruction 
+# or else an exception occurs. This is a part of CET(Control-flow Enforcement Tech)
+# to prevent buffer-overflow or gadget exploits on return addresses.
+  401000:	f3 0f 1e fa          	endbr64 
+  401004:	48 83 ec 08          	sub    rsp,0x8
+# Checks to see whether __gmon_start__ exists. This symbol doesn't exist in our
+# code, because we don't have gmon profiling enabled(used for gprof)
+  401008:	48 8b 05 e1 2f 00 00 	mov    rax,QWORD PTR [rip+0x2fe1]        # 403ff0 <__gmon_start__>
+  # Jumps if %rax is equal to 0. Test does an AND operation.
+  40100f:	48 85 c0             	test   rax,rax
+  401012:	74 02                	je     401016 <_init+0x16>
+  # If we don't jump, then we call the __gmon_start__ function which does
+  # some intrusive profiling setup.
+  401014:	ff d0                	call   rax
+  401016:	48 83 c4 08          	add    rsp,0x8
+  40101a:	c3                   	ret    
+```
+
+This initialization function is at the front of our assembly dump. It really doesn't do much other than call the `gmon` profiling system if it's defined. Otherwise, it returns.
+
+Note that this piece of code is actually in an `.init` section. This means that this procedure is called before `main` even starts.
+
+## `_start`
+
+```assembly
+Disassembly of section .text:
+
+0000000000401020 <_start>:
+# Same end branch instr as above
+  401020:	f3 0f 1e fa          	endbr64 
+# sets ebp to 0
+  401024:	31 ed                	xor    ebp,ebp
+  401026:	49 89 d1             	mov    r9,rdx
+# Takes the top of the stack (argument), which is `argc` for C++.
+# Pop also causes rsp to increase by 8 bytes (stack grows from high to low)
+  401029:	5e                   	pop    rsi
+# Moves `argv` pointer value into rdx.
+  40102a:	48 89 e2             	mov    rdx,rsp
+# Forcibly grow the stack a bit.
+  40102d:	48 83 e4 f0          	and    rsp,0xfffffffffffffff0
+# pushes:
+# - argc
+# - argv 
+# - aligned stack ptr
+# - garbage registers 
+# ... as arguments before calling __libc_start_main
+  401031:	50                   	push   rax
+  401032:	54                   	push   rsp
+  401033:	49 c7 c0 90 11 40 00 	mov    r8,0x401190 # addr of __libc_csu_fini
+  40103a:	48 c7 c1 20 11 40 00 	mov    rcx,0x401120 # addr of __libc_csu_init
+  401041:	48 c7 c7 06 11 40 00 	mov    rdi,0x401106 # addr of main
+  401048:	ff 15 9a 2f 00 00    	call   QWORD PTR [rip+0x2f9a]        # 403fe8 <__libc_start_main@GLIBC_2.2.5>
+  40104e:	f4                   	hlt    
+  40104f:	90                   	nop
+```
+
+Basically, `_start` prepares the system to call the `__libc_start_main` function, which takes in the following arguments:
+
+```
+int __libc_start_main(int *(main) (int, char * *, char * *), 
+                      int argc, 
+                      char * * ubp_av, 
+                      void (*init) (void), 
+                      void (*fini) (void), 
+                      void (*rtld_fini) (void), 
+                      void (* stack_end));
+```
+
+Which seems to line up with the arguments the assembly code is preparing prior to calling the function. The pattern of moving arguments into registers and overflowing onto the stack via `push` is done here with the `ubp_av` variable, which looks at `argv` on the stack.
+
+## `__libc_csu_init` and `__libc_csu_fini`
+
+Since these functions are fairly large, I'm too lazy to analyze them line-by-line. They basically do the construction and destruction handling as a program. Although the gnu docs roughly outline this, let's actually see it in action. Let's write a simple program with directives:
+
+```c++
+void __attribute__ ((constructor)) dumb_constructor(){}
+
+void __attribute__ ((destructor)) dumb_destructor(){}
+
+int main() {}
+```
+
+And now I will use `gdb` to show you that they're being called here. We see that `dumb_constructor` is being called by the init function:
+
+```
+Breakpoint 1, dumb_constructor () at main.cpp:1
+1	void __attribute__ ((constructor)) dumb_constructor(){}
+(gdb) bt
+#0  dumb_constructor () at main.cpp:1
+#1  0x000000000040116d in __libc_csu_init ()
+#2  0x00007ffff7abcfb0 in __libc_start_main () from /usr/lib/libc.so.6
+#3  0x000000000040104e in _start ()
+```
+
+... And that `dumb_destructor` is being called by the fini function:
+
+```
+Breakpoint 1, dumb_destructor () at main.cpp:3
+3   void __attribute__ ((destructor)) dumb_destructor(){}
+(gdb) bt
+#0  dumb_destructor () at main.cpp:3
+#1  0x00007ffff7fe242b in _dl_fini () from /lib64/ld-linux-x86-64.so.2
+#2  0x00007ffff7ad4537 in __run_exit_handlers () from /usr/lib/libc.so.6
+#3  0x00007ffff7ad46ee in exit () from /usr/lib/libc.so.6
+#4  0x00007ffff7abd02a in __libc_start_main () from /usr/lib/libc.so.6
+#5  0x000000000040104e in _start ()
+```
+
+*... Wait, it's not?* Bewildered, I took to StackOverflow and [asked why this is happening](https://stackoverflow.com/questions/61649960/why-do-program-level-constructors-get-called-by-libc-csu-init-but-destructor).
+
+
+
