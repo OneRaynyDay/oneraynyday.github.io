@@ -128,7 +128,8 @@ a.sidebar-nav-item:focus {
 
 @media (min-width: 48em) {
   .content {
-    max-width: 38rem;
+    /* We set this ourselves because ultra-wide monitors look super awkward w/ the content being squeezed. */
+    max-width: 100rem;
     margin-left: 20rem;
     margin-right: 2rem;
   }
