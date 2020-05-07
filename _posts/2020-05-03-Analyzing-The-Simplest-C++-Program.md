@@ -237,7 +237,7 @@ Well, one way is to make the function information loading _all eager_, and then 
 
 So in the above section `DYNAMIC` we talked a bit about linkers. We also see that there are several sections in our code as well as dynamically loading from `libc.so`, `libstdc++`, etc. Where are the dynamically loaded libraries' data going to be placed in the final layout of our executable? If we use the below flags with verbose linkage, we'll see the **linker script** actually being emitted (major parts redacted):
 
-```json
+```
 ❯ make linker
 g++ -O0 -fverbose-asm -no-pie -o /dev/null -x c main.cpp -Wl,--verbose
 ...
