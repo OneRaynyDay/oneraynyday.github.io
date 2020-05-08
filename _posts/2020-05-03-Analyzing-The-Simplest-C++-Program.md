@@ -524,7 +524,7 @@ int main() {
 }
 ```
 
-It took me a while to formulate the minimum code required for the libitm calls to kick in. This compiles to:
+It took me a while to formulate the minimum code required for the libitm calls to kick in (believe me, for some reason that function call to `hello` was required). This compiles to:
 
 ```assembly
 0000000000401187 <main>:
