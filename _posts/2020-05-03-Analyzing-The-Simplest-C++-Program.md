@@ -1,6 +1,6 @@
 ---
 published: true
-title: Analyzing The Simplest C++ Program - WIP
+title: Analyzing The Simplest C++ Program
 use_math: true
 category: dev
 layout: default
@@ -452,7 +452,7 @@ __libc_csu_fini (void) { ... }
 
 To find out why historically we used `__libc_csu_fini` but now we delegate to `_dl_fini` is another rabbithole in itself, and I decided to stop my investigations there.
 
-## `register_tm_clones` and `deregister_tm_clones`
+## `register_tm_clones`, `deregister_tm_clones` and `__do_global_dtors_aux`
 
 Here's an abbreviated view of `register_tm_clones`:
 
@@ -466,7 +466,18 @@ Here's an abbreviated view of `register_tm_clones`:
   4010f8:	c3                   	ret    
 ```
 
-After going on a scavenger hunt, it appears that `tm` stands for "Transactional Memory" which is used in multithreading applications, and functions with the prefix `_ITM` belongs to the `libitm` component of `gcc`. Of course, for other compiler flavors it may be called something else. The code for this can be found in [gcc](https://github.com/gcc-mirror/gcc/blob/41d6b10e96a1de98e90a7c0378437c3255814b16/libgcc/crtstuff.c#L297) but it lacks comments.
+After going on a scavenger hunt, it appears that `tm` stands for "Transactional Memory" which is used in multithreading applications, and functions with the prefix `_ITM` belongs to the `libitm` component of `gcc`. Of course, for other compiler flavors it may be called something else. The code for this can be found in [gcc](https://github.com/gcc-mirror/gcc/blob/41d6b10e96a1de98e90a7c0378437c3255814b16/libgcc/crtstuff.c#L297) but it lacks comments. The `deregister_tm_clones` function appears to be called by `__do_global_dtors_aux`:
+
+```
+00000000004010d0 <__do_global_dtors_aux>:
+  ...
+  4010e1:	e8 7a ff ff ff       	call   401060 <deregister_tm_clones>
+  ...
+  4010f0:	c3                   	ret    
+
+```
+
+As far as I know, global destructors belong to static objects. But we don't have any static objects defined as it's such a barebones C++ program. Where is this `tm_clones` thing coming from?
 
 **Warning: The below is an experimental part of the C++ standard. It may vary after the publishing of this blog.**
 
@@ -608,5 +619,21 @@ What do we get after `objdump`'ing it? We see something very surprising:
 ...
 ```
 
-**There appears to be cloned versions of the original function upon the C++ attribute being applied!** These clone functions must've been registered onto the dynamic clone table that will point to the transaction clones when called from a `synchronized` block! It makes sense for the registration to happen before runtime if any functions with such attributes are defined. *The functions `de/register_tm_clones` are there in case we want to enable this language feature.*
+**There appears to be cloned versions of the original function upon the C++ attribute being applied!** These clone functions must've been registered onto the clone table(configured in static runtime) that will point to the transaction clones when called from a `synchronized` block! It makes sense for the registration to happen before runtime if any functions with such attributes are defined. *The functions `de/register_tm_clones` are there in case we want to enable this language feature.*
+
+# Conclusion
+
+It was an incredibly deep rabbit hole that I dug myself into, but I'm glad I came out with a wealth of knowledge about:
+
+- ELF formats
+- Linker sections
+- Dynamic linker executable
+- PLT and GOT (shared objects symbols)
+- Libc runtime
+- Program constructors and destructors
+- Static initialization
+- Transaction memory models
+- etc
+
+I've finished my undergrad in college without learning any of these concepts and I deeply regret not jumping in sooner to get a clear picture of exactly how a simple `int main(){}` program is created. Thanks for joining me on this journey and let me know if I'm missing anything in the investigation!
 
