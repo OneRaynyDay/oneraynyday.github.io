@@ -398,7 +398,9 @@ int __libc_start_main(int *(main) (int, char * *, char * *),
                       void (* stack_end));
 ```
 
-Which seems to line up with the arguments the assembly code is preparing prior to calling the function. The pattern of moving arguments into registers and overflowing onto the stack via `push` is done here with the `ubp_av` variable, which looks at `argv` on the stack.
+Which seems to line up with the arguments the assembly code is preparing prior to calling the function. The pattern of moving arguments into registers and overflowing onto the stack via `push` is done here with the `ubp_av` variable, which looks at `argv` on the stack. 
+
+You might be curious why this `_start` along with many other symbols we'll inspect is included in our executable. These assembly instructions are created in an object file called `crt1.o` or `crt0.o`, which stands for "C Run Time". Depending on your operating system and compiler, you may get either of the two (but not both). These are linked statically with _all C and C++ executables_ as a bootstrapping mechanism to start the program. You can actually bypass the startup code if you pass in the flags `-nostdlib -nostdinc`, which removes all standard C libraries (including the runtime library).
 
 ## `__libc_csu_init` and `__libc_csu_fini`
 
@@ -438,7 +440,173 @@ Breakpoint 1, dumb_destructor () at main.cpp:3
 #5  0x000000000040104e in _start ()
 ```
 
-*... Wait, it's not?* Bewildered, I took to StackOverflow and [asked why this is happening](https://stackoverflow.com/questions/61649960/why-do-program-level-constructors-get-called-by-libc-csu-init-but-destructor).
+*... Wait, it's not?* Bewildered, I took to StackOverflow and [asked why this is happening](https://stackoverflow.com/questions/61649960/why-do-program-level-constructors-get-called-by-libc-csu-init-but-destructor). It seems like in the libc code, the `__libc_csu_fini` function is essentially deprecated with the comment:
 
+```c++
+/* This function should not be used anymore.  We run the executable's
+   destructor now just like any other.  We cannot remove the function,
+   though.  */
+void
+__libc_csu_fini (void) { ... }
+```
 
+To find out why historically we used `__libc_csu_fini` but now we delegate to `_dl_fini` is another rabbithole in itself, and I decided to stop my investigations there.
+
+## `register_tm_clones` and `deregister_tm_clones`
+
+Here's an abbreviated view of `register_tm_clones`:
+
+```
+00000000004010c0 <register_tm_clones>:
+  4010c0:	be 48 40 40 00       	mov    esi,0x404048
+  4010c5:	48 81 ee 38 40 40 00 	sub    rsi,0x404038
+  ...
+  4010df:	48 8b 05 02 2f 00 00 	mov    rax,QWORD PTR [rip+0x2f02]        # 403fe8 <_ITM_registerTMCloneTable@LIBITM_1.0>
+  ...
+  4010f8:	c3                   	ret    
+```
+
+After going on a scavenger hunt, it appears that `tm` stands for "Transactional Memory" which is used in multithreading applications, and functions with the prefix `_ITM` belongs to the `libitm` component of `gcc`. Of course, for other compiler flavors it may be called something else. The code for this can be found in [gcc](https://github.com/gcc-mirror/gcc/blob/41d6b10e96a1de98e90a7c0378437c3255814b16/libgcc/crtstuff.c#L297) but it lacks comments.
+
+**Warning: The below is an experimental part of the C++ standard. It may vary after the publishing of this blog.**
+
+Basically, C++ has its own **Transactional Memory Technical Specification, or TMTS**, which standardizes what a transaction really means in libitm. In the specification, we have two ways of accessing the transactional memory scope:
+
+```c++
+// (1)
+// Psuedocode. Currently can use with __transaction_atomic
+__transaction_atomic {
+	x++;
+}
+// (2)
+// Pseudocode. Currently can use with __transaction_relaxed
+__transaction_relaxed {
+	x++;
+    read_file();
+}
+// (3)
+[[optimize_for_synchronized]] char* read_file() { ... }
+```
+
+1. Here, `__transaction_atomic` blocks are modeled after optimistic concurrency, where upon a check of whether `x`'s original values has been modified, it will re-run the block with the new value of `x` and scrap any changes to commit to all variables written to. 
+2. `__transaction_relaxed` is exactly like how `synchronized` is in Java - a global lock is acquired and the code is executed sequentially in total order until the lock is released. In most cases, C++ code is **not transaction safe** like file I/O above, so we can't use atomic and have to fall back to using `__transaction_relaxed`.  
+3. The last feature above is the C++ attribute `[[optimize_for_synchronized]]` which has the compiler optimize the function `read_file` for repeated calls within a `synchronized` block (aka, removing the global lock whenever possible). 
+
+This is a very promising and interesting feature we should expect to see in the future releases of compilers, but right now it's still in development. Here's what we can do with it though:
+
+### Atomic transactions
+
+Here, I compile a program with `-fgnu-tm` to enable the atomic transaction calls:
+
+```c++
+int hello(int& y) {
+    return y + 1;
+}
+
+int main() {
+    int x = 0;
+    // Begin
+    __transaction_atomic {
+        x++;
+    } // End
+    x = hello(x);
+}
+```
+
+It took me a while to formulate the minimum code required for the libitm calls to kick in. This compiles to:
+
+```assembly
+0000000000401187 <main>:
+  4011aa:	b8 00 00 00 00       	mov    eax,0x0
+  # Begin
+  4011af:	e8 bc fe ff ff       	call   401070 <_ITM_beginTransaction@plt>
+  ...
+  4011c2:	e8 99 fe ff ff       	call   401060 <_ITM_RU4@plt>
+  ...
+  4011d5:	e8 56 fe ff ff       	call   401030 <_ITM_WU4@plt>
+  4011da:	e8 61 fe ff ff       	call   401040 <_ITM_commitTransaction@plt>
+  ...
+  4011ea:	e8 51 fe ff ff       	call   401040 <_ITM_commitTransaction@plt>
+  # End
+  ...
+  401218:	c3                   	ret    
+  401219:	0f 1f 80 00 00 00 00 	nop    DWORD PTR [rax+0x0]
+
+```
+
+It compiles and runs fine. As you can see, we begin the transaction right after `mov eax,0x0`, which is setting `x = 0`. The transactional memory block runs and calls a few things involving `ITM` in the `plt`, which as we had learned before is a procedural linkage table, pointing to the shared library containing the definition for the functions. 
+
+### Synchronized transactions
+
+I wanted to confirm for myself that `__transaction_relaxed` is fully working in g++-9 and we can enforce total order with it with the following program:
+
+```c++
+#include <thread>
+#include <atomic>
+#include <iostream>
+
+std::atomic<int> x = 0;
+
+void t1(){
+    __transaction_relaxed {
+        x = 1;
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::cout << "x is equal to... " << x << std::endl;
+        while(x == 0);
+    }
+}
+void t2(){
+    // Comment this scope out if you want to see it deadlock
+    __transaction_relaxed {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        // This will turn x to 0 and t1 will "deadlock"
+        std::cout << "x is changed by t2!" << std::endl;
+        x = 0;
+    }
+}
+
+int main() {
+    std::thread _t1(t1);
+    std::thread _t2(t2);
+    _t1.join();
+    _t2.join();
+}
+```
+
+Here, we have two threads, one of which would set the atomic int to 1, and if total order is assumed, will never enter the while loop. However, threads can modify the value of an atomic variable in any order, **and** the compiler has the ability to re-order your instructions however it wants unless you state the memory order for loading and storing the atomic (long story, we'll cover that later). *In this case, the second thread would come along and set the value to 0 right before execution of the while loop for the first thread 99% of the time due to sleeps.* If we add the synchronized scope, we get the following output and the program exits with no infinite while loop:
+
+```
+❯ ./main
+x is equal to... 1
+x is changed by t2!
+```
+
+This confirms that `libitm` is doing its job.
+
+### `tm` clones
+
+So now we know that `TM` is an experimental transactional memory feature, but what is `tm_clones`? Well, I compiled another simple C++ program and found out. Here, we use the C++ attribute explained above:
+
+```
+[[optimize_for_synchronized]] int hello(int y){
+    return y;
+}
+
+int main () {}
+```
+
+What do we get after `objdump`'ing it? We see something very surprising:
+
+```assembly
+0000000000401144 <hello(int)>:
+  401144:	55                   	push   rbp
+  401145:	48 89 e5             	mov    rbp,rsp
+...
+0000000000401179 <transaction clone for hello(int)>:
+  401179:	55                   	push   rbp
+  40117a:	48 89 e5             	mov    rbp,rsp
+...
+```
+
+**There appears to be cloned versions of the original function upon the C++ attribute being applied!** These clone functions must've been registered onto the dynamic clone table that will point to the transaction clones when called from a `synchronized` block! It makes sense for the registration to happen before runtime if any functions with such attributes are defined. *The functions `de/register_tm_clones` are there in case we want to enable this language feature.*
 
