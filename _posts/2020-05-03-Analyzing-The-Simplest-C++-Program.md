@@ -6,6 +6,12 @@ category: dev
 layout: default
 ---
 
+# Table of Contents
+
+* TOC
+{:toc}
+# The Setup: Simplest C++ Program
+
 Here I have the simplest C++ program in existence:
 
 ```c++
@@ -41,16 +47,19 @@ clean:
 	rm main main.dump
 ```
 
-When we run the program, the program simply starts up, does nothing, and returns with exit code 0. However, even this seemingly simple process is extremely complicated and as engineers we should really understand the process to protect ourselves against security vulnerabilities, to optimize our programs and to debug the annoying linker errors that plague our typical C++ development cycles. To do this, let's analyze the structure of the executable and read some assembly.
+Upon execution, the program simply starts up and returns with exit code 0. However, there are a few steps we just skipped:
 
-# Table of Contents
+1. **What is the structure of the executable?**
+2. **What did `g++` do to generate this binary file?**
+3. **What are the generated procedures being run in assembly?**
 
-* TOC
-{:toc}
+As we'll see, the process is extremely complicated. We'll be answering all of these questions, but they have very long answers. Follow with me on this adventure to understand the inner workings of a C++ program.
 
-# Structure: ELF files & Linkers
+# Structure of the Executable: ELF Format
 
-**ELF, which stands for Executable and Linkable Format** is the format used for binaries and libraries that we compile with C and C++. It's in an unreadable binary format that can be analyzed with several GNU tools. To understand what the assembly outputs are, we must first be familiar with the general layout of an ELF file.
+**ELF, which stands for Executable and Linkable Format**, is the format used for binaries and libraries that we compile with C and C++. It's in an unreadable binary format that can be analyzed with several GNU tools. To understand what the assembly outputs are, we must first be familiar with the general layout of an ELF file.
+
+**Q: How can you tell that an executable is ELF? If so, how do you inspect the metadata about it?**
 
 You can identify an ELF file by using the `file` command:
 
@@ -63,25 +72,19 @@ If it does say `ELF`, you can use `readelf` to analyze the headers like so:
 
 ```
 ❯ readelf -e main
-ELF Header:
-...
-
-Section Headers:
-...
-
-Key to Flags:
-...
-
-Program Headers:
-...
-
- Section to Segment mapping:
-  Segment Sections...
+ELF Header: ...
+Section Headers: ...
+Key to Flags: ...
+Program Headers: ...
+Section to Segment mapping:
+  Segment Sections: ...
 ...
 
 ```
 
-If we look at the ELF Header and Program Headers sections, we can get a lot of information about the runtime behavior of the executable, so let's analyze it.
+In ELF there is a concept of *sections* and *segments*. Sections reside within segments, which are contiguous pieces of memory in the runtime of the executable(the pieces may be 0 bytes). Some sections may appear in more than one segment and it's because two segments overlap(with the exception of two `LOAD` segments) with those sections in the intersection. We'll be going more in-depth on what each of these do throughout the blog. 
+
+If we take a look at the ELF Header and Program Headers, we can get a lot of information about the runtime behavior of the executable, so let's analyze it.
 
 ## ELF Headers
 
@@ -94,17 +97,8 @@ ELF Header:
   Data:                              2's complement, little endian
 ...
   Type:                              DYN (Shared object file)
-  Version:                           0x1
-  Entry point address:               0x1020
-  Start of program headers:          64 (bytes into file)
-  Start of section headers:          14584 (bytes into file)
-  Flags:                             0x0
-  Size of this header:               64 (bytes)
-  Size of program headers:           56 (bytes)
   Number of program headers:         11
-  Size of section headers:           64 (bytes)
   Number of section headers:         27
-  Section header string table index: 26
 ...
 ```
 
@@ -123,6 +117,10 @@ The little endian representation (in increasing memory order): 0x44 0x33 0x22 0x
 and `2's complement` is the representation of signed numbers. For any arbitrary positive number $N$ represented in binary, the corresponding $-N$ is represented as bit-flipped $N$ plus 1.
 
 - The `Type` field tells us what kind of file it is. You might be surprised in this case to see that it's a `DYN` for shared object file when we're actually creating an executable. I was also baffled and asked on StackOverflow [here](https://stackoverflow.com/questions/61567439/why-is-my-simple-main-programs-elf-header-say-its-a-dyn-shared-object-file). TL;DR: We'll be adding the flag `-no-pie` to turn it into an `EXEC` type file. The rest of the blog will be based off of that assumption.
+- The number of program headers is the number of segments that will be mapped into memory upon execution.
+- The number of section headers is the number of sections, each of which will be placed into one of the 11 segments.
+
+---
 
 ## Program Headers
 
@@ -148,21 +146,42 @@ Program Headers:
   GNU_RELRO      ...
 ```
 
-Note that the rest of the table is redacted for readability. The program headers give hints to the memory loader for the process to put chunks of the program in the right places.
+Each program header is mapped to a segment containing zero or more sections. The `VirtAddr` field tells us where the segments will be located, `Flags` tells us the permission bits of each memory segment, and the `Type` field tells us exactly what that segment is used for. 
 
-For a simple program, there appears to be a lot of program headers. Let's analyze what segments each of these headers point to and why they're needed.
+Isn't it surprising that there are so many program headers our simple C++ program? Let's analyze what types each of these headers point to and why they're needed.
+
+---
 
 ### PHDR
 
-`PHDR` is a bit of a strange one. According to the official linux documentations [here](http://man7.org/linux/man-pages/man5/elf.5.html), it says:
+*This segment usually contains no sections*.
+
+`PHDR` stands for "Program HeaDeR", and is a bit of a strange one. According to the official linux documentations [here](http://man7.org/linux/man-pages/man5/elf.5.html), it says:
 
 > ... specifies the location and size of the program header table itself, both in the file and in the memory image of the program.
 
-which means it describes the actual program header table's location. According to the question I asked [here](https://stackoverflow.com/questions/61568612/is-jumping-over-removing-phdr-program-header-in-elf-file-for-executable-ok-if/61568759#61568759), it seems like the struct `PT_PHDR` is used for determining where the PIE executable was loaded in the virtual memory.
+**Q: Why do we need to know where the program table is? Why don't we just remove this metadata during runtime?**
+
+Simply stated - **we want to know where the executable begins**. The program table which includes `PHDR` itself could be relocated anywhere in memory if it was a PIE(position independent executable). To compute the location of the executable, we subtract the location where the header exists with the `VirtAddr` field it claims it's in. Here's the source code in libc:
+
+```c
+...
+case PT_PHDR:
+    /* Find out the load address.  */
+    main_map->l_addr = (ElfW(Addr)) phdr - ph->p_vaddr;
+    break;
+...
+```
+
+Here, `phdr` is the location of the actual header, and `ph->vaddr` is the field `VirtAddr` deserialized from the ELF file. By subtracting, we have the base location of the executable, which we can use to find where `some_segment` lives in memory by `main_map->l_addr + some_segment->p_vaddr`. Credits to the writer of [musl](https://stackoverflow.com/questions/61568612/is-jumping-over-removing-phdr-program-header-in-elf-file-for-executable-ok-if/61568759#61568759), which is a libc implementation.
+
+---
 
 ### INTERP
 
-This specifies where the interpreter is for running shared library executables. If you look carefully, it says that the dynamic linker resides in `/lib64/ld-linux-x86-64.so.2`. Let's call it and see what it says:
+*This segment usually contains one section: `.interp`*
+
+This specifies where the interpreter is for running shared library executables, and we even see the metadata tag `[Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]` in the program header. Let's call it and see what it says:
 
 ```
 ❯ /lib64/ld-linux-x86-64.so.2
@@ -171,20 +190,44 @@ You have invoked `ld.so', the helper program for shared library executables... T
 to run, and runs it.  You may invoke this helper program directly from the command line to load and run an ELF executable file; this is like executing that file itself, but always uses this helper program from the file you specified, instead of the helper program file specified in the executable file you run.
 ```
 
-TL;DR: Programs that load shared libraries will invoke this dynamic linker to run the shared library executable. You usually don't call this yourself, but you can.
+TL;DR: `ld` is the dynamic linker. Programs that load shared libraries will invoke this dynamic linker to run the shared library executable. You usually don't call this yourself, but you can.2e10
+
+We will be analyzing this in more detail later in the blog.
+
+---
 
 ### LOAD
 
-Load basically tells the linker to allocate a particular segment of memory with particular permissions. In the above, we see that there are 4 `LOAD` sections. This only happens for the newer versions of `ld`. These segments in C++ are for the following:
+*This segment can contain many different sections, and there are multiple `LOAD`s per program. Some commonly occurring sections include `.interp .init .text .fini .dynamic .got .got.plt .data .bss `*
+
+**This is the most important segment for a typical C++ program.** It basically tells the linker to allocate a particular segment of memory with particular permissions. In the above, we see that there are 4 `LOAD` sections. This only happens for the newer versions of `ld`. These segments in C++ are for the following(roughly):
 
 - `.text`, which holds the code to be executed. This should be in the `R E` section.
 - `.rodata`, which means *read-only data*. This usually holds static constants that are used in the program. This is in one of the `R` sections.
 - `.data`, which is read/write data containing the heap and the stack (usually). This is in the `RW` section. There's no execute because of buffer overflow security vulnerabilities leading to execution of code in the data section. In addition, we have `.bss` in this section as well. The name doesn't really mean too much now - you should just consider it as "zero-initialized data". It contains global variables and static variables that are zero-initialized. *The reason this segment exists is for space optimization in the executable itself*. (Imagine a lot of zero buffers adding space to the executable's size)
 - The ELF header information is in the other `R` section.
 
+---
+
 ### DYNAMIC
 
-If this executable requires further dynamic linking, this field will point to us exactly what information is required. Usually, you don't look at this, but rather the `.dynamic` section in the ELF file to see what shared libraries are required. In reality, you don't need to do this - instead, use `ldd` to find the dependencies yourself:
+*This segment usually contains one section: `.dynamic`*
+
+If this executable requires further dynamic linking, this field will point to us exactly what information is required. The `.dynamic` section in the ELF file shows you what shared libraries are required. To view that information, run:
+
+```
+❯ readelf -d main
+
+Dynamic section at offset 0x2e20 contains 23 entries:
+  Tag        Type                         Name/Value
+ 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+...
+```
+
+In reality, you don't need to do this - instead, use `ldd` to find the dependencies yourself:
 
 ```
 ❯ ldd main
@@ -197,17 +240,33 @@ If this executable requires further dynamic linking, this field will point to us
 
 ```
 
-We see that even though we're not really running anything in our program, we're still pulling in these `.so`'s. These core libraries are required for the C++ runtime. Linker issues are the biggest headache, involving `rpath, runpath, LD_LIBRARY_PATH`, and other variables that may or may not be baked into the `.dynamic` section of the ELF file. I highly recommend this [blogpost](https://amir.rachum.com/blog/2016/09/17/shared-libraries/) if you're running into a practical issue with dynamic linking `.so` files.
+**Q: Why does `ldd` tell us we have two more shared libraries than the ELF file?**
+
+`ldd` tells us there are 2 more shared libraries, namely `linux-vdso.so.1` and `/lib64/ld-linux-x86-64.so.2`. These two are actually shared libraries that the kernel automatically maps into the address space of **all user-space applications**. `vdso` stands for "Virtual Dynamic Shared Object", and contains many utilities such as getting the current timestamp, which would be expensive if we were to jump to kernel-space to execute. The other shared library is the (in)famous dynamic linker. It is responsible for loading other shared objects into the main runtime's memory space.
+
+Linker issues are the biggest headache, involving `rpath, runpath, LD_LIBRARY_PATH`, and other variables that may or may not be baked into the `.dynamic` section of the ELF file. I highly recommend this [blogpost](https://amir.rachum.com/blog/2016/09/17/shared-libraries/) if you're running into a practical issue with dynamic linking `.so` files. We'll also shortly discuss the linker script that our compiler generates for the dynamic linker to ensure shared objects' sections will be placed in the correct memory segments (and more).
+
+---
 
 ### NOTE 
 
+*This segment sometimes contains the sections: `.note.gnu.build-id .note.ABI-tag`, but it varies.*
+
 This is a very free-style section used by vendors or engineers to mark an object file with special information. This information is usually used to check for compatibility. A note segment is fairly small and we don't really need to care much about this.
+
+---
 
 ### GNU_EH_FRAME
 
+*This segment usually contains one section: `.eh_frame_hdr`*
+
 In here, `EH` stands for exception handling. This is a sorted data structure that handles exceptions. It maps particular exceptions to particular function handlers, and helps with frame unwinding for those nice backtraces you get with `bt` in `gdb`.
 
+---
+
 ### GNU_STACK
+
+*This segment usually contains no sections*
 
 This is a lightweight header that tells us what permissions we gave the stack. The stack in general *should not be executable* for security vulnerabilities, so let's see whether our binary is safe with `scanelf`:
 
@@ -219,7 +278,11 @@ ET_EXEC RW- R-- RW- ./main
 
 We don't allow execution on the stack - good news!
 
+---
+
 ### GNU_RELRO
+
+*This segment usually contains the sections `.dynamic .got` and sometimes `.init_array .fini_array`*
 
 This particular section is purely for protection against security vulnerabilities. ELF binaries have two maps called the **Global Offset Table**, otherwise known as GOT, and the **Procedure Linkage Table**, otherwise known as PLT. The GOT stores the exact address of global variables, functions and other symbols from a dynamically loaded shared library. These values in the GOT are subject to change when you re-compile the same program. When calling a function from the shared library, there may be many functions that are never called. To reduce the function resolution overhead, we create stubs in GOT for *lazy loaded functions*. The steps to resolve a lazy loaded function in runtime is outlined below:
 
@@ -231,9 +294,24 @@ This particular section is purely for protection against security vulnerabilitie
 
 The reason I explained the above is to illustrate how important the PLT and GOT are, but I still haven't really explained what `GNU_RELRO` is. `RELRO` in this case stands for **RELocation Read Only**. These in-memory structures are read-write in order to save the resolved addresses of the loaded functions, but that lends itself to security vulnerabilities. What if the user can buffer-overflow and change the entry in the GOT to execute a function containing arbitrary code?
 
-Well, one way is to make the function information loading _all eager_, and then turn the section read-only before the user can screw around with the GOT. Before user code can be executed, if the GOT is already populated then turning this section read-only with the [system call](http://man7.org/linux/man-pages/man2/mprotect.2.html) `mprotect` will prevent any vulnerabilities.
+Well, one way is to make the function information loading _all eager_, and then turn the section read-only before the user can screw around with the GOT. Before user code can be executed, if the GOT is already populated then turning this section read-only with the [system call](http://man7.org/linux/man-pages/man2/mprotect.2.html) `mprotect` will prevent any vulnerabilities. Similar things are done for the dynamic section and the `.init_array` and `.fini_array` sections which we'll discuss in the Assembly dump section.
 
-## Linker Script
+---
+
+## Recap
+
+So now that we've seen what each of these types of segments are used for, let's recap:
+
+1. The ELF header contains metadata about the program.
+2. Each segment is mapped to memory somewhere. Two segments may overlap if they are not both of type `LOAD`. This is how sections may live in two segments.
+3. We load the dynamic linker into the `DYNAMIC` segment to load shared objects.
+4. We have particular segments like `GNU_RELRO` and `GNU_STACK` for security.
+
+Below is a diagram for clarity:
+
+![elf_format]({{ site.url }}/assets/elf_format.png)
+
+# What does the compiler do: Linker Script
 
 So in the above section `DYNAMIC` we talked a bit about linkers. We also see that there are several sections in our code as well as dynamically loading from `libc.so`, `libstdc++`, etc. Where are the dynamically loaded libraries' data going to be placed in the final layout of our executable? If we use the below flags with verbose linkage, we'll see the **linker script** actually being emitted (major parts redacted):
 
@@ -625,15 +703,14 @@ What do we get after `objdump`'ing it? We see something very surprising:
 
 It was an incredibly deep rabbit hole that I dug myself into, but I'm glad I came out with a wealth of knowledge about:
 
-- ELF formats
-- Linker sections
-- Dynamic linker executable
+- ELF formats (sections & segments)
+- Dynamic linker executable & script
 - PLT and GOT (shared objects symbols)
 - Libc runtime
 - Program constructors and destructors
 - Static initialization
 - Transaction memory models
-- etc
+- ... and more.
 
 I've finished my undergrad in college without learning any of these concepts and I deeply regret not jumping in sooner to get a clear picture of exactly how a simple `int main(){}` program is created. Thanks for joining me on this journey and let me know if I'm missing anything in the investigation!
 
