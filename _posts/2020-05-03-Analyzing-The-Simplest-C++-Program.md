@@ -190,7 +190,7 @@ You have invoked `ld.so', the helper program for shared library executables... T
 to run, and runs it.  You may invoke this helper program directly from the command line to load and run an ELF executable file; this is like executing that file itself, but always uses this helper program from the file you specified, instead of the helper program file specified in the executable file you run.
 ```
 
-TL;DR: `ld` is the dynamic linker. Programs that load shared libraries will invoke this dynamic linker to run the shared library executable. You usually don't call this yourself, but you can.2e10
+*TL;DR: `ld` is the dynamic linker. Programs that load shared libraries will invoke this dynamic linker to run the shared library executable. You usually don't call this yourself, but you can.*
 
 We will be analyzing this in more detail later in the blog.
 
