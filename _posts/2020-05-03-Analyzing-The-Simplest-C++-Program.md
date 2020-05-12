@@ -38,7 +38,7 @@ linker: main.cpp
 	$(CC) $(FLAGS) -o /dev/null -x c $^ -Wl,--verbose
 ```
 
-Upon execution, the program simply starts up and returns with exit code 0. However, there are a few steps we just skipped:
+Upon execution, the program simply starts up and returns with exit code 0. However, there are a few questions you might be wondering:
 
 1. **What is the structure of the executable?**
 2. **What did `g++` do to generate this binary file?**
