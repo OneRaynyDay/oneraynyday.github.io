@@ -320,7 +320,7 @@ Below is a diagram for clarity:
 
 ---
 
-## Preprocessor
+## Preprocessor (`cpp`)
 
 The **preprocessor** in the context of C++ is something that takes your macros and turns them into actual values before feeding the resulting C++ program to a compiler. If would usually take something like this:
 
@@ -345,7 +345,7 @@ This is the simplest part of the workflow for creating an executable.
 
 ---
 
-## Compiler
+## Compiler (`cc1plus`)
 
 *The compiler is such a complicated beast that I can't possibly talk about it in detail in this post(nor do I have the expertise to talk about the C++ compiler in detail).* The C++ language has many ambiguous grammar rules which makes some expressions require arbitrary long lookaheads of the next expressions to determine the syntactic meaning of the program. For simple languages that are context-free, $LR(1)$ type parsers can be sufficient (in fact, you can implement parsers for context-free languages by a simple stack), but C++ is not context free, so it requires $LR(\infty)$ parsers to guarantee correctness. In fact, C++ templates itself is [turing complete](http://port70.net/~nsz/c/c%2B%2B/turing.pdf), which means the compiler may terminate with no errors and produce a program that is runnable, or terminate with an error upon parsing, or never terminate. (The "correct" definition involving the Church-Turing thesis is covered in [my blog here](https://oneraynyday.github.io/math/2019/02/06/Computability-Theory-Halting-Problem/) and [here](https://oneraynyday.github.io/math/2019/02/18/Recursive-Enumerable-Sets/))
 
@@ -379,7 +379,7 @@ The semantic definition of our program is that there is a function named `main` 
 
 ---
 
-## Linker
+## Linker (`ld`)
 
 So in the above section `DYNAMIC` we talked a bit about linkers. We also see that there are several sections in our code as well as dynamically loading from `libc.so`, `libstdc++`, etc. Where are the dynamically loaded libraries' data going to be placed in the final layout of our executable? If we use the below flags with verbose linkage, we'll see the **linker script** actually being emitted (major parts redacted) in the `g++` driver:
 
