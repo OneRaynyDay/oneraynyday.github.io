@@ -307,7 +307,7 @@ Below is a diagram for clarity:
 
 **To make this clear, `g++` is not a compiler.** A C++ compiler's job is to read C++ code and generate the proper assembly instructions(or some intermediate language like `llvm`) and create the translation units (`.o`'s). If `g++` only created `.o`'s, we would not be able to execute anything `g++` creates for us. *Then what is `g++`?* 
 
-**`g++` is actually a thin wrapper that dispatches multiple different tools including preprocessors, compilers, and linkers to create whatever you want, whether it be `.o`'s, `.so`'s, or executables.** Don't be embarrassing and say `g++` is a compiler because it's not. 
+**`g++` is actually a thin wrapper that dispatches multiple different tools including preprocessors, compilers, and linkers to create whatever you want, whether it be `.o`'s, `.so`'s, or executables.** If you say "`g++` compiler", people will assume you mean `cc1plus`, but don't think that `g++` itself is a compiler! 
 
 ---
 
