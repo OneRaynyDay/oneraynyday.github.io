@@ -304,16 +304,84 @@ So now that we've seen what each of these types of segments are used for, let's 
 
 1. The ELF header contains metadata about the program.
 2. Each segment is mapped to memory somewhere. Two segments may overlap if they are not both of type `LOAD`. This is how sections may live in two segments.
-3. We load the dynamic linker into the `DYNAMIC` segment to load shared objects.
-4. We have particular segments like `GNU_RELRO` and `GNU_STACK` for security.
+3. **`LOAD` is the most important part of our program.** It's directly mapped into memory with the relevant permissions.
+4. We load the dynamic linker into the `DYNAMIC` segment to load shared objects.
+5. We have particular segments like `GNU_RELRO` and `GNU_STACK` for security.
 
 Below is a diagram for clarity:
 
 ![elf_format]({{ site.url }}/assets/elf_format.png)
 
-# What does the compiler do: Linker Script
+# What does `g++` do?
 
-So in the above section `DYNAMIC` we talked a bit about linkers. We also see that there are several sections in our code as well as dynamically loading from `libc.so`, `libstdc++`, etc. Where are the dynamically loaded libraries' data going to be placed in the final layout of our executable? If we use the below flags with verbose linkage, we'll see the **linker script** actually being emitted (major parts redacted):
+**To make this clear, `g++` is not a compiler.** A C++ compiler's job is to read C++ code and generate the proper assembly instructions(or some intermediate language like `llvm`) and create the translation units (`.o`'s). If `g++` only created `.o`'s, we would not be able to execute anything `g++` creates for us. *Then what is `g++`?* 
+
+**`g++` is actually a thin wrapper that dispatches multiple different tools including preprocessors, compilers, and linkers to create whatever you want, whether it be `.o`'s, `.so`'s, or executables.** Don't be embarrassing and say `g++` is a compiler because it's not. 
+
+---
+
+## Preprocessor
+
+The **preprocessor** in the context of C++ is something that takes your macros and turns them into actual values before feeding the resulting C++ program to a compiler. If would usually take something like this:
+
+```c++
+// Output:
+// ❯ cpp main.cpp (can also invoke with g++ -E main.cpp)
+// ...
+// int x = 1;
+//
+// int main() {}
+#define MACRO
+#ifdef MACRO
+int x = 1;
+#else
+int y = 0;
+#endif
+
+int main() {}
+```
+
+This is the simplest part of the workflow for creating an executable.
+
+---
+
+## Compiler
+
+*The compiler is such a complicated beast that I can't possibly talk about it in detail in this post(nor do I have the expertise to talk about the C++ compiler in detail).* The C++ language has many ambiguous grammar rules which makes some expressions require arbitrary long lookaheads of the next expressions to determine the syntactic meaning of the program. For simple languages that are context-free, $LR(1)$ type parsers can be sufficient (in fact, you can implement parsers for context-free languages by a simple stack), but C++ is not context free, so it requires $LR(\infty)$ parsers to guarantee correctness. In fact, C++ templates itself is [turing complete](http://port70.net/~nsz/c/c%2B%2B/turing.pdf), which means the compiler may terminate with no errors and produce a program that is runnable, or terminate with an error upon parsing, or never terminate. (The "correct" definition involving the Church-Turing thesis is covered in [my blog here](https://oneraynyday.github.io/math/2019/02/06/Computability-Theory-Halting-Problem/) and [here](https://oneraynyday.github.io/math/2019/02/18/Recursive-Enumerable-Sets/))
+
+```c++
+template <int A, int B>
+int break_my_compiler()
+{
+    if constexpr(A == B)
+        return break_my_compiler<A+1, B+1>();
+    return 0;
+};
+
+int main() {
+    break_my_compiler<1,1>();
+}
+```
+
+Try running the above program with `-ftemplate-depth=60000` and wait for your CPU to catch on fire.
+
+For a simple C++ program such as ours, involving only `int main() {}`, we can assume the grammar rules fit something like:
+$$
+m ::= t\; id\; (t_1\;id_1,\;t_2\;id_2,\;...\;t_n\;id_n) \{ s_1;\;s_2;\;s_3;\;...s_m;\} \quad{\textbf{(Method declaration)}}\\
+t ::= \text{int} \;|\; \text{long} \;|\; \text{float} \;|\; ... \quad{\textbf{(Type)}}\\
+id ::= \text{<IDENTIFIER>} \quad{\textbf{(Variable)}}\\
+s ::= \{ s_1;\;s_2;\;s_3;\;...s_j;\} \;|\; id = expr; \;|\; return \;expr\; | ... \quad{\textbf{(Statement)}} \\
+...
+$$
+The semantic definition of our program is that there is a function named `main` that returns `int` and contains no statements or parameters. The compiler creates some representation of this definition, usually in the form of an **[Abstract Syntax Tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree)**. We'll see in the `objdump` section that this is indeed what the compiler translated our code into.
+
+*Disclaimer: The `cc1plus` compiler implementation is miles more complicated than this. This was an example of a grammar that could fit to parse our simple program. I didn't state the definition of $expr$ since that will require me to add a lot more rules and compilers isn't really the focus of this blog.*
+
+---
+
+## Linker
+
+So in the above section `DYNAMIC` we talked a bit about linkers. We also see that there are several sections in our code as well as dynamically loading from `libc.so`, `libstdc++`, etc. Where are the dynamically loaded libraries' data going to be placed in the final layout of our executable? If we use the below flags with verbose linkage, we'll see the **linker script** actually being emitted (major parts redacted) in the `g++` driver:
 
 ```
 ❯ make linker
@@ -375,11 +443,24 @@ Then, we see the PLT sections along with the GOT being laid out with `.plt`, `.p
 
 Recall my [blogpost from a while back](https://oneraynyday.github.io/dev/2017/08/28/Essential-C++-1/#issue-with-static--singleton-design), where I said you can't have static constructors that depend on each other across translation units. This is because the linker can choose to order the calls of global constructors in whichever way it wants. Calling another static variable's methods during static construction will give you undefined behavior *unless you can go into the linker script and force a translation unit to be compiled first.* (Or, just don't do something so stupid)
 
-Now that we've understood what each part of the ELF file does, let's actually look at the emitted assembly code placed in these sections!
+## Recap
 
-# Objdump
+So what did we learn about the `g++` driver?
 
-The `objdump` command quite literally dumps an object file's information. The command I used is in the Makefile above and can be invoked by `make dump`. We have surprisingly many sections to analyze, but let's see the most obvious: the `main` function.
+1. `g++` is composed of 3 main parts - the **preprocessor, the compiler and the linker.**
+2. The preprocessor replaces macros in our C++ program into actual values.
+3. The compiler uses a set of rules to traverse through our source code and generate the assembly code using the semantics of our program. It's super complicated.
+4. The linker gets instructions via the **linker script** to group our sections in the ELF object files in a particular organization to create an executable.
+
+Now that we've understood what `g++` does roughly, let's actually look at the emitted assembly code placed in these sections!
+
+# Analyzing Generated Procedures: `Objdump`
+
+The `objdump` command quite literally dumps an object file's information. The command I used is in the Makefile above and can be invoked by `make dump`. For such a small program, we have a surprising amount of sections to analyze. However, all of them are important.
+
+## `main`
+
+Let's see the most obvious function that we were expecting: the `main` function.
 
 ```assembly
 0000000000401106 <main>:
@@ -398,7 +479,7 @@ The `objdump` command quite literally dumps an object file's information. The co
   40111b:	0f 1f 44 00 00       	nop    DWORD PTR [rax+rax*1+0x0]
 ```
 
-Nothing too fancy here. Let's find the more interesting sections of the assembly dump and analyze them.
+Nothing too fancy here - the function returns a literal value of 0 and does nothing else. Let's find the more interesting sections of the assembly dump and analyze them.
 
 ## `_init`
 
