@@ -447,6 +447,10 @@ So what did we learn about the `g++` driver?
 3. The compiler uses a set of rules to traverse through our source code and generate the assembly code using the semantics of our program. It's super complicated.
 4. The linker gets instructions via the **linker script** to group our sections in the ELF object files in a particular organization to create an executable.
 
+Below is a diagram for clarity:
+
+![compiler_driver]({{ site.url }}/assets/compiler_driver.png)
+
 Now that we've understood what `g++` does roughly, let's actually look at the emitted assembly code placed in these sections!
 
 # Analyzing Generated Procedures: `Objdump`
