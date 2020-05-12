@@ -32,19 +32,10 @@ main: main.cpp
 	$(CC) $(FLAGS) -o $@ $^ 
 
 dump: main
-	# -r shows symbol names on relocations (so you'd see puts in the call instruction below)
-	# -R shows dynamic-linking relocations / symbol names (useful on shared libraries)
-	# -C demangles C++ symbol names
-	# -w is "wide" mode: it doesn't line-wrap the machine-code bytes
-	# -Mintel: use GAS/binutils MASM-like .intel_syntax noprefix syntax instead of AT&T
-	# -S: interleave source lines with disassembly.
 	objdump -drwC -Mintel main &> main.dump
 
 linker: main.cpp
 	$(CC) $(FLAGS) -o /dev/null -x c $^ -Wl,--verbose
-
-clean:
-	rm main main.dump
 ```
 
 Upon execution, the program simply starts up and returns with exit code 0. However, there are a few steps we just skipped:
