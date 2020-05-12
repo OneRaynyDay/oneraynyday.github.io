@@ -357,6 +357,8 @@ int main() {
 Try running the above program with `-ftemplate-depth=60000` and wait for your CPU to catch on fire.
 
 For a simple C++ program such as ours, involving only `int main() {}`, we can assume the grammar rules fit something like:
+
+
 $$
 m ::= t\; id\; (t_1\;id_1,\;t_2\;id_2,\;...\;t_n\;id_n) \{ s_1;\;s_2;\;s_3;\;...s_m;\} \quad{\textbf{(Method declaration)}}\\
 t ::= \text{int} \;|\; \text{long} \;|\; \text{float} \;|\; ... \quad{\textbf{(Type)}}\\
@@ -364,6 +366,8 @@ id ::= \text{<IDENTIFIER>} \quad{\textbf{(Variable)}}\\
 s ::= \{ s_1;\;s_2;\;s_3;\;...s_j;\} \;|\; id = expr; \;|\; return \;expr\; | ... \quad{\textbf{(Statement)}} \\
 ...
 $$
+
+
 The semantic definition of our program is that there is a function named `main` that returns `int` and contains no statements or parameters. The compiler creates some representation of this definition, usually in the form of an **[Abstract Syntax Tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree)**. We'll see in the `objdump` section that this is indeed what the compiler translated our code into.
 
 *Disclaimer: The `cc1plus` compiler implementation is miles more complicated than this. This was an example of a grammar that could fit to parse our simple program. I didn't state the definition of $expr$ since that will require me to add a lot more rules and compilers isn't really the focus of this blog.*
