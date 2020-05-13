@@ -313,7 +313,7 @@ Below is a diagram for clarity:
 
 ## Preprocessor (`cpp`)
 
-The **preprocessor** in the context of C++ is something that takes your macros and turns them into actual values before feeding the resulting C++ program to a compiler. If would usually take something like this:
+The **preprocessor** in the context of C++ is something that takes your macros and turns them into actual values before feeding the resulting C++ program to a compiler. This also includes the `#include` directive for header files. It would usually take something like this:
 
 ```c++
 // Output:
@@ -338,39 +338,45 @@ This is the simplest part of the workflow for creating an executable.
 
 ## Compiler (`cc1plus`)
 
-*The compiler is such a complicated beast that I can't possibly talk about it in detail in this post(nor do I have the expertise to talk about the C++ compiler in detail).* The C++ language has many ambiguous grammar rules which makes some expressions require arbitrary long lookaheads of the next expressions to determine the syntactic meaning of the program. For simple languages that are context-free, $LR(1)$ type parsers can be sufficient (in fact, you can implement parsers for context-free languages by a simple stack), but C++ is not context free, so it requires $LR(\infty)$ parsers to guarantee correctness. In fact, C++ templates itself is [turing complete](http://port70.net/~nsz/c/c%2B%2B/turing.pdf), which means the compiler may terminate with no errors and produce a program that is runnable, or terminate with an error upon parsing, or never terminate. (The "correct" definition involving the Church-Turing thesis is covered in [my blog here](https://oneraynyday.github.io/math/2019/02/06/Computability-Theory-Halting-Problem/) and [here](https://oneraynyday.github.io/math/2019/02/18/Recursive-Enumerable-Sets/))
+*The compiler is such a complicated beast that I can't possibly talk about it in detail in this post(nor do I have the expertise to talk about the C++ compiler in detail).* 
+
+The part of `g++` that _actually compiles things_ is called `cc1plus`, and it generates assembly code from C++ code. This particular compiler is broken up into 3 logical sections - the "front end", "middle end", and the "back end". For a simple program like ours, we can go through each part and see how our simple source code compiles into assembly.
+
+### Front End
+
+The front end of the `cc1plus` compiler takes in C++ code, and transforms it into an **abstract syntax tree, or AST.** The AST is the semantic representation of our code in a tree-like format. The entire program is the root of the node, and different entities like function definitions, global variable declarations and other statements in the global scope are the children of the root node, and it follows recursively until we reach a primitive token like an identifier or a literal value.
+
+On `clang`, we are able to compile C++ programs and obtain a `.dot` file detailing the AST it builds during compilation. The `int main() {}` program isn't very exciting...
+
+![main_ast.png]({{ site.url }}/assets/main_ast.png)
+
+The definition for `main` is considered a `CompoundStmt`, and we have nothing inside the definition, so that's it for the AST. So let's look at a *slightly* more complicated program to see an example of what the AST looks like in general:
 
 ```c++
-template <int A, int B>
-int break_my_compiler()
-{
-    if constexpr(A == B)
-        return break_my_compiler<A+1, B+1>();
-    return 0;
-};
-
 int main() {
-    break_my_compiler<1,1>();
+    int x = 3;
+    int y = 3 + x;
+    return y;
 }
 ```
 
-Try running the above program with `-ftemplate-depth=60000` and wait for your CPU to catch on fire.
+Pretty simple - we return the value 6. However, the AST that includes these symbols tell us a lot about the structure:
 
-For a simple C++ program such as ours, involving only `int main() {}`, we can assume the grammar rules fit something like:
+![main_ast2.png]({{ site.url }}/assets/main_ast2.png)
 
+As you can see, since we have two declarations of `int` types, we have two nodes called `DeclStmt`, and `3` is a `IntegerLiteral` type, which is a token that cannot be expanded to further symbols. The second branch adds the variable `x` and a literal together, and we first implicitly cast the variable `x` (which is a `DeclRefExpr`) even though it's of the same type. We also have a return statement which returns the `DeclRefExpr` corresponding to `y`. The tree is traversed by the compiler to eventually generate assembly code according to these instructions.
 
-$$
-m ::= t\; id\; (t_1\;id_1,\;t_2\;id_2,\;...\;t_n\;id_n) \{ s_1;\;s_2;\;s_3;\;...s_m;\} \quad{\textbf{(Method declaration)}}\\
-t ::= \text{int} \;|\; \text{long} \;|\; \text{float} \;|\; ... \quad{\textbf{(Type)}}\\
-id ::= \text{<IDENTIFIER>} \quad{\textbf{(Variable)}}\\
-s ::= \{ s_1;\;s_2;\;s_3;\;...s_j;\} \;|\; id = expr; \;|\; return \;expr\; | ... \quad{\textbf{(Statement)}} \\
-...
-$$
+As far as I know, you can't create a viewable AST from `g++`. However, we can get the control flow of the program and visualize it. To create the control flow for this program, use the `-fdump-tree-all-graph` mode during compilation and you'll get a ton of `.dot` files which you can visualize with `graphviz`. Here's our flow graph for `int main() {}`:
 
+![main_flow.png]({{ site.url }}/assets/main_flow.png)
 
-The semantic definition of our program is that there is a function named `main` that returns `int` and contains no statements or parameters. The compiler creates some representation of this definition, usually in the form of an **[Abstract Syntax Tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree)**. We'll see in the `objdump` section that this is indeed what the compiler translated our code into.
+We see in the scope a statement `_1 = 0;`. This is generated by the compiler in the special case of `main`, stating:
 
-*Disclaimer: The `cc1plus` compiler implementation is miles more complicated than this. This was an example of a grammar that could fit to parse our simple program. I didn't state the definition of $expr$ since that will require me to add a lot more rules and compilers isn't really the focus of this blog.*
+> If control reaches the end of main without encountering a return  statement, the effect is that of executing `return 0`
+
+Cool! So now we know that the compiler creates a flow graph and an AST. What happens next?
+
+TODO
 
 ---
 
@@ -794,3 +800,40 @@ It was an incredibly deep rabbit hole that I dug myself into, but I'm glad I cam
 
 I've finished my undergrad in college without learning any of these concepts and I deeply regret not jumping in sooner to get a clear picture of exactly how a simple `int main(){}` program is created. Thanks for joining me on this journey and let me know if I'm missing anything in the investigation!
 
+# Appendix
+
+## Some notes about the `cc1plus` compiler
+
+The C++ language has many ambiguous grammar rules which makes some expressions require arbitrary long lookaheads of the next expressions to determine the syntactic meaning of the program. For simple languages that are context-free, $LR(1)$ type parsers can be sufficient (in fact, you can implement parsers for context-free languages by a simple stack), but C++ is not context free, so it requires $LR(\infty)$ parsers to guarantee correctness. In fact, C++ templates itself is [turing complete](http://port70.net/~nsz/c/c%2B%2B/turing.pdf), which means the compiler may terminate with no errors and produce a program that is runnable, or terminate with an error upon parsing, or never terminate. (The "correct" definition involving the Church-Turing thesis is covered in [my blog here](https://oneraynyday.github.io/math/2019/02/06/Computability-Theory-Halting-Problem/) and [here](https://oneraynyday.github.io/math/2019/02/18/Recursive-Enumerable-Sets/))
+
+```c++
+template <int A, int B>
+int break_my_compiler()
+{
+    if constexpr(A == B)
+        return break_my_compiler<A+1, B+1>();
+    return 0;
+};
+
+int main() {
+    break_my_compiler<1,1>();
+}
+```
+
+Try running the above program with `-ftemplate-depth=60000` and wait for your CPU to catch on fire.
+
+For a simple C++ program such as ours, involving only `int main() {}`, we can assume the grammar rules fit something like:
+
+
+$$
+m ::= t\; id\; (t_1\;id_1,\;t_2\;id_2,\;...\;t_n\;id_n) \{ s_1;\;s_2;\;s_3;\;...s_m;\} \quad{\textbf{(Method declaration)}}\\
+t ::= \text{int} \;|\; \text{long} \;|\; \text{float} \;|\; ... \quad{\textbf{(Type)}}\\
+id ::= \text{<IDENTIFIER>} \quad{\textbf{(Variable)}}\\
+s ::= \{ s_1;\;s_2;\;s_3;\;...s_j;\} \;|\; id = expr; \;|\; return \;expr\; | ... \quad{\textbf{(Statement)}} \\
+...
+$$
+
+
+The semantic definition of our program is that there is a function named `main` that returns `int` and contains no statements or parameters. The compiler creates some representation of this definition, usually in the form of an **[Abstract Syntax Tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree)**. We'll see in the `objdump` section that this is indeed what the compiler translated our code into.
+
+*Disclaimer: The `cc1plus` compiler implementation is miles more complicated than this. This was an example of a grammar that could fit to parse our simple program. I didn't state the definition of $expr$ since that will require me to add a lot more rules and compilers isn't really the focus of this blog.*
