@@ -467,13 +467,7 @@ The back end for `cc1plus` is responsible for taking whatever intermediate repre
 
 ## Static Linker (`ld`)
 
----
-
-#### Disclaimer: Static linker is not the dynamic linker!
-
-So in the ELF section we visited the`DYNAMIC` header and its corresponding sections. In that discussion, we talked a bit about dynamic linkers and dynamically loading from `libc.so`, `libstdc++`, etc. *That is information that the dynamic linker needs to know about.* **The role of the dynamic linker is to map dynamic dependencies into memory at runtime.** The static linker is **NOT** the same thing. We'll explain it below.
-
-**After the compilation happens, organization of the memory space needs to be done.** If we have multiple translation units (think of them as `.o`'s or static libraries), how are we going to piece them together into a single executable? 
+**After the compilation happens, organization of the memory space needs to be done.** If we have multiple translation units (think of them as `.o`'s or static libraries), how are we going to piece them together into a single executable? Well, that's the job for `ld`!
 
 ---
 
