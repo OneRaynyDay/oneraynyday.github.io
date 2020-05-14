@@ -181,7 +181,7 @@ You have invoked `ld.so', the helper program for shared library executables... T
 to run, and runs it.  You may invoke this helper program directly from the command line to load and run an ELF executable file; this is like executing that file itself, but always uses this helper program from the file you specified, instead of the helper program file specified in the executable file you run.
 ```
 
-*TL;DR: `ld` is the dynamic linker. Programs that load shared libraries will invoke this dynamic linker to run the shared library executable. You usually don't call this yourself, but you can.*
+*TL;DR: `ld.so` is the dynamic linker. Programs that load shared libraries will invoke this dynamic linker to run the shared library executable. You usually don't call this yourself, but you can.*
 
 We will be analyzing this in more detail later in the blog.
 
@@ -191,7 +191,7 @@ We will be analyzing this in more detail later in the blog.
 
 *This segment can contain many different sections, and there are multiple `LOAD`s per program. Some commonly occurring sections include `.interp .init .text .fini .dynamic .got .got.plt .data .bss `*
 
-**This is the most important segment for a typical C++ program.** It basically tells the linker to allocate a particular segment of memory with particular permissions. In the above, we see that there are 4 `LOAD` sections. This only happens for the newer versions of `ld`. These segments in C++ are for the following(roughly):
+**This is the most important segment for a typical C++ program.** It basically tells the linker to allocate a particular segment of memory with particular permissions. In the above, we see that there are 4 `LOAD` sections. This only happens for the newer versions of `ld`(the **static** linker). These segments in C++ are for the following(roughly):
 
 - `.text`, which holds the code to be executed. This should be in the `R E` section.
 - `.rodata`, which means *read-only data*. This usually holds static constants that are used in the program. This is in one of the `R` sections.
@@ -204,7 +204,7 @@ We will be analyzing this in more detail later in the blog.
 
 *This segment usually contains one section: `.dynamic`*
 
-If this executable requires further dynamic linking, this field will point to us exactly what information is required. The `.dynamic` section in the ELF file shows you what shared libraries are required. To view that information, run:
+If this executable requires dynamic linking, this field will point to us exactly what information is required. The `.dynamic` section in the ELF file shows you what shared libraries are required. To view that information, run:
 
 ```
 ❯ readelf -d main
@@ -233,9 +233,9 @@ In reality, you don't need to do this - instead, use `ldd` to find the dependenc
 
 **Q: Why does `ldd` tell us we have two more shared libraries than the ELF file?**
 
-`ldd` tells us there are 2 more shared libraries, namely `linux-vdso.so.1` and `/lib64/ld-linux-x86-64.so.2`. These two are actually shared libraries that the kernel automatically maps into the address space of **all user-space applications**. `vdso` stands for "Virtual Dynamic Shared Object", and contains many utilities such as getting the current timestamp, which would be expensive if we were to jump to kernel-space to execute. The other shared library is the (in)famous dynamic linker. It is responsible for loading other shared objects into the main runtime's memory space.
+`ldd` tells us there are 2 more dynamic dependencies, namely `linux-vdso.so.1` and `/lib64/ld-linux-x86-64.so.2`. These two are actually shared libraries that the kernel automatically maps into the address space of **all user-space applications**. `vdso` stands for "Virtual Dynamic Shared Object", and contains many utilities such as getting the current timestamp, which would be expensive if we were to jump to kernel-space to execute. The other shared library is the (in)famous dynamic linker. It is responsible for loading other shared objects into the main runtime's memory space.
 
-Linker issues are the biggest headache, involving `rpath, runpath, LD_LIBRARY_PATH`, and other variables that may or may not be baked into the `.dynamic` section of the ELF file. I highly recommend this [blogpost](https://amir.rachum.com/blog/2016/09/17/shared-libraries/) if you're running into a practical issue with dynamic linking `.so` files. We'll also shortly discuss the linker script that our compiler generates for the dynamic linker to ensure shared objects' sections will be placed in the correct memory segments (and more).
+Linker issues are the biggest headache, involving `rpath, runpath, LD_LIBRARY_PATH`, and other variables that may or may not be baked into the `.dynamic` section of the ELF file. I highly recommend this [blogpost](https://amir.rachum.com/blog/2016/09/17/shared-libraries/) if you're running into a practical issue with dynamic linking `.so` files. It's out of the scope of this blog.
 
 ---
 
@@ -465,9 +465,27 @@ The back end for `cc1plus` is responsible for taking whatever intermediate repre
 
 ---
 
-## Linker (`ld`)
+## Static Linker (`ld`)
 
-So in the ELF section we visited the`DYNAMIC` header and its corresponding sections. In that discussion, we talked a bit about linkers and dynamically loading from `libc.so`, `libstdc++`, etc. **After the compilation happens, organization of the memory space needs to be done.** Where are the dynamically loaded libraries' data going to be placed in the final layout of our executable? If we use the below flags with verbose linkage, we'll see the **linker script** actually being emitted (major parts redacted) in the `g++` driver:
+---
+
+#### Disclaimer: Static linker is not the dynamic linker!
+
+So in the ELF section we visited the`DYNAMIC` header and its corresponding sections. In that discussion, we talked a bit about dynamic linkers and dynamically loading from `libc.so`, `libstdc++`, etc. *That is information that the dynamic linker needs to know about.* **The role of the dynamic linker is to map dynamic dependencies into memory at runtime.** The static linker is **NOT** the same thing. We'll explain it below.
+
+**After the compilation happens, organization of the memory space needs to be done.** If we have multiple translation units (think of them as `.o`'s or static libraries), how are we going to piece them together into a single executable? 
+
+---
+
+#### Disclaimer: Static linker and dynamic linkers are NOT the same thing!
+
+As you might have remembered from the `.DYNAMIC` section of the ELF file, we list a couple of needed dynamic dependencies. This is a job for the **dynamic linker**, to run those dependencies somewhere in memory during runtime. The **static linker** is responsible for organizing a ton of object files and static libraries into a single executable. **They are NOT the same!** The final executable ONLY has the path of the dependencies for the dynamic linker(literally a few strings), but it has the sections, code, everything from translation units for the static linker.
+
+Usually, `ld` is considered the static linker. `ld.so` is the dynamic linker. Don't get them mixed up!
+
+---
+
+If we use the below flags with verbose linkage, we'll see the **linker script** actually being emitted (major parts redacted) in the `g++` driver:
 
 ```
 ❯ make linker
@@ -544,11 +562,13 @@ Below is a diagram for clarity:
 
 Now that we've understood what `g++` does roughly, let's actually look at the emitted assembly code placed in these sections!
 
+---
+
 # Analyzing Generated Procedures: `Objdump`
 
 The `objdump` command quite literally dumps an object file's information. The command I used is in the Makefile above and can be invoked by `make dump`. For such a small program, we have a surprising amount of sections to analyze. However, all of them are important.
 
-## `main`
+## `main` - The dumb and obvious
 
 Let's see the most obvious function that we were expecting: the `main` function.
 
@@ -571,37 +591,7 @@ Let's see the most obvious function that we were expecting: the `main` function.
 
 Nothing too fancy here - the function returns a literal value of 0 and does nothing else. Let's find the more interesting sections of the assembly dump and analyze them.
 
-## `_init`
-
-```assembly
-Disassembly of section .init:
-
-0000000000401000 <_init>:
-# Stands for End Branch (64 bits). 
-# When an indirect jump occurs, it must jump to an endbr64 instruction 
-# or else an exception occurs. This is a part of 
-# CET(Control-flow Enforcement Tech) to prevent buffer-overflow
-# or gadget exploits on return addresses.
-  401000:	f3 0f 1e fa          	endbr64 
-  401004:	48 83 ec 08          	sub    rsp,0x8
-# Checks to see whether __gmon_start__ exists. This symbol doesn't exist in our
-# code, because we don't have gmon profiling enabled(used for gprof)
-  401008:	48 8b 05 e1 2f 00 00 	mov    rax,QWORD PTR [rip+0x2fe1]        # 403ff0 <__gmon_start__>
-# Jumps if %rax is equal to 0. Test does an AND operation.
-  40100f:	48 85 c0             	test   rax,rax
-  401012:	74 02                	je     401016 <_init+0x16>
-# If we don't jump, then we call the __gmon_start__ function which does
-# some intrusive profiling setup.
-  401014:	ff d0                	call   rax
-  401016:	48 83 c4 08          	add    rsp,0x8
-  40101a:	c3                   	ret    
-```
-
-This initialization function is at the front of our assembly dump. It really doesn't do much other than call the `gmon` profiling system if it's defined. Otherwise, it returns.
-
-Note that this piece of code is actually in an `.init` section. This means that this procedure is called before `main` even starts.
-
-## `_start`
+## `_start` - True start of the program
 
 ```assembly
 Disassembly of section .text:
@@ -635,7 +625,7 @@ Disassembly of section .text:
   40104f:	90                   	nop
 ```
 
-Basically, `_start` prepares the system to call the `__libc_start_main` function, which takes in the following arguments:
+This is the first function in `.text` and is the first function the program executes. Basically, `_start` prepares the system to call the `__libc_start_main` function, which takes in the following arguments:
 
 ```
 int __libc_start_main(int *(main) (int, char * *, char * *), 
@@ -651,9 +641,17 @@ Which seems to line up with the arguments the assembly code is preparing prior t
 
 You might be curious why this `_start` along with many other symbols we'll inspect is included in our executable. These assembly instructions are created in an object file called `crt1.o` or `crt0.o`, which stands for "C Run Time". Depending on your operating system and compiler, you may get either of the two (but not both). These are linked statically with _all C and C++ executables_ as a bootstrapping mechanism to start the program. You can actually bypass the startup code if you pass in the flags `-nostdlib -nostdinc`, which removes all standard C libraries (including the runtime library).
 
-## `__libc_csu_init` and `__libc_csu_fini`
+We also see the functions `__libc_csu_fini` and `__libc_csu_init` pointers being moved into registers as callee-side arguments into `__libc_start_main`. What are these?
 
-Since these functions are fairly large, I'm too lazy to analyze them line-by-line. They basically do the construction and destruction handling as a program. Although the gnu docs roughly outline this, let's actually see it in action. Let's write a simple program with directives:
+## `__libc_csu_init` and `__libc_csu_fini` - Program level ctor/dtor handlers
+
+Since these functions are fairly large, I'm too lazy to analyze them line-by-line. They basically do the construction and destruction handling as a program. We can register a list of constructors to be called by `__libc_csu_init` and similarly destructors with `__libc_csu_fini`. We can't actually dump the contents of `__libc_start_main` since it lives in the libc shared library, but we can assume the execution order is:
+
+1. Call `__libc_csu_init` for the program level constructor handling
+2. Call `main`
+3. Call `__libc_csu_fini` for the program level destructor handling
+
+Let's see the program level constructors and destructors in action. Let's write a simple program with functions with global constructor and destructor attributes:
 
 ```c++
 void __attribute__ ((constructor)) dumb_constructor(){}
@@ -701,7 +699,43 @@ __libc_csu_fini (void) { ... }
 
 To find out why historically we used `__libc_csu_fini` but now we delegate to `_dl_fini` is another rabbithole in itself, and I decided to stop my investigations there.
 
-## `register_tm_clones`, `deregister_tm_clones` and `__do_global_dtors_aux`
+One thing I thought was interesting from breakpointing `__libc_csu_init` was that it actually called a function `_init` first before calling our `dumb_constructor()` function. What is this function?
+
+## `_init` and `_fini` - Obsolete program level ctor/dtor with highest priority
+
+```assembly
+Disassembly of section .init:
+
+0000000000401000 <_init>:
+# Stands for End Branch (64 bits). 
+# When an indirect jump occurs, it must jump to an endbr64 instruction 
+# or else an exception occurs. This is a part of 
+# CET(Control-flow Enforcement Tech) to prevent buffer-overflow
+# or gadget exploits on return addresses.
+  401000:	f3 0f 1e fa          	endbr64 
+  401004:	48 83 ec 08          	sub    rsp,0x8
+# Checks to see whether __gmon_start__ exists. This symbol doesn't exist in our
+# code, because we don't have gmon profiling enabled(used for gprof)
+  401008:	48 8b 05 e1 2f 00 00 	mov    rax,QWORD PTR [rip+0x2fe1]        # 403ff0 <__gmon_start__>
+# Jumps if %rax is equal to 0. Test does an AND operation.
+  40100f:	48 85 c0             	test   rax,rax
+  401012:	74 02                	je     401016 <_init+0x16>
+# If we don't jump, then we call the __gmon_start__ function which does
+# some intrusive profiling setup.
+  401014:	ff d0                	call   rax
+  401016:	48 83 c4 08          	add    rsp,0x8
+  40101a:	c3                   	ret    
+```
+
+This initialization function is at the front of our assembly dump. It seems like it really doesn't do much other than call the `gmon` profiling system if it's defined. Otherwise, it returns.
+
+From looking online, it appears these two functions are actually deprecated, and we shouldn't use them:
+
+> Historically there have been two special functions, `_init` and `_fini` that can be used to control constructors and destructors. However, they are  obsolete, and their use can lead to unpredictable results. Your  libraries should not use these; use the function attributes constructor and destructor instead.
+
+And this makes sense! We see `_init` being called from `__libc_csu_init`, and then our own custom program level constructor being called by `__libc_csu_init` shortly after. As long as we register our constructors with the attribute, we can feel free to ignore this pair of functions.
+
+## `register_tm_clones`, `deregister_tm_clones` - Mysterious concurrency model functions
 
 Here's an abbreviated view of `register_tm_clones`:
 
@@ -728,7 +762,7 @@ After going on a scavenger hunt, it appears that `tm` stands for "Transactional 
 
 As far as I know, global destructors belong to static objects. But we don't have any static objects defined as it's such a barebones C++ program. Where is this `tm_clones` thing coming from?
 
-**Warning: The below is an experimental part of the C++ standard. It may vary after the publishing of this blog.**
+**Warning: The below is an experimental part of the C++ standard. The contents of this blog is generated from `g++-9`.**
 
 Basically, C++ has its own **Transactional Memory Technical Specification, or TMTS**, which standardizes what a transaction really means in libitm. In the specification, we have two ways of accessing the transactional memory scope:
 
@@ -870,6 +904,19 @@ What do we get after `objdump`'ing it? We see something very surprising:
 
 **There appears to be cloned versions of the original function upon the C++ attribute being applied!** These clone functions must've been registered onto the clone table(configured in static runtime) that will point to the transaction clones when called from a `synchronized` block! It makes sense for the registration to happen before runtime if any functions with such attributes are defined. *The functions `de/register_tm_clones` are there in case we want to enable this language feature.*
 
+---
+
+## Recap
+
+Now that we've seen basically all of the important functions generated in assembly, let's summarize our findings:
+
+1. `main` is boring and expected.
+2. The system starts by calling `_start`, which calls `__libc_csu_init`, then `__libc_start_main`
+3. `__libc_csu_init` calls `_init` first, an obsolete global initializer, then our own custom ones
+4. `register_tm_clones` and `deregister_tm_clones` are a part of the experimental and incomplete transactional memory feature for C++. They register clones of functions that are optimized for concurrent access during runtime.
+
+Let's see a flow chart of what this is actually doing.
+
 # Conclusion
 
 It was an incredibly deep rabbit hole that I dug myself into, but I'm glad I came out with a wealth of knowledge about:
@@ -887,7 +934,7 @@ I've finished my undergrad in college without learning any of these concepts and
 
 # Appendix
 
-## Some notes about the `cc1plus` compiler
+## Some notes about the `cc1plus` compiler and general parsing rules
 
 The C++ language has many ambiguous grammar rules which makes some expressions require arbitrary long lookaheads of the next expressions to determine the syntactic meaning of the program. For simple languages that are context-free, $LR(1)$ type parsers can be sufficient (in fact, you can implement parsers for context-free languages by a simple stack), but C++ is not context free, so it requires $LR(\infty)$ parsers to guarantee correctness. In fact, C++ templates itself is [turing complete](http://port70.net/~nsz/c/c%2B%2B/turing.pdf), which means the compiler may terminate with no errors and produce a program that is runnable, or terminate with an error upon parsing, or never terminate. (The "correct" definition involving the Church-Turing thesis is covered in [my blog here](https://oneraynyday.github.io/math/2019/02/06/Computability-Theory-Halting-Problem/) and [here](https://oneraynyday.github.io/math/2019/02/18/Recursive-Enumerable-Sets/))
 
@@ -919,6 +966,6 @@ s ::= \{ s_1;\;s_2;\;s_3;\;...s_j;\} \;|\; id = expr; \;|\; return \;expr\; | ..
 $$
 
 
-The semantic definition of our program is that there is a function named `main` that returns `int` and contains no statements or parameters. The compiler creates some representation of this definition, usually in the form of an **[Abstract Syntax Tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree)**. We'll see in the `objdump` section that this is indeed what the compiler translated our code into.
+The semantic definition of our program is that there is a function named `main` that returns `int` and contains no statements or parameters. The compiler creates some representation of this definition, usually in the form of an **[Abstract Syntax Tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree)**.
 
 *Disclaimer: The `cc1plus` compiler implementation is miles more complicated than this. This was an example of a grammar that could fit to parse our simple program. I didn't state the definition of $expr$ since that will require me to add a lot more rules and compilers isn't really the focus of this blog.*
