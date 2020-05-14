@@ -911,6 +911,8 @@ Now that we've seen basically all of the important functions generated in assemb
 
 Let's see a flow chart of what this is actually doing.
 
+TODO
+
 # Conclusion
 
 It was an incredibly deep rabbit hole that I dug myself into, but I'm glad I came out with a wealth of knowledge about:
