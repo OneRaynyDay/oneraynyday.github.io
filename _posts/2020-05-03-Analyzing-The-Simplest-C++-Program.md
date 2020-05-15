@@ -6,6 +6,16 @@ category: dev
 layout: default
 ---
 
+<style>
+  .purple {
+    color:inherit;
+  }
+  .purple:hover {
+    color:rgb(107,79,187);
+  }
+</style>
+
+
 # Table of Contents
 
 * TOC
@@ -20,6 +30,7 @@ int main(){}
 ```
 
 and here is the corresponding Makefile for this program (with some utilities we'll use later):
+{: .purple}
 
 ```makefile
 # Makefile
