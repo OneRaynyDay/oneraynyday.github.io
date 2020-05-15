@@ -30,7 +30,6 @@ int main(){}
 ```
 
 and here is the corresponding Makefile for this program (with some utilities we'll use later):
-{: .purple}
 
 ```makefile
 # Makefile
@@ -64,6 +63,7 @@ As we'll see, the process is extremely complicated. We'll be answering all of th
 **ELF, which stands for Executable and Linkable Format**, is the format used for binaries and libraries that we compile with C and C++. It's in an unreadable binary format that can be analyzed with several GNU tools. To understand what the assembly outputs are, we must first be familiar with the general layout of an ELF file.
 
 <details><summary markdown='span'>**How can I tell that an executable is ELF?**
+{: .purple}
 </summary>
 You can identify an ELF file by using the `file` command:
 
@@ -74,6 +74,7 @@ main: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linke
 </details>
 
 <details><summary markdown='span'>**How can I get information about an ELF file?**
+{: .purple}
 </summary>
 If it does say `ELF`, you can use `readelf` to analyze the headers like so:
 
