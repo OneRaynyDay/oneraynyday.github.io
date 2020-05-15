@@ -54,7 +54,7 @@ Upon execution, the program simply starts up and returns with exit code 0. Howev
 2. **What did `g++` do to generate this binary file?**
 3. **What are the generated procedures being run in assembly?**
 
-As we'll see, the process is extremely complicated. We'll be answering all of these questions, but they have very long answers. Follow with me on this adventure to understand the inner workings of a C++ program.
+As we'll see, the process is extremely complicated. *To make this easier to navigate, I have made collapsible blocks identifiable by the cursor next to questions.*
 
 # Structure of the Executable: ELF Format
 
@@ -72,10 +72,9 @@ main: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linke
 ```
 </details>
 {: .purple}
+{ cursor: pointer; }
 
 <details><summary markdown='span'>**How can I get information about an ELF file?**
-{: .purple}
-
 </summary>
 If it does say `ELF`, you can use `readelf` to analyze the headers like so:
 
@@ -90,6 +89,7 @@ Section to Segment mapping:
 ...
 ```
 </details>
+{: .purple}
 
 In ELF there is a concept of *sections* and *segments*. Sections reside within segments, which are contiguous pieces of memory in the runtime of the executable(the pieces may be 0 bytes). Some sections may appear in more than one segment and it's because two segments overlap(with the exception of two `LOAD` segments) with those sections in the intersection. We'll be going more in-depth on what each of these do throughout the blog. 
 
@@ -113,6 +113,7 @@ ELF Header:
 ...
 ```
 </details>
+{: .purple}
 
 <details><summary markdown='span'>**What does each section do?**
 </summary>
@@ -134,6 +135,9 @@ and `2's complement` is the representation of signed numbers. For any arbitrary 
 - The number of program headers is the number of segments that will be mapped into memory upon execution.
 - The number of section headers is the number of sections, each of which will be placed into one of the 11 segments.
 </details>
+{: .purple}
+
+In general, the ELF headers tells us exactly what kind of platform this binary was compiled for, and a general summary of the structure of the ELF file.
 
 ---
 
