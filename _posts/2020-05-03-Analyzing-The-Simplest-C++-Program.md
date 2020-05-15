@@ -48,16 +48,22 @@ As we'll see, the process is extremely complicated. We'll be answering all of th
 
 # Structure of the Executable: ELF Format
 
+*Our goal for this section is to understand the format of the `main` binary*.
+
 **ELF, which stands for Executable and Linkable Format**, is the format used for binaries and libraries that we compile with C and C++. It's in an unreadable binary format that can be analyzed with several GNU tools. To understand what the assembly outputs are, we must first be familiar with the general layout of an ELF file.
 
 **Q: How can you tell that an executable is ELF? If so, how do you inspect the metadata about it?**
 
-You can identify an ELF file by using the `file` command:
+<details>
+  <summary>How can I tell that an executable is ELF?</summary>
 
-```
-❯ file main
-main: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=921d352e49a0e4262aece7e72418290189520782, for GNU/Linux 3.2.0, not stripped
-```
+  You can identify an ELF file by using the `file` command:
+
+  ```
+  ❯ file main
+  main: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=921d352e49a0e4262aece7e72418290189520782, for GNU/Linux 3.2.0, not stripped
+  ```
+</details>
 
 If it does say `ELF`, you can use `readelf` to analyze the headers like so:
 
@@ -304,6 +310,8 @@ Below is a diagram for clarity:
 ![elf_format]({{ site.url }}/assets/elf_format.png)
 
 # What does `g++` do?
+
+*Our goal for this section is to illustrate the different steps in turning our `main.cpp` file into `main` the executable.*
 
 **To make this clear, `g++` is not a compiler.** A C++ compiler's job is to read C++ code and generate the proper assembly instructions(or some intermediate language like `llvm`) and create the translation units (`.o`'s). If `g++` only created `.o`'s, we would not be able to execute anything `g++` creates for us. *Then what is `g++`?* 
 
@@ -560,6 +568,8 @@ Now that we've understood what `g++` does roughly, let's actually look at the em
 
 # Analyzing Generated Procedures: `Objdump`
 
+*Our goal this section is to understand what procedures are generated from the compiler, what they're used for, and in what order they are executed.*
+
 The `objdump` command quite literally dumps an object file's information. The command I used is in the Makefile above and can be invoked by `make dump`. For such a small program, we have a surprising amount of sections to analyze. However, all of them are important.
 
 ## `main` - The dumb and obvious
@@ -756,6 +766,80 @@ After going on a scavenger hunt, it appears that `tm` stands for "Transactional 
 
 As far as I know, global destructors belong to static objects. But we don't have any static objects defined as it's such a barebones C++ program. Where is this `tm_clones` thing coming from?
 
+**The short answer is: It's a function being called by `libgcc.so` for transactional memory model in C++.** **The long answer is in the appendix.**
+
+We know that `_start` is the beginning of our program, *but we actually need to run something else first.* When the program interpreter field in `INTERP` is specified, we actually run the dynamic linker `ld.so` to populate our memory with the shared libraries in the `NEEDED` section in `DYNAMIC`. `libgcc.so` is one of these, and so we start by loading it into memory, and then running some initialization code, which then eventually calls `register_tm_clones`, and then gives control back to the main executable at the `_start` function. **So technically, `register_tm_clones` is an example of a function that gets run before the `_start` function is even called!**
+
+---
+
+## Recap
+
+Now that we've seen basically all of the important functions generated in assembly, let's summarize our findings:
+
+1. `main` is boring and expected.
+2. The system starts by calling `_start`, which calls `__libc_csu_init`, then `__libc_start_main`
+3. `__libc_csu_init` calls `_init` first, an obsolete global initializer, then our own custom ones
+4. `register_tm_clones` and `deregister_tm_clones` are a part of the experimental and incomplete transactional memory feature for C++. They register clones of functions that are optimized for concurrent access during runtime.
+
+Let's see a flow chart of what this is actually doing.
+
+![seq_diagram]({{ site.url }}/assets/main_seq_diagram.png)
+
+# Conclusion
+
+It was an incredibly deep rabbit hole that I dug myself into, but I'm glad I came out with a wealth of knowledge about:
+
+- ELF formats (sections & segments)
+- Dynamic linker executable & script
+- PLT and GOT (shared objects symbols)
+- Libc runtime
+- Program constructors and destructors
+- Static initialization
+- Transaction memory models
+- ... and more.
+
+I've finished my undergrad in college without learning any of these concepts and I deeply regret not jumping in sooner to get a clear picture of exactly how a simple `int main(){}` program is created. Thanks for joining me on this journey and let me know if I'm missing anything in the investigation!
+
+# Appendix
+
+## Some notes about the `cc1plus` compiler and general parsing rules
+
+The C++ language has many ambiguous grammar rules which makes some expressions require arbitrary long lookaheads of the next expressions to determine the syntactic meaning of the program. For simple languages that are context-free, $LR(1)$ type parsers can be sufficient (in fact, you can implement parsers for context-free languages by a simple stack), but C++ is not context free, so it requires $LR(\infty)$ parsers to guarantee correctness. In fact, C++ templates itself is [turing complete](http://port70.net/~nsz/c/c%2B%2B/turing.pdf), which means the compiler may terminate with no errors and produce a program that is runnable, or terminate with an error upon parsing, or never terminate. (The "correct" definition involving the Church-Turing thesis is covered in [my blog here](https://oneraynyday.github.io/math/2019/02/06/Computability-Theory-Halting-Problem/) and [here](https://oneraynyday.github.io/math/2019/02/18/Recursive-Enumerable-Sets/))
+
+```c++
+template <int A, int B>
+int break_my_compiler()
+{
+    if constexpr(A == B)
+        return break_my_compiler<A+1, B+1>();
+    return 0;
+};
+
+int main() {
+    break_my_compiler<1,1>();
+}
+```
+
+Try running the above program with `-ftemplate-depth=60000` and wait for your CPU to catch on fire.
+
+For a simple C++ program such as ours, involving only `int main() {}`, we can assume the grammar rules fit something like:
+
+
+$$
+m ::= t\; id\; (t_1\;id_1,\;t_2\;id_2,\;...\;t_n\;id_n) \{ s_1;\;s_2;\;s_3;\;...s_m;\} \quad{\textbf{(Method declaration)}}\\
+t ::= \text{int} \;|\; \text{long} \;|\; \text{float} \;|\; ... \quad{\textbf{(Type)}}\\
+id ::= \text{<IDENTIFIER>} \quad{\textbf{(Variable)}}\\
+s ::= \{ s_1;\;s_2;\;s_3;\;...s_j;\} \;|\; id = expr; \;|\; return \;expr\; | ... \quad{\textbf{(Statement)}} \\
+...
+$$
+
+
+The semantic definition of our program is that there is a function named `main` that returns `int` and contains no statements or parameters. The compiler creates some representation of this definition, usually in the form of an **[Abstract Syntax Tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree)**.
+
+*Disclaimer: The `cc1plus` compiler implementation is miles more complicated than this. This was an example of a grammar that could fit to parse our simple program. I didn't state the definition of $expr$ since that will require me to add a lot more rules and compilers isn't really the focus of this blog.*
+
+## Transactional Memory Model & Clones
+
 **Warning: The below is an experimental part of the C++ standard. The contents of this blog is generated from `g++-9`.**
 
 Basically, C++ has its own **Transactional Memory Technical Specification, or TMTS**, which standardizes what a transaction really means in libitm. In the specification, we have two ways of accessing the transactional memory scope:
@@ -897,71 +981,3 @@ What do we get after `objdump`'ing it? We see something very surprising:
 ```
 
 **There appears to be cloned versions of the original function upon the C++ attribute being applied!** These clone functions must've been registered onto the clone table(configured in static runtime) that will point to the transaction clones when called from a `synchronized` block! It makes sense for the registration to happen before runtime if any functions with such attributes are defined. *The functions `de/register_tm_clones` are there in case we want to enable this language feature.*
-
----
-
-## Recap
-
-Now that we've seen basically all of the important functions generated in assembly, let's summarize our findings:
-
-1. `main` is boring and expected.
-2. The system starts by calling `_start`, which calls `__libc_csu_init`, then `__libc_start_main`
-3. `__libc_csu_init` calls `_init` first, an obsolete global initializer, then our own custom ones
-4. `register_tm_clones` and `deregister_tm_clones` are a part of the experimental and incomplete transactional memory feature for C++. They register clones of functions that are optimized for concurrent access during runtime.
-
-Let's see a flow chart of what this is actually doing.
-
-TODO
-
-# Conclusion
-
-It was an incredibly deep rabbit hole that I dug myself into, but I'm glad I came out with a wealth of knowledge about:
-
-- ELF formats (sections & segments)
-- Dynamic linker executable & script
-- PLT and GOT (shared objects symbols)
-- Libc runtime
-- Program constructors and destructors
-- Static initialization
-- Transaction memory models
-- ... and more.
-
-I've finished my undergrad in college without learning any of these concepts and I deeply regret not jumping in sooner to get a clear picture of exactly how a simple `int main(){}` program is created. Thanks for joining me on this journey and let me know if I'm missing anything in the investigation!
-
-# Appendix
-
-## Some notes about the `cc1plus` compiler and general parsing rules
-
-The C++ language has many ambiguous grammar rules which makes some expressions require arbitrary long lookaheads of the next expressions to determine the syntactic meaning of the program. For simple languages that are context-free, $LR(1)$ type parsers can be sufficient (in fact, you can implement parsers for context-free languages by a simple stack), but C++ is not context free, so it requires $LR(\infty)$ parsers to guarantee correctness. In fact, C++ templates itself is [turing complete](http://port70.net/~nsz/c/c%2B%2B/turing.pdf), which means the compiler may terminate with no errors and produce a program that is runnable, or terminate with an error upon parsing, or never terminate. (The "correct" definition involving the Church-Turing thesis is covered in [my blog here](https://oneraynyday.github.io/math/2019/02/06/Computability-Theory-Halting-Problem/) and [here](https://oneraynyday.github.io/math/2019/02/18/Recursive-Enumerable-Sets/))
-
-```c++
-template <int A, int B>
-int break_my_compiler()
-{
-    if constexpr(A == B)
-        return break_my_compiler<A+1, B+1>();
-    return 0;
-};
-
-int main() {
-    break_my_compiler<1,1>();
-}
-```
-
-Try running the above program with `-ftemplate-depth=60000` and wait for your CPU to catch on fire.
-
-For a simple C++ program such as ours, involving only `int main() {}`, we can assume the grammar rules fit something like:
-
-
-$$
-m ::= t\; id\; (t_1\;id_1,\;t_2\;id_2,\;...\;t_n\;id_n) \{ s_1;\;s_2;\;s_3;\;...s_m;\} \quad{\textbf{(Method declaration)}}\\
-t ::= \text{int} \;|\; \text{long} \;|\; \text{float} \;|\; ... \quad{\textbf{(Type)}}\\
-id ::= \text{<IDENTIFIER>} \quad{\textbf{(Variable)}}\\
-s ::= \{ s_1;\;s_2;\;s_3;\;...s_j;\} \;|\; id = expr; \;|\; return \;expr\; | ... \quad{\textbf{(Statement)}} \\
-...
-$$
-
-
-The semantic definition of our program is that there is a function named `main` that returns `int` and contains no statements or parameters. The compiler creates some representation of this definition, usually in the form of an **[Abstract Syntax Tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree)**.
-
-*Disclaimer: The `cc1plus` compiler implementation is miles more complicated than this. This was an example of a grammar that could fit to parse our simple program. I didn't state the definition of $expr$ since that will require me to add a lot more rules and compilers isn't really the focus of this blog.*
