@@ -93,6 +93,7 @@ Section to Segment mapping:
 </details>
 {: .red}
 
+
 In ELF there is a concept of *sections* and *segments*. Sections reside within segments, which are contiguous pieces of memory in the runtime of the executable(the pieces may be 0 bytes). Some sections may appear in more than one segment and it's because two segments overlap(with the exception of two `LOAD` segments) with those sections in the intersection. We'll be going more in-depth on what each of these do throughout the blog. 
 
 If we take a look at the ELF Header and Program Headers, we can get a lot of information about the runtime behavior of the executable, so let's analyze it.
@@ -117,6 +118,7 @@ ELF Header:
 </details>
 {: .red}
 
+
 <details><summary markdown='span' class='collapse'>**What does each section do?**
 </summary>
 Let's go through some of these sections:
@@ -138,6 +140,7 @@ and `2's complement` is the representation of signed numbers. For any arbitrary 
 - The number of section headers is the number of sections, each of which will be placed into one of the 11 segments.
 </details>
 {: .red}
+
 
 In general, the ELF headers tells us exactly what kind of platform this binary was compiled for, and a general summary of the structure of the ELF file.
 
@@ -171,14 +174,14 @@ Program Headers:
 </details>
 {: .red}
 
+
 Each program header is mapped to a segment containing zero or more sections. The `VirtAddr` field tells us where the segments will be located, `Flags` tells us the permission bits of each memory segment, and the `Type` field tells us exactly what that segment is used for. 
 
 Isn't it surprising that there are so many program headers our simple C++ program? Let's analyze what types each of these headers point to and why they're needed.
 
 ---
 
-<details><summary class='collapse'><h3> PHDR </h3>
-</summary>
+### PHDR
 
 *This segment usually contains no sections*.
 
@@ -186,8 +189,8 @@ Isn't it surprising that there are so many program headers our simple C++ progra
 
 > ... specifies the location and size of the program header table itself, both in the file and in the memory image of the program.
 
-**Why do we need to know where the program table is? Why don't we just remove this metadata during runtime?**
-
+<details><summary markdown='span' class='collapse'>**Why do we need to know where the program table is? Why don't we just remove this metadata during runtime?**
+</summary>
 
 Simply stated - **we want to know where the executable begins**. The program table which includes `PHDR` itself could be relocated anywhere in memory if it was a PIE(position independent executable). To compute the location of the executable, we subtract the location where the header exists with the `VirtAddr` field it claims it's in. Here's the source code in libc:
 
@@ -199,12 +202,12 @@ case PT_PHDR:
     break;
 ...
 ```
+</details>
+{: .red}
 
 Here, `phdr` is the location of the actual header, and `ph->vaddr` is the field `VirtAddr` deserialized from the ELF file. By subtracting, we have the base location of the executable, which we can use to find where `some_segment` lives in memory by `main_map->l_addr + some_segment->p_vaddr`. Credits to the writer of [musl](https://stackoverflow.com/questions/61568612/is-jumping-over-removing-phdr-program-header-in-elf-file-for-executable-ok-if/61568759#61568759), which is a libc implementation.
 
 ---
-</details>
-{: .red}
 
 ### INTERP
 
@@ -224,6 +227,7 @@ to run, and runs it.  You may invoke this helper program directly from the comma
 ```
 </details>
 {: .red}
+
 
 *TL;DR: `ld.so` is the dynamic linker. Programs that load shared libraries will invoke this dynamic linker to run the shared library executable. You usually don't call this yourself, but you can. It's like an `exec`.*
 
