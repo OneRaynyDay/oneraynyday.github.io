@@ -63,8 +63,6 @@ As we'll see, the process is extremely complicated. We'll be answering all of th
 **ELF, which stands for Executable and Linkable Format**, is the format used for binaries and libraries that we compile with C and C++. It's in an unreadable binary format that can be analyzed with several GNU tools. To understand what the assembly outputs are, we must first be familiar with the general layout of an ELF file.
 
 <details><summary markdown='span'>**How can I tell that an executable is ELF?**
-{: .purple}
-
 </summary>
 You can identify an ELF file by using the `file` command:
 
@@ -73,6 +71,7 @@ You can identify an ELF file by using the `file` command:
 main: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=921d352e49a0e4262aece7e72418290189520782, for GNU/Linux 3.2.0, not stripped
 ```
 </details>
+{: .purple}
 
 <details><summary markdown='span'>**How can I get information about an ELF file?**
 {: .purple}
