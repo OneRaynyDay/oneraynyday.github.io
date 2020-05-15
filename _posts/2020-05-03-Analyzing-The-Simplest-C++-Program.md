@@ -531,6 +531,8 @@ The back end for `cc1plus` is responsible for taking whatever intermediate repre
 
 **After the compilation happens, organization of the memory space needs to be done.** If we have multiple translation units (think of them as `.o`'s or static libraries), how are we going to piece them together into a single executable? Well, that's the job for `ld`!
 
+---
+
 #### Disclaimer: Static linker and dynamic linkers are NOT the same thing!
 
 As you might have remembered from the `.DYNAMIC` section of the ELF file, we list a couple of needed dynamic dependencies. This is a job for the **dynamic linker**, to run those dependencies somewhere in memory during runtime. The **static linker** is responsible for organizing a ton of object files and static libraries into a single executable. **They are NOT the same!** The final executable ONLY has the path of the dependencies for the dynamic linker(literally a few strings), but it has the sections, code, everything from translation units for the static linker.
