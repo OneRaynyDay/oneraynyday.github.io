@@ -467,9 +467,9 @@ a = T1 + d;
 a = b ? c : d;
 --- Turns into ---
 if (b)
-	T1 = c;
+    T1 = c;
 else
-	T1 = d;
+    T1 = d;
 a = T1;
 ```
 
