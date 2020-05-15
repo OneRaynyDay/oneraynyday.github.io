@@ -177,7 +177,8 @@ Isn't it surprising that there are so many program headers our simple C++ progra
 
 ---
 
-### PHDR
+<details><summary markdown='span' class='collapse'>### PHDR
+</summary>
 
 *This segment usually contains no sections*.
 
@@ -185,8 +186,8 @@ Isn't it surprising that there are so many program headers our simple C++ progra
 
 > ... specifies the location and size of the program header table itself, both in the file and in the memory image of the program.
 
-<details><summary markdown='span' class='collapse'>**Why do we need to know where the program table is? Why don't we just remove this metadata during runtime?**
-</summary>
+**Why do we need to know where the program table is? Why don't we just remove this metadata during runtime?**
+
 
 Simply stated - **we want to know where the executable begins**. The program table which includes `PHDR` itself could be relocated anywhere in memory if it was a PIE(position independent executable). To compute the location of the executable, we subtract the location where the header exists with the `VirtAddr` field it claims it's in. Here's the source code in libc:
 
@@ -198,12 +199,12 @@ case PT_PHDR:
     break;
 ...
 ```
-</details>
-{: .red}
 
 Here, `phdr` is the location of the actual header, and `ph->vaddr` is the field `VirtAddr` deserialized from the ELF file. By subtracting, we have the base location of the executable, which we can use to find where `some_segment` lives in memory by `main_map->l_addr + some_segment->p_vaddr`. Credits to the writer of [musl](https://stackoverflow.com/questions/61568612/is-jumping-over-removing-phdr-program-header-in-elf-file-for-executable-ok-if/61568759#61568759), which is a libc implementation.
 
 ---
+</details>
+{: .red}
 
 ### INTERP
 
@@ -285,11 +286,8 @@ In reality, you don't need to do this - instead, use `ldd` to find the dependenc
 	/lib64/ld-linux-x86-64.so.2 => /usr/lib64/ld-linux-x86-64.so.2 (0x00007ff8ae3d9000)
 
 ```
-</details>
-{: .red}
 
-<details><summary markdown='span' class='collapse'>**(Follow-up) Why does `ldd` tell us we have two more shared libraries than the ELF file?**
-</summary>
+As a follow-up, why does `ldd` tell us we have two more shared libraries than the ELF file?
 
 `ldd` tells us there are 2 more dynamic dependencies, namely `linux-vdso.so.1` and `/lib64/ld-linux-x86-64.so.2`. These two are actually shared libraries that the kernel automatically maps into the address space of **all user-space applications**. `vdso` stands for "Virtual Dynamic Shared Object", and contains many utilities such as getting the current timestamp, which would be expensive if we were to jump to kernel-space to execute. The other shared library is the (in)famous dynamic linker. It is responsible for loading other shared objects into the main runtime's memory space.
 </details>
