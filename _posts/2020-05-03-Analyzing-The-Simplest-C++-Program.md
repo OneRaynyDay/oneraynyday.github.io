@@ -882,7 +882,7 @@ It was an incredibly deep rabbit hole that I dug myself into, but I'm glad I cam
 - Transaction memory models
 - ... and more.
 
-I've finished my undergrad in college without learning any of these concepts and I deeply regret not jumping in sooner to get a clear picture of exactly how a simple `int main(){}` program is created. Thanks for joining me on this journey and let me know if I'm missing anything in the investigation!
+I've always been interested in diving into these rabbit holes and I've learned some of the material in college, through Professor Eggert's class. If there's anyone I'd like to thank for sprouting my curiosity in the subjects discussed it would have to be him. Although there's still many questions, I can confidently say that this investigation has made me less afraid of the mysteries of executables, and I'm excited to delve deeper into more rabbit holes in `libc` and the gnu packages.
 
 # Appendix
 
