@@ -417,7 +417,11 @@ Pretty simple - we return the value 6. However, the AST that includes these symb
 
 ![main_ast2.png]({{ site.url }}/assets/main_ast2.png)
 
+<details><summary markdown='span' class='collapse'>**What does the above AST tell us?**
+</summary>
 As you can see, since we have two declarations of `int` types, we have two nodes called `DeclStmt`, and `3` is a `IntegerLiteral` type, which is a token that cannot be expanded to further symbols. The second branch adds the variable `x` and a literal together, and we first implicitly cast the variable `x` (which is a `DeclRefExpr`) even though it's of the same type. We also have a return statement which returns the `DeclRefExpr` corresponding to `y`. The tree is traversed by the compiler to eventually generate assembly code according to these instructions.
+</details>
+{: .red}
 
 As far as I know, you can't create a viewable AST from `g++`. However, we can get the control flow of the program and visualize it. To create the control flow for this program, use the `-fdump-tree-all-graph` mode during compilation and you'll get a ton of `.dot` files which you can visualize with `graphviz`. Here's our flow graph for `int main() {}`:
 
@@ -443,7 +447,10 @@ main ()
 }
 ```
 
-Well... that's a bit boring - it just creates a temporary variable to return 0 with. Let's take a look at what GIMPLE can actually do, by using two basic rules in an example:
+<details><summary markdown='span' class='collapse'>**Well... that's a bit boring, can you give a more interesting example?**
+</summary>
+
+Let's take a look at what GIMPLE can actually do, by using two basic rules in an example:
 
 **Any expression involving more than 3 operands is broken up:**
 
@@ -507,6 +514,8 @@ main ()
 ````
 
 As you can see, the unary operator decayed into an `if else` statement with `goto`'s, and we use three temporaries. `_1` is used to compute an intermediate value in the expression `x + y + 3`, `_2` is used to compute an intermediate value in the expression `x - y - 3`, and `iftmp.0` is a variable used to hold the values of either branches to be assigned to `z`. We actually need one more variable, `D.2074` to return a value of 0 for our main function. 
+</details>
+{: .red}
 
 GIMPLE is a simple language which allows for powerful optimizations. The simpler the language, the more optimization rules can be applied in general, and that's one of the reasons for C++'s blazing fast performance.
 
@@ -522,8 +531,6 @@ The back end for `cc1plus` is responsible for taking whatever intermediate repre
 
 **After the compilation happens, organization of the memory space needs to be done.** If we have multiple translation units (think of them as `.o`'s or static libraries), how are we going to piece them together into a single executable? Well, that's the job for `ld`!
 
----
-
 #### Disclaimer: Static linker and dynamic linkers are NOT the same thing!
 
 As you might have remembered from the `.DYNAMIC` section of the ELF file, we list a couple of needed dynamic dependencies. This is a job for the **dynamic linker**, to run those dependencies somewhere in memory during runtime. The **static linker** is responsible for organizing a ton of object files and static libraries into a single executable. **They are NOT the same!** The final executable ONLY has the path of the dependencies for the dynamic linker(literally a few strings), but it has the sections, code, everything from translation units for the static linker.
@@ -532,6 +539,10 @@ Usually, `ld` is considered the static linker. `ld.so` is the dynamic linker. Do
 
 ---
 
+The static linker reads a set of instructions in the **linker script**, which is a file written in a special language made only for `ld`.
+
+<details><summary markdown='span' class='collapse'>**How do we view the linker script for our simple program? (Example)**
+</summary>
 If we use the below flags with verbose linkage, we'll see the **linker script** actually being emitted (major parts redacted) in the `g++` driver:
 
 ```
@@ -580,15 +591,33 @@ SECTIONS
 
 As expected, the linker script tells us at the beginning that we are generating a 64-bit ELF file made for the 64 bit architecture. Upon execution of the program, we start at a symbol called `_start`, and our shared objects are found in the `SEARCH_DIR` paths(which can be modified by the `rpath` or `runpath` variables during compilation). Then, the linker script describes exactly how the sections are laid out in our executable.
 
-Understanding the syntax for this linker script is actually not too hard. When we look at the `INTERP` section:
+</details>
+{: .red}
+
+Understanding the syntax for the linker script is actually not too hard. The most important part of a linker script is in the `SECTIONS` block. Each scope explains the organization of a particular section. If we recall in the ELF header section, we need to put our interpreter information somewhere in memory, and each object file may have their own interpreter information. Where are we going to put our `.interp` section in the final executable? It usually looks like this in the linker script:
 
 ```
   .interp         : { *(.interp) }
 ```
 
-This is saying the `.interp` section is laid out by all the `.interp` sections the linker was able to find (in the other shared libraries) in some sequence. The `*` matches all section definitions found and the `(.interp)` selects that particular section specification. Similarly, we see the `.rela.dyn` section being defined by all of the `.rela.init` sub-sections first, and then the `.rela.text` sections laid out after. The reason the linker did not say `.rela.dyn : { *(.rela) }` is because it would've been laid out without the subsections (like `rela.init`) being grouped together.
+This is saying the `.interp` section is laid out by all the `.interp` sections the linker was able to find (in the other shared libraries) in some sequence. The `*` matches all section definitions found and the `(.interp)` selects that particular section specification.
 
-Then, we see the PLT sections along with the GOT being laid out with `.plt`, `.plt.got` and `.plt.sec` sections defined.
+Let's look at a slightly more complicated example (taken from the above generated linker script):
+
+```
+.rela.dyn       :
+    {
+      *(.rela.init)
+      *(.rela.text .rela.text.* .rela.gnu.linkonce.t.*)
+      ...
+      *(.rela.lrodata .rela.lrodata.* .rela.gnu.linkonce.lr.*)
+      *(.rela.ifunc)
+    }
+```
+
+Similarly, we see the `.rela.dyn` section being defined by all of the `.rela.init` sub-sections first, and then the `.rela.text` sections laid out after. The reason the linker did not say `.rela.dyn : { *(.rela) }` is because it would've been laid out without the subsections (like `rela.init`) being grouped together.
+
+Then, we see the PLT sections along with the GOT being laid out with `.plt`, `.plt.got` and `.plt.sec` sections defined in the example linker script above.
 
 **Then, we see two sections that we weren't familiar with before - `.init_array` and `.fini_array`.** These are actually calling the global constructors for statically initialized objects before the first line of code in `main` is actually executed, and calling the destructors for the same object upon exit of the `main` function. Within each translation unit (by definition, a single `.c/.cpp` file with all of the header files included) we will have `.init_array` sections containing global constructors. 
 
@@ -688,7 +717,13 @@ int __libc_start_main(int *(main) (int, char * *, char * *),
 
 Which seems to line up with the arguments the assembly code is preparing prior to calling the function. The pattern of moving arguments into registers and overflowing onto the stack via `push` is done here with the `ubp_av` variable, which looks at `argv` on the stack. 
 
+<details><summary markdown='span' class='collapse'>**Why is this `_start` function in our binary? We never declared it!**
+</summary>
+
 You might be curious why this `_start` along with many other symbols we'll inspect is included in our executable. These assembly instructions are created in an object file called `crt1.o` or `crt0.o`, which stands for "C Run Time". Depending on your operating system and compiler, you may get either of the two (but not both). These are linked statically with _all C and C++ executables_ as a bootstrapping mechanism to start the program. You can actually bypass the startup code if you pass in the flags `-nostdlib -nostdinc`, which removes all standard C libraries (including the runtime library).
+
+</details>
+{: .red}
 
 We also see the functions `__libc_csu_fini` and `__libc_csu_init` pointers being moved into registers as callee-side arguments into `__libc_start_main`. What are these?
 
@@ -700,6 +735,8 @@ Since these functions are fairly large, I'm too lazy to analyze them line-by-lin
 2. Call `main`
 3. Call `__libc_csu_fini` for the program level destructor handling
 
+<details><summary markdown='span' class='collapse'>**What is a program destructor? And how do I use it in C++?**
+</summary>
 Let's see the program level constructors and destructors in action. Let's write a simple program with functions with global constructor and destructor attributes:
 
 ```c++
@@ -747,6 +784,8 @@ __libc_csu_fini (void) { ... }
 ```
 
 To find out why historically we used `__libc_csu_fini` but now we delegate to `_dl_fini` is another rabbithole in itself, and I decided to stop my investigations there.
+</details>
+{: .red}
 
 One thing I thought was interesting from breakpointing `__libc_csu_init` was that it actually called a function `_init` first before calling our `dumb_constructor()` function. What is this function?
 
