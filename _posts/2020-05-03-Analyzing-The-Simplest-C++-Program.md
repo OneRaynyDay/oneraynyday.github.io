@@ -64,6 +64,7 @@ As we'll see, the process is extremely complicated. We'll be answering all of th
 
 <details><summary markdown='span'>**How can I tell that an executable is ELF?**
 {: .purple}
+
 </summary>
 You can identify an ELF file by using the `file` command:
 
@@ -75,6 +76,7 @@ main: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linke
 
 <details><summary markdown='span'>**How can I get information about an ELF file?**
 {: .purple}
+
 </summary>
 If it does say `ELF`, you can use `readelf` to analyze the headers like so:
 
