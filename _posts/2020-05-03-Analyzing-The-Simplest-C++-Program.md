@@ -177,7 +177,7 @@ Isn't it surprising that there are so many program headers our simple C++ progra
 
 ---
 
-<details><summary markdown='span' class='collapse'>### PHDR
+<details><summary markdown='span' class='collapse'><h3> PHDR </h3>
 </summary>
 
 *This segment usually contains no sections*.
