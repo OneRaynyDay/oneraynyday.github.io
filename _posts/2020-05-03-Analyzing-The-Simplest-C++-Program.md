@@ -7,13 +7,12 @@ layout: default
 ---
 
 <style>
-  .purple {
+  .red {
     color:inherit;
   }
-  .purple:hover {
-    color:rgb(107,79,187);
+  .red:hover {
+    color:rgb(129, 17, 18);
   }
-  
   .collapse:hover {
     cursor: pointer;
   }
@@ -42,7 +41,7 @@ CC=g++
 # Turn off optimizations because we want to be able to follow the assembly.
 FLAGS=-O0 -fverbose-asm -no-pie
 
-main: main.cpp
+main: main.cpppurple
 	$(CC) $(FLAGS) -o $@ $^ 
 
 dump: main
@@ -75,9 +74,9 @@ You can identify an ELF file by using the `file` command:
 main: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=921d352e49a0e4262aece7e72418290189520782, for GNU/Linux 3.2.0, not stripped
 ```
 </details>
-{: .purple}
+{: .red}
 
-<details><summary markdown='span'>**How can I get information about an ELF file?**
+<details><summary markdown='span' class='collapse'>**How can I get information about an ELF file?**
 </summary>
 If it does say `ELF`, you can use `readelf` to analyze the headers like so:
 
@@ -92,7 +91,7 @@ Section to Segment mapping:
 ...
 ```
 </details>
-{: .purple}
+{: .red}
 
 In ELF there is a concept of *sections* and *segments*. Sections reside within segments, which are contiguous pieces of memory in the runtime of the executable(the pieces may be 0 bytes). Some sections may appear in more than one segment and it's because two segments overlap(with the exception of two `LOAD` segments) with those sections in the intersection. We'll be going more in-depth on what each of these do throughout the blog. 
 
@@ -100,7 +99,7 @@ If we take a look at the ELF Header and Program Headers, we can get a lot of inf
 
 ## ELF Headers
 
-<details><summary markdown='span'>**What does our ELF header look like?**
+<details><summary markdown='span' class='collapse'>**What does our ELF header look like?**
 </summary>
 We see the following relevant details in the `ELF Header` section:
 
@@ -116,9 +115,9 @@ ELF Header:
 ...
 ```
 </details>
-{: .purple}
+{: .red}
 
-<details><summary markdown='span'>**What does each section do?**
+<details><summary markdown='span' class='collapse'>**What does each section do?**
 </summary>
 Let's go through some of these sections:
 
@@ -138,7 +137,7 @@ and `2's complement` is the representation of signed numbers. For any arbitrary 
 - The number of program headers is the number of segments that will be mapped into memory upon execution.
 - The number of section headers is the number of sections, each of which will be placed into one of the 11 segments.
 </details>
-{: .purple}
+{: .red}
 
 In general, the ELF headers tells us exactly what kind of platform this binary was compiled for, and a general summary of the structure of the ELF file.
 
@@ -146,7 +145,7 @@ In general, the ELF headers tells us exactly what kind of platform this binary w
 
 ## Program Headers
 
-<details><summary markdown='span'>**What does the `Program Header` section look like?**
+<details><summary markdown='span' class='collapse'>**What does the `Program Header` section look like?**
 </summary>
 We see the following relevant details in the `Program Header` section:
 
@@ -170,6 +169,7 @@ Program Headers:
   GNU_RELRO      ...
 ```
 </details>
+{: .red}
 
 Each program header is mapped to a segment containing zero or more sections. The `VirtAddr` field tells us where the segments will be located, `Flags` tells us the permission bits of each memory segment, and the `Type` field tells us exactly what that segment is used for. 
 
@@ -185,7 +185,8 @@ Isn't it surprising that there are so many program headers our simple C++ progra
 
 > ... specifies the location and size of the program header table itself, both in the file and in the memory image of the program.
 
-**Q: Why do we need to know where the program table is? Why don't we just remove this metadata during runtime?**
+<details><summary markdown='span' class='collapse'>**Why do we need to know where the program table is? Why don't we just remove this metadata during runtime?**
+</summary>
 
 Simply stated - **we want to know where the executable begins**. The program table which includes `PHDR` itself could be relocated anywhere in memory if it was a PIE(position independent executable). To compute the location of the executable, we subtract the location where the header exists with the `VirtAddr` field it claims it's in. Here's the source code in libc:
 
@@ -197,6 +198,8 @@ case PT_PHDR:
     break;
 ...
 ```
+</details>
+{: .red}
 
 Here, `phdr` is the location of the actual header, and `ph->vaddr` is the field `VirtAddr` deserialized from the ELF file. By subtracting, we have the base location of the executable, which we can use to find where `some_segment` lives in memory by `main_map->l_addr + some_segment->p_vaddr`. Credits to the writer of [musl](https://stackoverflow.com/questions/61568612/is-jumping-over-removing-phdr-program-header-in-elf-file-for-executable-ok-if/61568759#61568759), which is a libc implementation.
 
@@ -206,7 +209,11 @@ Here, `phdr` is the location of the actual header, and `ph->vaddr` is the field 
 
 *This segment usually contains one section: `.interp`*
 
-This specifies where the interpreter is for running shared library executables, and we even see the metadata tag `[Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]` in the program header. Let's call it and see what it says:
+This specifies where the interpreter is for running shared library executables, and we even see the metadata tag `[Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]` in the program header. 
+
+<details><summary markdown='span' class='collapse'>**What does this `ld-linux` thing do?**
+</summary>
+Thankfully, it is an executable with a very helpful help section. Let's call it and see what it says:
 
 ```
 ❯ /lib64/ld-linux-x86-64.so.2
@@ -214,8 +221,10 @@ Usage: ld.so [OPTION]... EXECUTABLE-FILE [ARGS-FOR-PROGRAM...]
 You have invoked `ld.so', the helper program for shared library executables... This helper program loads the shared libraries needed by the program executable, prepares the program
 to run, and runs it.  You may invoke this helper program directly from the command line to load and run an ELF executable file; this is like executing that file itself, but always uses this helper program from the file you specified, instead of the helper program file specified in the executable file you run.
 ```
+</details>
+{: .red}
 
-*TL;DR: `ld.so` is the dynamic linker. Programs that load shared libraries will invoke this dynamic linker to run the shared library executable. You usually don't call this yourself, but you can.*
+*TL;DR: `ld.so` is the dynamic linker. Programs that load shared libraries will invoke this dynamic linker to run the shared library executable. You usually don't call this yourself, but you can. It's like an `exec`.*
 
 We will be analyzing this in more detail later in the blog.
 
@@ -225,12 +234,20 @@ We will be analyzing this in more detail later in the blog.
 
 *This segment can contain many different sections, and there are multiple `LOAD`s per program. Some commonly occurring sections include `.interp .init .text .fini .dynamic .got .got.plt .data .bss `*
 
-**This is the most important segment for a typical C++ program.** It basically tells the linker to allocate a particular segment of memory with particular permissions. In the above, we see that there are 4 `LOAD` sections. This only happens for the newer versions of `ld`(the **static** linker). These segments in C++ are for the following(roughly):
+**This is the most important segment for a typical C++ program.** It basically tells the linker to allocate a particular segment of memory with particular permissions. In the above, we see that there are 4 `LOAD` sections. This only happens for the newer versions of `ld`(the **static** linker). 
+
+<details><summary markdown='span' class='collapse'>**Why do we need 4 sections?**
+</summary>
+We need different sections because two sections may need different permissions, and/or serve completely different purposes. These segments in C++ are for the following purposes(roughly):
 
 - `.text`, which holds the code to be executed. This should be in the `R E` section.
 - `.rodata`, which means *read-only data*. This usually holds static constants that are used in the program. This is in one of the `R` sections.
 - `.data`, which is read/write data containing the heap and the stack (usually). This is in the `RW` section. There's no execute because of buffer overflow security vulnerabilities leading to execution of code in the data section. In addition, we have `.bss` in this section as well. The name doesn't really mean too much now - you should just consider it as "zero-initialized data". It contains global variables and static variables that are zero-initialized. *The reason this segment exists is for space optimization in the executable itself*. (Imagine a lot of zero buffers adding space to the executable's size)
 - The ELF header information is in the other `R` section.
+</details>
+{: .red}
+
+The kernel is responsible here to memory map these segments into our runtime and set up our execution environment involving the stack, heap, our code, etc. Without this section, we would not have executables.
 
 ---
 
@@ -238,7 +255,11 @@ We will be analyzing this in more detail later in the blog.
 
 *This segment usually contains one section: `.dynamic`*
 
-If this executable requires dynamic linking, this field will point to us exactly what information is required. The `.dynamic` section in the ELF file shows you what shared libraries are required. To view that information, run:
+If this executable requires dynamic linking, this field will point to us exactly what information is required. The `.dynamic` section in the ELF file shows you what shared libraries are required. 
+
+<details><summary markdown='span' class='collapse'>**How do we find the required shared libraries in the ELF file?**
+</summary>
+To view that information, run:
 
 ```
 ❯ readelf -d main
@@ -264,12 +285,17 @@ In reality, you don't need to do this - instead, use `ldd` to find the dependenc
 	/lib64/ld-linux-x86-64.so.2 => /usr/lib64/ld-linux-x86-64.so.2 (0x00007ff8ae3d9000)
 
 ```
+</details>
+{: .red}
 
-**Q: Why does `ldd` tell us we have two more shared libraries than the ELF file?**
+<details><summary markdown='span' class='collapse'>**(Follow-up) Why does `ldd` tell us we have two more shared libraries than the ELF file?**
+</summary>
 
 `ldd` tells us there are 2 more dynamic dependencies, namely `linux-vdso.so.1` and `/lib64/ld-linux-x86-64.so.2`. These two are actually shared libraries that the kernel automatically maps into the address space of **all user-space applications**. `vdso` stands for "Virtual Dynamic Shared Object", and contains many utilities such as getting the current timestamp, which would be expensive if we were to jump to kernel-space to execute. The other shared library is the (in)famous dynamic linker. It is responsible for loading other shared objects into the main runtime's memory space.
+</details>
+{: .red}
 
-Linker issues are the biggest headache, involving `rpath, runpath, LD_LIBRARY_PATH`, and other variables that may or may not be baked into the `.dynamic` section of the ELF file. I highly recommend this [blogpost](https://amir.rachum.com/blog/2016/09/17/shared-libraries/) if you're running into a practical issue with dynamic linking `.so` files. It's out of the scope of this blog.
+Linker issues are the biggest headaches and they often involve `rpath, runpath, LD_LIBRARY_PATH`, and other variables that may or may not be baked into the `.dynamic` section of the ELF file. Knowing how this segment works is crucial to debugging many of the common linker errors. I highly recommend this [blogpost](https://amir.rachum.com/blog/2016/09/17/shared-libraries/) if you're running into a practical issue with dynamic linking `.so` files. It's out of the scope of this blog.
 
 ---
 
