@@ -13,6 +13,10 @@ layout: default
   .purple:hover {
     color:rgb(107,79,187);
   }
+  
+  .collapse:hover {
+    cursor: pointer;
+  }
 </style>
 
 
@@ -62,7 +66,7 @@ As we'll see, the process is extremely complicated. *To make this easier to navi
 
 **ELF, which stands for Executable and Linkable Format**, is the format used for binaries and libraries that we compile with C and C++. It's in an unreadable binary format that can be analyzed with several GNU tools. To understand what the assembly outputs are, we must first be familiar with the general layout of an ELF file.
 
-<details><summary markdown='span'>**How can I tell that an executable is ELF?**
+<details><summary markdown='span' class='collapse'>**How can I tell that an executable is ELF?**
 </summary>
 You can identify an ELF file by using the `file` command:
 
@@ -72,7 +76,6 @@ main: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linke
 ```
 </details>
 {: .purple}
-{ cursor: pointer; }
 
 <details><summary markdown='span'>**How can I get information about an ELF file?**
 </summary>
