@@ -52,8 +52,6 @@ As we'll see, the process is extremely complicated. We'll be answering all of th
 
 **ELF, which stands for Executable and Linkable Format**, is the format used for binaries and libraries that we compile with C and C++. It's in an unreadable binary format that can be analyzed with several GNU tools. To understand what the assembly outputs are, we must first be familiar with the general layout of an ELF file.
 
-**Q: How can you tell that an executable is ELF? If so, how do you inspect the metadata about it?**
-
 <details><summary markdown='span'>**How can I tell that an executable is ELF?**
 </summary>
 You can identify an ELF file by using the `file` command:
@@ -64,6 +62,8 @@ main: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linke
 ```
 </details>
 
+<details><summary markdown='span'>**How can I get information about an ELF file?**
+</summary>
 If it does say `ELF`, you can use `readelf` to analyze the headers like so:
 
 ```
@@ -75,8 +75,8 @@ Program Headers: ...
 Section to Segment mapping:
   Segment Sections: ...
 ...
-
 ```
+</details>
 
 In ELF there is a concept of *sections* and *segments*. Sections reside within segments, which are contiguous pieces of memory in the runtime of the executable(the pieces may be 0 bytes). Some sections may appear in more than one segment and it's because two segments overlap(with the exception of two `LOAD` segments) with those sections in the intersection. We'll be going more in-depth on what each of these do throughout the blog. 
 
@@ -84,6 +84,8 @@ If we take a look at the ELF Header and Program Headers, we can get a lot of inf
 
 ## ELF Headers
 
+<details><summary markdown='span'>**What does our ELF header look like?**
+</summary>
 We see the following relevant details in the `ELF Header` section:
 
 ```yaml
@@ -97,7 +99,10 @@ ELF Header:
   Number of section headers:         27
 ...
 ```
+</details>
 
+<details><summary markdown='span'>**What does each section do?**
+</summary>
 Let's go through some of these sections:
 
 - The `Magic` field contains the letters `ELF`, denoted by hexadecimals `45 4c 46`. To identify whether this file is an ELF format, you need to check the header magic here.
@@ -115,11 +120,14 @@ and `2's complement` is the representation of signed numbers. For any arbitrary 
 - The `Type` field tells us what kind of file it is. You might be surprised in this case to see that it's a `DYN` for shared object file when we're actually creating an executable. I was also baffled and asked on StackOverflow [here](https://stackoverflow.com/questions/61567439/why-is-my-simple-main-programs-elf-header-say-its-a-dyn-shared-object-file). TL;DR: We'll be adding the flag `-no-pie` to turn it into an `EXEC` type file. The rest of the blog will be based off of that assumption.
 - The number of program headers is the number of segments that will be mapped into memory upon execution.
 - The number of section headers is the number of sections, each of which will be placed into one of the 11 segments.
+</details>
 
 ---
 
 ## Program Headers
 
+<details><summary markdown='span'>**What does the `Program Header` section look like?**
+</summary>
 We see the following relevant details in the `Program Header` section:
 
 ```
@@ -141,6 +149,7 @@ Program Headers:
   GNU_STACK      ...
   GNU_RELRO      ...
 ```
+</details>
 
 Each program header is mapped to a segment containing zero or more sections. The `VirtAddr` field tells us where the segments will be located, `Flags` tells us the permission bits of each memory segment, and the `Type` field tells us exactly what that segment is used for. 
 
