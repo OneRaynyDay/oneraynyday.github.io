@@ -55,8 +55,8 @@ As we'll see, the process is extremely complicated. We'll be answering all of th
 **Q: How can you tell that an executable is ELF? If so, how do you inspect the metadata about it?**
 
 <details>
-
-  <summary>How can I tell that an executable is ELF?</summary>
+  <summary>How can I tell that an executable is ELF?
+  </summary>
 
 You can identify an ELF file by using the `file` command:
 

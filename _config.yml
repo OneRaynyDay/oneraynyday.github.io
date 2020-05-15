@@ -11,6 +11,8 @@ tagline:          'UCLA CS'
 description:      'CS & Math Stuff'
 url:              http://oneraynyday.github.io
 baseurl:          ''
+kramdown:
+  parse_block_html: true
 
 author:
   name:           'Ray Zhang'
