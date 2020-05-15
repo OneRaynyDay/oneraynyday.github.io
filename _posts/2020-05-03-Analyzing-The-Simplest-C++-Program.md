@@ -179,8 +179,6 @@ Each program header is mapped to a segment containing zero or more sections. The
 
 Isn't it surprising that there are so many program headers our simple C++ program? Let's analyze what types each of these headers point to and why they're needed.
 
----
-
 ### PHDR
 
 *This segment usually contains no sections*.
@@ -207,8 +205,6 @@ case PT_PHDR:
 
 Here, `phdr` is the location of the actual header, and `ph->vaddr` is the field `VirtAddr` deserialized from the ELF file. By subtracting, we have the base location of the executable, which we can use to find where `some_segment` lives in memory by `main_map->l_addr + some_segment->p_vaddr`. Credits to the writer of [musl](https://stackoverflow.com/questions/61568612/is-jumping-over-removing-phdr-program-header-in-elf-file-for-executable-ok-if/61568759#61568759), which is a libc implementation.
 
----
-
 ### INTERP
 
 *This segment usually contains one section: `.interp`*
@@ -233,8 +229,6 @@ to run, and runs it.  You may invoke this helper program directly from the comma
 
 We will be analyzing this in more detail later in the blog.
 
----
-
 ### LOAD
 
 *This segment can contain many different sections, and there are multiple `LOAD`s per program. Some commonly occurring sections include `.interp .init .text .fini .dynamic .got .got.plt .data .bss `*
@@ -253,8 +247,6 @@ We need different sections because two sections may need different permissions, 
 {: .red}
 
 The kernel is responsible here to memory map these segments into our runtime and set up our execution environment involving the stack, heap, our code, etc. Without this section, we would not have executables.
-
----
 
 ### DYNAMIC
 
@@ -299,23 +291,17 @@ As a follow-up, why does `ldd` tell us we have two more shared libraries than th
 
 Linker issues are the biggest headaches and they often involve `rpath, runpath, LD_LIBRARY_PATH`, and other variables that may or may not be baked into the `.dynamic` section of the ELF file. Knowing how this segment works is crucial to debugging many of the common linker errors. I highly recommend this [blogpost](https://amir.rachum.com/blog/2016/09/17/shared-libraries/) if you're running into a practical issue with dynamic linking `.so` files. It's out of the scope of this blog.
 
----
-
 ### NOTE 
 
 *This segment sometimes contains the sections: `.note.gnu.build-id .note.ABI-tag`, but it varies.*
 
 This is a very free-style section used by vendors or engineers to mark an object file with special information. This information is usually used to check for compatibility. A note segment is fairly small and we don't really need to care much about this.
 
----
-
 ### GNU_EH_FRAME
 
 *This segment usually contains one section: `.eh_frame_hdr`*
 
 In here, `EH` stands for exception handling. This is a sorted data structure that handles exceptions. It maps particular exceptions to particular function handlers, and helps with frame unwinding for those nice backtraces you get with `bt` in `gdb`.
-
----
 
 ### GNU_STACK
 
@@ -331,25 +317,28 @@ ET_EXEC RW- R-- RW- ./main
 
 We don't allow execution on the stack - good news!
 
----
-
 ### GNU_RELRO
 
 *This segment usually contains the sections `.dynamic .got` and sometimes `.init_array .fini_array`*
 
-This particular section is purely for protection against security vulnerabilities. ELF binaries have two maps called the **Global Offset Table**, otherwise known as GOT, and the **Procedure Linkage Table**, otherwise known as PLT. The GOT stores the exact address of global variables, functions and other symbols from a dynamically loaded shared library. These values in the GOT are subject to change when you re-compile the same program. When calling a function from the shared library, there may be many functions that are never called. To reduce the function resolution overhead, we create stubs in GOT for *lazy loaded functions*. The steps to resolve a lazy loaded function in runtime is outlined below:
+This particular section is purely for protection against security vulnerabilities. ELF binaries have two maps called the **Global Offset Table**, otherwise known as GOT, and the **Procedure Linkage Table**, otherwise known as PLT. 
+
+<details><summary markdown='span' class='collapse'>**What does the GOT and PLT do?**
+</summary>
+
+The GOT stores the exact address of global variables, functions and other symbols from a dynamically loaded shared library. These values in the GOT are subject to change when you re-compile the same program. When calling a function from the shared library, there may be many functions that are never called. To reduce the function resolution overhead, we create stubs in GOT for *lazy loaded functions*. The steps to resolve a lazy loaded function in runtime is outlined below:
 
 - User calls a lazy loaded function from a dynamically loaded library. This is an entry in the GOT (fixed, unlike the address of the actual function).
 - If the function is unresolved, stub code in the section jump to the PLT, where it redirects the call to the dynamic linker's `_dl_runtime_resolve` routine.
 - `_dl_runtime_resolve` populates the GOT section with the correct address of the function.
 - The address of the function is used.
 - Upon further invocation of the function, the GOT no longer needs to jump to the PLT, and immediately gives the address of the function.
+</details>
+{: .red}
 
-The reason I explained the above is to illustrate how important the PLT and GOT are, but I still haven't really explained what `GNU_RELRO` is. `RELRO` in this case stands for **RELocation Read Only**. These in-memory structures are read-write in order to save the resolved addresses of the loaded functions, but that lends itself to security vulnerabilities. What if the user can buffer-overflow and change the entry in the GOT to execute a function containing arbitrary code?
+The PLT and GOT are super important, and we need to stop malicious users from messing with it. `RELRO` in this case stands for **RELocation Read Only**. These in-memory structures are read-write in order to save the resolved addresses of the loaded functions, but that lends itself to security vulnerabilities. What if the user can buffer-overflow and change the entry in the GOT to execute a function containing arbitrary code?
 
 Well, one way is to make the function information loading _all eager_, and then turn the section read-only before the user can screw around with the GOT. Before user code can be executed, if the GOT is already populated then turning this section read-only with the [system call](http://man7.org/linux/man-pages/man2/mprotect.2.html) `mprotect` will prevent any vulnerabilities. Similar things are done for the dynamic section and the `.init_array` and `.fini_array` sections which we'll discuss in the Assembly dump section.
-
----
 
 ## Recap
 
