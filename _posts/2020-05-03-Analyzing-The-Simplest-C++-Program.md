@@ -55,7 +55,8 @@ As we'll see, the process is extremely complicated. We'll be answering all of th
 **Q: How can you tell that an executable is ELF? If so, how do you inspect the metadata about it?**
 
 <details>
-  <summary>How can I tell that an executable is ELF?</summary>
+  <summary>How can I tell that an executable is ELF?
+</summary>
 
 You can identify an ELF file by using the `file` command:
 
@@ -63,7 +64,6 @@ You can identify an ELF file by using the `file` command:
 ❯ file main
 main: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=921d352e49a0e4262aece7e72418290189520782, for GNU/Linux 3.2.0, not stripped
 ```
-  
 </details>
 
 
