@@ -435,7 +435,7 @@ Cool! So now we know that the compiler creates a flow graph and an AST. What hap
 
 ### Middle End
 
-The middle end of `cc1plus` is arguably the biggest and most important part. It's often working with an intermediate representation that is neither C++ nor assembly. It needs this extra step of compilation in order to make powerful optimizations. As mentioned, the middle end's language is called `GIMPLE`, which is a language involving max 3 operands in a single expression. Merrill's paper on GIMPLE explains the transformation from C++ to GIMPLE for some basic operations (Merill, 2003). Here's our simple program in GIMPLE:
+The middle end of `cc1plus` is arguably the biggest and most important part. It's often working with an intermediate representation that is neither C++ nor assembly. It needs this extra step of compilation in order to make powerful optimizations. As mentioned, the middle end's language is called `GIMPLE` (a subset of language called `GENERIC`), a language which involves max 3 operands in a single expression. Merrill's paper on GIMPLE explains the transformation from C++ to GIMPLE for some basic operations (Merill, 2003). Here's our simple program in GIMPLE:
 
 ```c++
 main ()
@@ -527,17 +527,41 @@ The back end for `cc1plus` is responsible for taking whatever intermediate repre
 
 ---
 
-## Static Linker (`ld`)
+## Assembler (`as`)
 
-**After the compilation happens, organization of the memory space needs to be done.** If we have multiple translation units (think of them as `.o`'s or static libraries), how are we going to piece them together into a single executable? Well, that's the job for `ld`!
+What we generate from `cc1plus` is not actually code that our computers can run. *There's a difference between assembly language and machine code!* Machine code is represented as binary and is unreadable to humans. It's usually the lowest level of language we work with until we play with circuits ourselves, since it can be read directly by the CPU to do instructions. 
+
+<details><summary markdown='span' class='collapse'>**So after we compile our C++ code to assembly language, the assembler should give us machine code right?**
+</summary>
+
+**Almost but not quite!** There is actually another intermediate language called *object code* that is a layer above machine code - **object code**. This is actually what assembler outputs. Object code is basically machine code that lives inside of an object file, with jump addressing parametrized for the linker to fill in. In position independent executables(`pie`), we don't know the absolute address of our `jmp` instructions in individual translation units(because we don't know what other `.o` files could be involved), so it's the static linker's job to fill this in.
+
+</details>
+{: .red}
 
 ---
 
-#### Disclaimer: Static linker and dynamic linkers are NOT the same thing!
+## Static Linker (`ld`)
+
+**After we generate the object code from `as`, organization of the memory space needs to be done.** If we have multiple translation units (think of them as `.o`'s or static libraries), how are we going to piece them together into a single executable? Well, that's the job for `ld`!
+
+---
+
+### Disclaimer: Static linker and dynamic linkers are NOT the same thing!
 
 As you might have remembered from the `.DYNAMIC` section of the ELF file, we list a couple of needed dynamic dependencies. This is a job for the **dynamic linker**, to run those dependencies somewhere in memory during runtime. The **static linker** is responsible for organizing a ton of object files and static libraries into a single executable. **They are NOT the same!** The final executable ONLY has the path of the dependencies for the dynamic linker(literally a few strings), but it has the sections, code, everything from translation units for the static linker.
 
 Usually, `ld` is considered the static linker. `ld.so` is the dynamic linker. Don't get them mixed up!
+
+<details><summary markdown='span' class='collapse'>**You may be asking - why do we need two different types of linkers? Can't we just have the static linker pull in all dependencies and create a standalone executable, or have the dynamic linker load all dependencies at runtime?**
+</summary>
+Yes - theoretically if every library you ever needed existed in both the static form (`.lib`, `.a`), and the shared form (`.so`), then you could have a 100% statically linked or 100% dynamically linked executable. But what practical issues arise from this?
+
+If we statically link everything, including the standard library, *we would be pulling in a lot of code to compile.* Your executable will turn out to be orders of magnitude larger than you originally expected. To run this on a computer with memory/disk constraints would be very difficult. In addition, libraries under active development constantly improve with new features with minimal disruption to the user interface. If you wanted to use the newer version of any library, *you'd have to compile the entire program again!* There are also some things you just cannot do with static linking, like the [`LD_PRELOAD` trick](http://man7.org/linux/man-pages/man8/ld.so.8.html) to replace system calls to the kernel, which requires dynamic linkage.
+
+On the other hand, dynamic linking is a huge nightmare with dependencies. You may have a slim executable with minimal code bloat, but everytime you wanted to run your executable on a brand new environment, you require *all of your dynamically linked libraries to exist*. On top of that, they need to be in the same discovery path, which is a convoluted set of rules involving environment variables and baked-in paths during compilation. In addition, **a key turn-off for dynamic linking is how slow it is.** In an adequately performant system, the fact that dynamically linked libraries require an indirection through the GOT/PLT could be costly. In addition, the compiler doesn't have the full picture of your procedures (all it has is the name of your shared library), so it can't make assumptions and propagate optimizations as it would with a static library. For financial firms, this is a dealbreaker.
+</details>
+{: .red}
 
 ---
 
@@ -632,7 +656,8 @@ So what did we learn about the `g++` driver?
 1. `g++` is composed of 3 main parts - the **preprocessor, the compiler and the linker.**
 2. The preprocessor replaces macros in our C++ program into actual values.
 3. The compiler uses a set of rules to traverse through our source code and generate the assembly code using the semantics of our program. It's super complicated.
-4. The linker gets instructions via the **linker script** to group our sections in the ELF object files in a particular organization to create an executable.
+4. The assembler takes the assembly code and generates **object code** (not machine code).
+5. The linker gets instructions via the **linker script** to group our sections in the ELF object files in a particular organization to create an executable.
 
 Below is a diagram for clarity:
 
