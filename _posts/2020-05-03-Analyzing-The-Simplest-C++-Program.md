@@ -529,7 +529,22 @@ The back end for `cc1plus` is responsible for taking whatever intermediate repre
 
 ## Assembler (`as`)
 
-What we generate from `cc1plus` is not actually code that our computers can run. *There's a difference between assembly language and machine code!* Machine code is represented as binary and is unreadable to humans. It's usually the lowest level of language we work with until we play with circuits ourselves, since it can be read directly by the CPU to do instructions. 
+What we generate from `cc1plus` is not actually code that our computers can run. *There's a difference between assembly language and machine code!* Machine code is represented as binary and is unreadable to humans. It's usually the lowest level of language we work with until we play with circuits ourselves, since it can be read directly by the CPU to do instructions. Here's an example of assembly that's "readable":
+
+```assembly
+# AT&T syntax
+push 0x0 # Push value 0 on the stack
+mov  %eax,0x0 # Move value 0 into register eax
+```
+
+And the corresponding machine code(in hex):
+
+```
+6a 00               
+b8 00 00 00 00
+```
+
+The latter is what we'll have in the final executable.
 
 <details><summary markdown='span' class='collapse'>**So after we compile our C++ code to assembly language, the assembler should give us machine code right?**
 </summary>
