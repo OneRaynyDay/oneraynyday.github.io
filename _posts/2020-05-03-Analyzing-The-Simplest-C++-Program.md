@@ -41,7 +41,7 @@ CC=g++
 # Turn off optimizations because we want to be able to follow the assembly.
 FLAGS=-O0 -fverbose-asm -no-pie
 
-main: main.cpppurple
+main: main.cpp
 	$(CC) $(FLAGS) -o $@ $^ 
 
 dump: main
