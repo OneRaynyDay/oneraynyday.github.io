@@ -548,8 +548,7 @@ The latter is what we'll have in the final executable.
 
 <details><summary markdown='span' class='collapse'>**So after we compile our C++ code to assembly language, the assembler should give us machine code right?**
 </summary>
-
-**Almost but not quite!** There is actually another intermediate language called *object code* that is a layer above machine code - **object code**. This is actually what assembler outputs. Object code is basically machine code that lives inside of an object file, with jump addressing parametrized for the linker to fill in. In position independent executables(`pie`), we don't know the absolute address of our `jmp` instructions in individual translation units(because we don't know what other `.o` files could be involved), so it's the static linker's job to fill this in.
+**Almost but not quite!** There is actually another intermediate language that is a layer above machine code - **object code**. This is actually what assembler outputs. Object code is basically machine code that lives inside of an object file, with jump addressing parametrized for the linker to fill in. In position independent executables(`pie`), we don't know the absolute address of our `jmp` instructions in individual translation units(because we don't know what other `.o` files could be involved), so it's the static linker's job to fill this in.
 
 </details>
 {: .red}
