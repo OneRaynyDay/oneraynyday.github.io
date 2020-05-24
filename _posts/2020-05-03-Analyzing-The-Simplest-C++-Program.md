@@ -534,7 +534,7 @@ What we generate from `cc1plus` is not actually code that our computers can run.
 ```assembly
 # AT&T syntax
 push 0x0 # Push value 0 on the stack
-mov  %eax,0x0 # Move value 0 into register eax
+mov  0x0, %eax # Move value 0 into register eax
 ```
 
 And the corresponding machine code(in hex):
