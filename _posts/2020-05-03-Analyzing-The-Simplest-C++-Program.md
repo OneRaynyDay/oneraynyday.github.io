@@ -209,7 +209,7 @@ Here, `phdr` is the location of the actual header, and `ph->vaddr` is the field 
 
 *This segment usually contains one section: `.interp`*
 
-This specifies where the interpreter is for running shared library executables, and we even see the metadata tag `[Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]` in the program header. 
+This specifies where the interpreter is for loading shared library executables, and we even see the metadata tag `[Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]` in the program header. 
 
 <details><summary markdown='span' class='collapse'>**What does this `ld-linux` thing do?**
 </summary>
@@ -225,7 +225,7 @@ to run, and runs it.  You may invoke this helper program directly from the comma
 {: .red}
 
 
-*TL;DR: `ld.so` is the dynamic linker. Programs that load shared libraries will invoke this dynamic linker to run the shared library executable. You usually don't call this yourself, but you can. It's like an `exec`.*
+*TL;DR: `ld.so` is the dynamic loader. Programs that load shared libraries will invoke this dynamic loader to load the shared library executable. You usually don't call this yourself, but you can. It's like an `exec`.*
 
 We will be analyzing this in more detail later in the blog.
 
