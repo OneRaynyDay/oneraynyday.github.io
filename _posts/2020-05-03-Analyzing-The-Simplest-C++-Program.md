@@ -667,7 +667,7 @@ Recall my [blogpost from a while back](https://oneraynyday.github.io/dev/2017/08
 
 So what did we learn about the `g++` driver?
 
-1. `g++` is composed of 3 main parts - the **preprocessor, the compiler and the linker.**
+1. `g++` is composed of 4 main parts - the **preprocessor, the compiler, the assembler and the linker.**
 2. The preprocessor replaces macros in our C++ program into actual values.
 3. The compiler uses a set of rules to traverse through our source code and generate the assembly code using the semantics of our program. It's super complicated.
 4. The assembler takes the assembly code and generates **object code** (not machine code).
