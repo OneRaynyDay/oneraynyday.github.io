@@ -203,13 +203,13 @@ case PT_PHDR:
 </details>
 {: .red}
 
-Here, `phdr` is the location of the actual header, and `ph->vaddr` is the field `VirtAddr` deserialized from the ELF file. By subtracting, we have the base location of the executable, which we can use to find where `some_segment` lives in memory by `main_map->l_addr + some_segment->p_vaddr`. Credits to the writer of [musl](https://stackoverflow.com/questions/61568612/is-jumping-over-removing-phdr-program-header-in-elf-file-for-executable-ok-if/61568759#61568759), which is a libc implementation.
+Here, `phdr` is the location of the actual header, and `ph->p_vaddr` is the field `VirtAddr` deserialized from the ELF file. By subtracting, we have the base location of the executable, which we can use to find where `some_segment` lives in memory by `main_map->l_addr + some_segment->p_vaddr`. Credits to the writer of [musl](https://stackoverflow.com/questions/61568612/is-jumping-over-removing-phdr-program-header-in-elf-file-for-executable-ok-if/61568759#61568759), which is a libc implementation.
 
 ### INTERP
 
 *This segment usually contains one section: `.interp`*
 
-This specifies where the interpreter is for running shared library executables, and we even see the metadata tag `[Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]` in the program header. 
+This specifies where the interpreter is for loading shared library executables, and we even see the metadata tag `[Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]` in the program header. 
 
 <details><summary markdown='span' class='collapse'>**What does this `ld-linux` thing do?**
 </summary>
@@ -225,7 +225,7 @@ to run, and runs it.  You may invoke this helper program directly from the comma
 {: .red}
 
 
-*TL;DR: `ld.so` is the dynamic linker. Programs that load shared libraries will invoke this dynamic linker to run the shared library executable. You usually don't call this yourself, but you can. It's like an `exec`.*
+*TL;DR: `ld.so` is the dynamic loader. Programs that load shared libraries will invoke this dynamic loader to load the shared library executable. You usually don't call this yourself, but you can. It's like an `exec`.*
 
 We will be analyzing this in more detail later in the blog.
 
@@ -534,7 +534,7 @@ What we generate from `cc1plus` is not actually code that our computers can run.
 ```assembly
 # AT&T syntax
 push 0x0 # Push value 0 on the stack
-mov  %eax,0x0 # Move value 0 into register eax
+mov  0x0, %eax # Move value 0 into register eax
 ```
 
 And the corresponding machine code(in hex):
@@ -667,7 +667,7 @@ Recall my [blogpost from a while back](https://oneraynyday.github.io/dev/2017/08
 
 So what did we learn about the `g++` driver?
 
-1. `g++` is composed of 3 main parts - the **preprocessor, the compiler and the linker.**
+1. `g++` is composed of 4 main parts - the **preprocessor, the compiler, the assembler and the linker.**
 2. The preprocessor replaces macros in our C++ program into actual values.
 3. The compiler uses a set of rules to traverse through our source code and generate the assembly code using the semantics of our program. It's super complicated.
 4. The assembler takes the assembly code and generates **object code** (not machine code).
