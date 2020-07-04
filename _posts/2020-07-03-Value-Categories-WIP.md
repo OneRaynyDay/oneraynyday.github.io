@@ -27,7 +27,7 @@ When you see the C++ standard's specification on [value categories](https://en.c
 
 ## CPL (early 1960s)
 
-According to the standards, the archaic language [CPL](https://en.wikipedia.org/wiki/CPL_(programming_language) used the terms *"right-hand mode"* and *"left-hand mode"* to describe the semantics of particular expressions. When an expression was evaluated in *left-hand mode*, it yielded an address, and when it was evaluated in *right-hand mode*, it yielded a "rule for the computation of a value". In C/C++, the rule is executed and we retrieve a value on the right hand side.
+According to the standards, the archaic language [CPL](https://en.wikipedia.org/wiki/CPL_(programming_language)) used the terms *"right-hand mode"* and *"left-hand mode"* to describe the semantics of particular expressions. When an expression was evaluated in *left-hand mode*, it yielded an address, and when it was evaluated in *right-hand mode*, it yielded a "rule for the computation of a value". In C/C++, the rule is executed and we retrieve a value on the right hand side.
 
 ## C (1970s)
 
@@ -62,7 +62,7 @@ int a, b; a = b; // the expression `b` is converted to an rvalue in `a = b`.
 
 Don't believe me? Here's the clang AST dump which clearly says that `b` is implicitly casted to an rvalue:
 
-```c++
+```
 ...    
     `-DeclStmt 0x559e56a03270 <line:3:5, col:14>
       `-VarDecl 0x559e56a031b8 <col:5, col:13> col:9 a 'int' cinit
@@ -184,7 +184,7 @@ integer(2) + integer(3); // `integer(2)` is a prvalue, and it is materialized as
 
 ---
 
-Life went on for C++ developers who came to live with these set of rules with `lvalue` and `rvalue`. However, C++11 came and value categories became much more complicated.
+Life went on for C++ developers who came to live with these set of rules with `lvalue` and `rvalue`. However, C++11 came and value categories became more complicated.
 
 ## C++11 (2011)
 
