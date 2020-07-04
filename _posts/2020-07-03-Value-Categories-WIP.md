@@ -1,6 +1,6 @@
 ---
 published: true
-title: [WIP] The Story of Value Categories in C++
+title: WIP - The Story of Value Categories in C++
 use_math: true
 category: dev
 layout: default
