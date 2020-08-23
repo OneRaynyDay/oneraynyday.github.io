@@ -184,8 +184,87 @@ integer(2) + integer(3); // `integer(2)` is a prvalue, and it is materialized as
 
 ---
 
-Life went on for C++ developers who came to live with these set of rules with `lvalue` and `rvalue`. However, C++11 came and value categories became more complicated.
+Life went on for C++ developers who came to live with these set of rules with *lvalue* and *rvalue*` (which is further broken up into *xvalues* and *prvalues*). However, C++11 came and value categories became more complicated.
 
 ## C++11 (2011)
 
-WIP
+One of the biggest optimizations to the C++ language paradigm occurred in C++11, in the form of **move semantics**. Prior to C++11, there was no standardized way to "rip out" contents from one object to be used in another. This is especially important for heavyweight data structures which may allocate large buffers transparently to hold objects, such as `std::vector<T>`. We can declare an object of type `T` "move-able" if it's an **rvalue reference**, denoted as `T&&`. We can also turn *lvalues* into *rvalue references* by using `std::move`. Let's run through a simple example:
+
+```
+#include <vector>
+#include <thread>
+#include <chrono>
+#include <iostream>
+
+template <typename T>
+class data_structure {
+public:
+    data_structure() = default;
+
+    data_structure(const data_structure<T>& clref) {
+        // Usually in here we would use `new` and `memcpy` or `std::copy(...)`
+        // to copy contents large buffers from clref to this object.
+        // We simulate that with a long sleep.
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+    data_structure(data_structure<T>&& rref) {
+        // Usually in here we would rip out the contents from rref and leave rref in
+        // a valid but unspecified state.
+        // This is as simple as a pointer assignment.
+        // It's on the order of nanoseconds.
+        std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+    }
+};
+
+int main() {
+    data_structure<int> d;
+    // Copying
+    std::cout << "Copying is slow..." << std::endl;
+    data_structure<int> cd(d);
+    // Moving
+    std::cout << "Moving is fast!" << std::endl;
+    data_structure<int> md(std::move(d));
+}
+```
+
+As you can see, `std::move(d)` essentially casts the current `data_structure<T>&` to `data_structure<T>&&`, and we trigger the **move constructor**. I talk about these *rvalue references* further in [this blogpost](https://oneraynyday.github.io/dev/2017/09/04/C++-Lvalue-Rvalue-Move/#move-semantics).
+
+So what does the above have anything to do with value categories? Recall that before C++11, we have the notions of *lvalues* and *rvalues* which are further divided into *xvalues and prvalues*. The reason *rvalues* were split into the two was because it could be temporarily materialized into an expiring value using const references. Similarly, with `std::move`, we can also consider the moved *lvalues* as expiring values(xvalues) as well. This is because when we allow the lvalue reference's contents to be moved, it usually should be considered expired as it's left in a *valid but unspecified state*.
+
+Now this is where things become a little confusing. Bear with me here. We have *rvalue* divided into *xvalue* and *prvalue*, then we should ideally divide *lvalue* into *xvalue* and *plvalue*(for "pure" lvalues) right? **No.** The standard commitee decided to call what we coined *plvalue* as *lvalue*, and _we_ coined *lvalue* as *glvalue*, or "generalized lvalue" which encompasses *xvalue* and *lvalue*. The tree looks like the following:
+
+![value_semantics]({{ site.url }}/assets/value_semantics_tree.png)
+
+<details><summary markdown='span' class='collapse'>*So why didn't the standard committee use the term plvalue?*
+</summary>
+To be fair, *prvalue* is "pure" in the sense that it does not have storage semantics(even though it may be stored in memory somewhere if it doesn't fit in registers), meanwhile *xvalues* have temporary storage. The concept of *plvalue* doesn't really make sense since both itself and *xvalues* would have storage semantics.
+In this sense, *lvalue* is a bucketing term for objects that don't expire. Generalized *lvalues* covers all objects, expire or not.
+</details>
+
+{: .red}
+
+This is basically an accurate picture of the current state of value semantics in C++. It's only confusing because of the names and historical context. If we see the evolution of these terms, it makes the biggeer picture a bit easier to understand. **To recap, any expression can either be glvalue or rvalue. glvalues can be either lvalues(non-expiring objects) or xvalues(expiring objects). rvalues can be either prvalues(no storage semantics) or xvalues(prvalues that temporarily materializes into objects).** 
+
+## C++17 (2017)
+
+The definition of what is a prvalue and what isn't has been changing frequently, but one of the most important and non-obvious things we should mention is the copy ellision rules involving returning prvalues. In C++17, copy ellision is now **guarranteed** for function calls returning prvalues, as in they never undergo temporary materialization. This is in a class of optimizations called RVO (return value optimization), and it has important implications. Previously, the standard didn't specify which one would be guarranteed to be faster than the other:
+
+```c++
+(1)
+Foo make_foo() {
+	Foo f;
+  // Move semantics
+	return std::move(f);
+}
+
+(2)
+Foo make_foo() {
+  // RVO
+	return Foo();
+}
+```
+
+Before, compiler writers could technically invoke the move in case (2), resulting in identical performance as (1). Now, they _must_ enforce zero-copy pass-by-value semantics on (2) since `Foo()` is a prvalue.
+
+
+
