@@ -190,7 +190,7 @@ Life went on for C++ developers who came to live with these set of rules with *l
 
 One of the biggest optimizations to the C++ language paradigm occurred in C++11, in the form of **move semantics**. Prior to C++11, there was no standardized way to "rip out" contents from one object to be used in another. This is especially important for heavyweight data structures which may allocate large buffers transparently to hold objects, such as `std::vector<T>`. We can declare an object of type `T` "move-able" if it's an **rvalue reference**, denoted as `T&&`. We can also turn *lvalues* into *rvalue references* by using `std::move`. Let's run through a simple example:
 
-```
+```c++
 #include <vector>
 #include <thread>
 #include <chrono>
