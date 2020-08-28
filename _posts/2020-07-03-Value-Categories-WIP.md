@@ -240,10 +240,9 @@ Now this is where things become a little confusing. Bear with me here. We have *
 To be fair, *prvalue* is "pure" in the sense that it does not have storage semantics(even though it may be stored in memory somewhere if it doesn't fit in registers), meanwhile *xvalues* have temporary storage. The concept of *plvalue* doesn't really make sense since both itself and *xvalues* would have storage semantics.
 In this sense, *lvalue* is a bucketing term for objects that don't expire. Generalized *lvalues* covers all objects, expire or not.
 </details>
-
 {: .red}
 
-This is basically an accurate picture of the current state of value semantics in C++. It's only confusing because of the names and historical context. If we see the evolution of these terms, it makes the biggeer picture a bit easier to understand. **To recap, any expression can either be glvalue or rvalue. glvalues can be either lvalues(non-expiring objects) or xvalues(expiring objects). rvalues can be either prvalues(no storage semantics) or xvalues(prvalues that temporarily materializes into objects).** 
+This is basically an accurate picture of the current state of value semantics in C++. It's only confusing because of the names and historical context. If we see the evolution of these terms, it makes the bigger picture a bit easier to understand. **To recap, any expression can either be glvalue or rvalue. glvalues can be either lvalues(non-expiring objects) or xvalues(expiring objects). rvalues can be either prvalues(no storage semantics) or xvalues(prvalues that temporarily materializes into objects).** 
 
 ## C++17 (2017)
 
