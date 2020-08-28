@@ -251,15 +251,15 @@ The definition of what is a prvalue and what isn't has been changing frequently,
 ```c++
 (1)
 Foo make_foo() {
-	Foo f;
-  // Move semantics
-	return std::move(f);
+    Foo f;
+    // Move semantics
+    return std::move(f);
 }
 
 (2)
 Foo make_foo() {
-  // RVO
-	return Foo();
+    // RVO
+    return Foo();
 }
 ```
 
