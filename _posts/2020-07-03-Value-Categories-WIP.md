@@ -246,7 +246,39 @@ This is basically an accurate picture of the current state of value semantics in
 
 ## C++17 (2017)
 
-The definition of what is a prvalue and what isn't has been changing frequently, but one of the most important and non-obvious things we should mention is the copy ellision rules involving returning prvalues. In C++17, copy ellision is now **guarranteed** for function calls returning prvalues, as in they never undergo temporary materialization. This is in a class of optimizations called RVO (return value optimization), and it has important implications. Previously, the standard didn't specify which one would be guarranteed to be faster than the other:
+The definition of what is a prvalue and what isn't has been changing frequently, but one of the most important and non-obvious things we should mention is the copy ellision rules involving returning prvalues. In C++17, copy ellision is now **guarranteed** for function calls returning prvalues, as in they never undergo temporary materialization. This is in a class of optimizations called RVO (return value optimization), and it has important implications. 
+
+### More on RVO
+
+Before we move forward, it's important to note what kinds of RVO there are. There is the type of RVO that works on lvalues, which is also called NRVO, for "named return value optimization". There is also another RVO that works on prvalues. Usually, RVO on prvalues is often more powerful than NRVO. **In the standard there is no RVO for xvalues.** This will be very important for our discussions.
+
+```c++
+#include <iostream>
+using namespace std;
+
+class obj {
+public:
+    obj() {
+        std::cout << "default ctor" << std::endl;   
+    }
+    obj(const obj& o) {
+        std::cout << "copy ctor" << std::endl;   
+    }
+    obj(obj&& o) {
+        std::cout << "move ctor" << std::endl;   
+    }
+};
+
+obj make() {
+    return obj();
+}
+
+int main() {
+    obj o = make();
+}
+```
+
+Previously, the standard didn't specify which one would be guarranteed to be faster than the other:
 
 ```c++
 (1)
