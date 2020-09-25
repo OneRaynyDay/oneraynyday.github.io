@@ -54,11 +54,11 @@ A group is a set of elements $S$ (e.g. integers) with an operator $\cdot$ (e.g. 
 
 1. *Identity*
 
-$$\exists e \in S \text{such that} e \cdot x = x \cdot e = x \ \forall x \in S$$
+$$\exists e \in S \ \text{such that}\  e \cdot x = x \cdot e = x \ \forall x \in S$$
 
 2. *Inverse*
 
-$$\forall x \ \exists x^{-1} \in S \text{such that} x \cdot x^{-1} = x^{-1} \cdot x = e$$
+$$\forall x \ \exists x^{-1} \in S \ \text{such that}\  x \cdot x^{-1} = x^{-1} \cdot x = e$$
 
 3. *Associativity*
 
@@ -97,16 +97,16 @@ When we’re defining features in the feature store, we typically ask the questi
 To illustrate:
 
 
-![left_temporal]({{ site.url }}/assets/left_temporal.png =250x)
+![left_temporal]({{ site.url }}/assets/left_temporal.png){:height="50%" width="50%"}
 
 
-![right_temporal]({{ site.url }}/assets/right_temporal.png =250x)
+![right_temporal]({{ site.url }}/assets/right_temporal.png){:height="50%" width="50%"}
 
 
 Left: Query log, Right: Raw, unaggregated data
 
 
-![joined_temporal]({{ site.url }}/assets/joined_temporal.png =250x)
+![joined_temporal]({{ site.url }}/assets/joined_temporal.png =250x){:height="50%" width="50%"}
 
 
 Output: Aggregated features
