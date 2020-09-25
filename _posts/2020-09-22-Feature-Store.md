@@ -114,13 +114,17 @@ When we’re defining features in the feature store, we typically ask the questi
 
 If we use the scenario 2 illustrated above as an example, we can have queries ask for "what is the total amount of money spent in some time range?", with the raw events as purchase events with its corresponding dollar amount. The queries would look like:
 
-![left_temporal]({{ site.url }}/assets/left_temporal.png){:height="40%" width="100%"}
+![left_temporal]({{ site.url }}/assets/left_temporal.png){:height="40%"}
 
 which is the left side of the join. Meanwhile, the raw events would look like:
 
-![right_temporal]({{ site.url }}/assets/right_temporal.png){:height="40%" width="100%"}
+![right_temporal]({{ site.url }}/assets/right_temporal.png){:height="40%"}
 
 which is the right side of the join. The join looks like:
+
+![joined_temporal]({{ site.url }}/assets/joined_temporal.png){:height="40%" width="40%"}
+
+which is essentially a left join aggregated by name. Below we show an equivalent example in SQL.
 
 ```sql
 CREATE TABLE IF NOT EXISTS `queries` (
@@ -149,19 +153,14 @@ INSERT INTO `events` (`id`, `name`, `time`, `value`) VALUES
   ('3', 'A', 15, 30),
   ('4', 'B', 36, 6),
   ('5', 'B', 49, 20);
-```
 
-```
 SELECT queries.name, queries.starttime, queries.endtime, SUM(events.value) FROM queries LEFT JOIN events ON queries.name = events.name
   AND queries.starttime <= events.time AND events.time <= queries.endtime
   GROUP BY queries.name
 ;
 ```
 
-![joined_temporal]({{ site.url }}/assets/joined_temporal.png){:height="40%" width="40%"}
-
-
-Output: Aggregated features
+The problem statement, formulated in SQL, only accounts for the offline application for the feature store and not the online applications. We discuss efficient ways to solve the offline feature store below, and try to unify the solution in the online case.
 
 
 # Query Engine (Offline)
