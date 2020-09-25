@@ -96,11 +96,9 @@ When we’re defining features in the feature store, we typically ask the questi
 
 To illustrate:
 
-
-![left_temporal]({{ site.url }}/assets/left_temporal.png){:height="40%" width="40%"}
-
-
-![right_temporal]({{ site.url }}/assets/right_temporal.png){:height="40%" width="40%"}
+Left (query)                   | Right (raw events)
+:-------------------------:|:-------------------------:
+![left_temporal]({{ site.url }}/assets/left_temporal.png){:height="40%" width="40%"} | ![right_temporal]({{ site.url }}/assets/right_temporal.png){:height="40%" width="40%"}
 
 
 Left: Query log, Right: Raw, unaggregated data
