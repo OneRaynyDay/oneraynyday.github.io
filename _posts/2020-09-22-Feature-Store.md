@@ -92,13 +92,27 @@ An abelian group is one that contains this extra property:
 
 $$\forall x, y \in S,\ x \cdot y = y \cdot x$$
 
-If we consider the aggregated statistic of “dollars spent in the past 7 days” using “dollars spent in a day” datapoints, we can show how each of these properties are important. In this case, we can model the set as all real numbers, and the binary operator as addition. Formally we can denote it as $(\mathbb{R}, +)$.
+If we consider the aggregated statistic of “dollars spent in the past 7 days” by summing “dollars spent in a day” datapoints, we can show how each of these properties are important. In this case, we can model the set as all real numbers, and the binary operator as addition. Formally we can denote it as $(\mathbb{R}, +)$.
 
-The identity of the group is 0, and it’s used to initialize a new user who just joined the platform and has spent no money on it. We want closure so that summing the past 7 days’ worth of transactions will still be a representable dollar amount. Associativity and commutativity are required so that the order of transactions or the way we group them for aggregation do not change our total sum.
+The identity of the group is 0, and it’s used to initialize a new user who just joined the platform and has spent no money on it. We want closure so that summing the past 7 days’ worth of transactions will still be a dollar amount. Associativity and commutativity are required so that the order of transactions or the way we group them for aggregation do not change our total sum.
 
-So what is inverse used for? Well, it’s not actually **required** in the sense that we can still compute the total sum amount in the past 7 days without it. Instead, it is a powerful tool we can use to compute our statistics _faster._ Suppose we have a cumulative sum from when the user registered until times between then and today. It would be easy to compute the 7 days window by simply subtracting the cumulative sum until today with the cumulative sum until 7 days ago. Subtraction here is essentially adding the inverse element. Note that if we chose our set as $\mathbb{R}_{\geq 0}$ then inverse would not apply and we would not have an abelian group. Instead we’ll have something called a **commutative monoid.**
+So what is inverse used for? Well, it’s not actually **required** in the sense that we can still compute the total sum amount in the past 7 days without it. Instead, it is a powerful tool we can use to compute our statistics _faster._ Suppose we have a cumulative sum from when the user registered until times between then and today. It would be easy to compute the 7 days window by simply subtracting the cumulative sum until today with the cumulative sum until 7 days ago. Subtraction here is essentially adding the inverse element. We discuss this exact algorithm in more detail [later in the blog](#array-based-algorithms). Note that if we chose our set as $\mathbb{R}_{\geq 0}$ then inverse would not apply and we would not have an abelian group. Instead we’ll have something called a **commutative monoid.**
 
 Some useful examples of abelian group operators with sets as real numbers include addition/subtraction, multiplication/division, etc. With the set defined as $\mathbb{R} \times \mathbb{N}$, we can define averaging as an operator for this to be an abelian group as well.
+
+<details><summary markdown='span' class='collapse'>**How can average be represented as an abelian group?**
+</summary>
+Average can be expressed as an abelian group by using a 2-tuple in the form $(s, n)$, where $s \in \mathbb{R}, n \in \mathbb{N}$. When a value $s_t$ comes in and we want to update the average, we simply perform the following:
+
+$$(s, n) + (s_t, 1) = (s+s_t, n+1)$$
+
+As in, we increment the count by 1, and we add the value to the running sum. The inverse operation can be used to get an average of a time interval $[a, b]$ by the following:
+
+$$(s_b, n_b) - (s_{a-1}, n_{a-1}) = (s_b-s_{a-1}, n_b-n_{a-1}) = (s_{[a,b]}, n_{[a,b]})$$
+
+We used +/- above to make the example less abstract, but in reality we're adding by the inverse element when - is used above.
+</details>
+{: .red}
 
 
 ## Commutative Monoids
@@ -155,8 +169,7 @@ INSERT INTO `events` (`id`, `name`, `time`, `value`) VALUES
 
 SELECT queries.name, queries.starttime, queries.endtime, SUM(events.value) FROM queries LEFT JOIN events ON queries.name = events.name
   AND queries.starttime <= events.time AND events.time <= queries.endtime
-  GROUP BY queries.name
-;
+  GROUP BY queries.name;
 ```
 
 The problem statement, formulated in SQL, only accounts for the offline application for the feature store and not the online applications. We discuss efficient ways to solve the offline feature store below, and try to unify the solution in the online case.
@@ -188,11 +201,11 @@ It is important to note that we are sacrificing precision for speed in the trade
 
 ## Tree-based Algorithms
 
-Suppose we have a commutative monoid(note that abelian groups are also commutative monoids), then we can use a segment tree for range queries. Given the number of bins for timestamps $G$ as before, we can construct the segment tree with all events in $O(Nlog(G))$ time and query M times for $O(Mlog(G))$ time. Lazy propagation is an important optimization to prevent redundant updates down the tree. In total, we have $O((N+M) log(G))$ for runtime and $O(G)$ for space.
+Suppose we have a commutative monoid(note that abelian groups are also commutative monoids), then we can use a segment tree for range queries. Given the number of bins for timestamps $G$ as before, we can construct the segment tree with all events in $O(Nlog(G))$ time and query M times for $O(Mlog(G))$ time. In total, we have $O((N+M) log(G))$ for runtime and $O(G)$ for space.
 
 ![interval_tree_range_query]({{ site.url }}/assets/interval_tree_range_query.png){:height="50%" width="50%"}
 
-Here, N is the number of discretized timestamps. Not to be confused with N as the number of events. Note that we can use [fenwick trees](https://en.wikipedia.org/wiki/Fenwick_tree) for the same purpose. To keep this blog fairly self-contained, we only discuss segment trees.
+Here, N is the number of discretized timestamps. Not to be confused with N as the number of events. This is a very typical use-case of segment trees, and so typical optimizations like lazy propagation play important practical roles to prevent redundant updates. Note that we can use [fenwick trees](https://en.wikipedia.org/wiki/Fenwick_tree) for the same purpose. To keep this blog fairly self-contained, we only discuss segment trees.
 
 
 ### Alternative Segment Tree Representation
@@ -294,7 +307,7 @@ There are many types of distributed segment trees out there, like ones based off
 
 #### A Case Study
 
-Suppose we have an online system running with the above design for 1 year, and events are ingested at a rate of 100/sec. Furthermore, we assume each event’s timestamp is unique, with granularity up to the millisecond scale. We’re interested in the time it takes to query for an aggregate from 10 days($\sim 2^{30}$ milliseconds) ago until now. In total, we have $100 * (60 * 60 * 24 * 365) \approx 3 * 10^9$ events stored, or number of leaves in our segment tree. Suppose we perform the storage optimization so that only 1 month of aggregates are stored in memory, and the rest is on disk in an optimized format. Then we have $\sim 3 \* 10^8$ events in memory and $\sim2.7 \* 10^9$ on disk. If we represent each node in the segment tree with $128$ bytes (which is, for most cases, is reasonable except for topK, HyperLogLog, etc), then we’ve only used on the order of $\sim3 \* 10^{10}$ bytes, or $\sim 30$GBs, which is reasonable for a typical r4.8xlarge server machine with $244$ GB of RAM (a full binary segment tree only doubles the number of nodes, ours being sparse is a slightly higher constant factor overhead). We also have roughly $\sim 244$GB times a constant factor(to create an in-disk segment tree) worth of events stored in block storage, typically on SSD’s.
+Suppose we have an online system running with the above design for 1 year, and events are ingested at a rate of 100/sec. Furthermore, we assume each event’s timestamp is unique, with granularity up to the millisecond scale. We’re interested in the time it takes to query for an aggregate from 10 days($\sim 2^{30}$ milliseconds) ago until now. In total, we have $100 * (60 * 60 * 24 * 365) \approx 3 * 10^9$ events stored, or number of leaves in our segment tree. Suppose we perform the storage optimization so that only 1 month of aggregates are stored in memory, and the rest is on disk in an optimized format. Then we have $\sim 3 \* 10^8$ events in memory and $\sim2.7 \* 10^9$ on disk. If we represent each node in the segment tree with $128$ bytes (which for most cases is reasonable except for topK, HyperLogLog, etc), then we’ve only used on the order of $\sim3 \* 10^{10}$ bytes, or $\sim 30$GBs, which is reasonable for a typical r4.8xlarge server machine with $244$ GB of RAM (a full binary segment tree only doubles the number of nodes, ours being sparse is a slightly higher constant factor overhead). We also have roughly $\sim 244$GB times a constant factor(to create an in-disk segment tree) worth of events stored in block storage, typically on SSD’s.
 
 Given a query of 10 days, the entire query can be done in memory. Since 10 days is equal to $\sim 2^{30}$ milliseconds, the subtree’s depth is at most 30. Suppose in the worst case, we query for $log(2^{30})=30$ nodes in our data structure for the range query, each of which is descending by 1 level. In this worst case of a binary segment tree, we require $2*logM$ nodes to traverse, which in this case is 60. Equivalently, it is the number of memory locations we need to access, all relatively far away from each other. Suppose we don’t run into any page faults, then the worst case scenario is 60 local DRAM accesses, which is roughly on the scale of $100ns$ each. In total, the query would have taken 6 microseconds just for the tree traversal itself. However, a single hop even within the same AWS VPC is on the order of milliseconds as discussed [here](https://stackoverflow.com/questions/54190445/aws-latency-between-zones-within-a-same-region#:~:text=For%20your%20use%20case%2C%20database,the%20same%20zone%20as%20RDS.), so it is fairly negligible in the typical service oriented architecture that many companies are converging on. Unless the feature store needs to be an embedded application(in which case we do not need a network hop) and we are dealing with sub-microsecond latency requirements, this approach operates well within requirements.
 
