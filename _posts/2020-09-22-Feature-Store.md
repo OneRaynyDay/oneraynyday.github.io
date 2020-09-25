@@ -110,7 +110,9 @@ As in, we increment the count by 1, and we add the value to the running sum. The
 
 $$(s_b, n_b) - (s_{a-1}, n_{a-1}) = (s_b-s_{a-1}, n_b-n_{a-1}) = (s_{[a,b]}, n_{[a,b]})$$
 
-We used +/- above to make the example less abstract, but in reality we're adding by the inverse element when - is used above.
+The 2-tuple isn't exactly an "average", but contains enough information to retrieve an average, simply by $\frac{s}{n} \in \mathbb{R}$. We call the tuple an **intermediate representation, or IR**. Many aggregate types use IR's that are bigger than a typical integer, and can go up to hundreds of bytes in practical applications. For reference, check out [HyperLogLog](https://en.wikipedia.org/wiki/HyperLogLog), which is an approximate count aggregate which uses tunable IR sizes.
+
+NOTE: We used +/- above to make the example less abstract, but in reality we're adding by the inverse element when - is used above.
 </details>
 {: .red}
 
