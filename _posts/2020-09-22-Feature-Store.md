@@ -70,25 +70,25 @@ Typical aggregation types belong in two categories, which we can rigorously defi
 
 A group is a set of elements $S$ (e.g. integers) with an operator $\cdot$ (e.g. addition) such that the follow properties hold:
 
-1. *Identity*
+- *Identity*
 
 $$\exists e \in S \ \text{such that}\  e \cdot x = x \cdot e = x \ \forall x \in S$$
 
-2. *Inverse*
+- *Inverse*
 
 $$\forall x \ \exists x^{-1} \in S \ \text{such that}\  x \cdot x^{-1} = x^{-1} \cdot x = e$$
 
-3. *Associativity*
+- *Associativity*
 
 $$\forall x,y,z \in S,\ (x \cdot y) \cdot z = x \cdot (y \cdot z)$$
 
-4. *Closure*
+- *Closure*
 
 $$\forall x, y \in S, \ x \cdot y \in S$$
 
 An abelian group is one that contains this extra property:
 
-*Commutativity* (for Abelian groups only)
+- *Commutativity* (for Abelian groups only)
 
 $$\forall x, y \in S,\ x \cdot y = y \cdot x$$
 
