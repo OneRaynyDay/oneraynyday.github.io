@@ -6,6 +6,24 @@ category: CS
 layout: default
 ---
 
+# Table of Contents
+
+* TOC
+{:toc}
+
+<style>
+  .red {
+    color:inherit;
+  }
+  .red:hover {
+    color:rgb(129, 17, 18);
+  }
+  .collapse:hover {
+    cursor: pointer;
+  }
+</style>
+
+
 # What is a Feature Store?
 
 A machine learning model does not typically use raw data as its features because of the following:
@@ -94,15 +112,51 @@ Some useful examples of commutative monoid operators with sets as real numbers i
 
 When we’re defining features in the feature store, we typically ask the question “What is the _&lt;aggregation statistic>_ for _&lt;key>_ from _&lt;time A>_ to _&lt;time B>_?”. This can be phrased by a join between the query and the raw data to create aggregated features. Semantically, the left side of the join is the query, the right side is the raw data, and the output is the aggregated features.
 
-To illustrate:
+If we use the scenario 2 illustrated above as an example, we can have queries ask for "what is the total amount of money spent in some time range?", with the raw events as purchase events with its corresponding dollar amount. The queries would look like:
 
-Left (query)                   | Right (raw events)
-:-------------------------:|:-------------------------:
-![left_temporal]({{ site.url }}/assets/left_temporal.png){:height="40%" width="40%"} | ![right_temporal]({{ site.url }}/assets/right_temporal.png){:height="40%" width="40%"}
+![left_temporal]({{ site.url }}/assets/left_temporal.png){:height="40%" width="100%"}
 
+which is the left side of the join. Meanwhile, the raw events would look like:
 
-Left: Query log, Right: Raw, unaggregated data
+![right_temporal]({{ site.url }}/assets/right_temporal.png){:height="40%" width="100%"}
 
+which is the right side of the join. The join looks like:
+
+```sql
+CREATE TABLE IF NOT EXISTS `queries` (
+  `id` int(6) unsigned NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `starttime` int(3) NOT NULL,
+  `endtime` int(3) NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+INSERT INTO `queries` (`id`, `name`, `starttime`, `endtime`) VALUES
+  ('1', 'A', 1, 5),
+  ('2', 'B', 2, 3);
+
+CREATE TABLE IF NOT EXISTS `events` (
+  `id` int(6) unsigned NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `time` int(3) NOT NULL,
+  `value` int(3) NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+INSERT INTO `events` (`id`, `name`, `time`, `value`) VALUES
+  ('1', 'A', 3, 10),
+  ('2', 'B', 23, 70),
+  ('3', 'A', 15, 30),
+  ('4', 'B', 36, 6),
+  ('5', 'B', 49, 20);
+```
+
+```
+SELECT queries.name, queries.starttime, queries.endtime, SUM(events.value) FROM queries LEFT JOIN events ON queries.name = events.name
+  AND queries.starttime <= events.time AND events.time <= queries.endtime
+  GROUP BY queries.name
+;
+```
 
 ![joined_temporal]({{ site.url }}/assets/joined_temporal.png){:height="40%" width="40%"}
 
