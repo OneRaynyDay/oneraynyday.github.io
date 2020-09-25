@@ -122,7 +122,7 @@ which is the left side of the join. Meanwhile, the raw events would look like:
 
 which is the right side of the join. The join looks like:
 
-![joined_temporal]({{ site.url }}/assets/joined_temporal.png){:height="40%" width="40%"}
+![joined_temporal]({{ site.url }}/assets/joined_temporal.png){:height="40%"}
 
 which is essentially a left join aggregated by name. Below we show an equivalent example in SQL.
 
