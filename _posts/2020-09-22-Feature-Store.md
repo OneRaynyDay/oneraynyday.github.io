@@ -114,10 +114,10 @@ When we’re defining features in the feature store, we typically ask the questi
 
 If we use the scenario 2 illustrated above as an example, we can have queries ask for "what is the total amount of money spent in some time range?", with the raw events as purchase events with its corresponding dollar amount. The queries would look like:
 
-![left_temporal]({{ site.url }}/assets/left_temporal.png){:height="40%" width="40%"}
+![left_temporal]({{ site.url }}/assets/left_temporal.png){:height="25%" width="25%"}
 which is the left side of the join. Meanwhile, the raw events would look like:
 
-![right_temporal]({{ site.url }}/assets/right_temporal.png){:height="40%" width="40%"}
+![right_temporal]({{ site.url }}/assets/right_temporal.png){:height="25%" width="25%"}
 
 which is the right side of the join. The join looks like:
 
