@@ -97,16 +97,16 @@ When we’re defining features in the feature store, we typically ask the questi
 To illustrate:
 
 
-![left_temporal]({{ site.url }}/assets/left_temporal.png){:height="50%" width="50%"}
+![left_temporal]({{ site.url }}/assets/left_temporal.png){:height="40%" width="40%"}
 
 
-![right_temporal]({{ site.url }}/assets/right_temporal.png){:height="50%" width="50%"}
+![right_temporal]({{ site.url }}/assets/right_temporal.png){:height="40%" width="40%"}
 
 
 Left: Query log, Right: Raw, unaggregated data
 
 
-![joined_temporal]({{ site.url }}/assets/joined_temporal.png =250x){:height="50%" width="50%"}
+![joined_temporal]({{ site.url }}/assets/joined_temporal.png =250x){:height="40%" width="40%"}
 
 
 Output: Aggregated features
@@ -128,7 +128,7 @@ We are considering an offline algorithm in which the queries and events will not
 Suppose we use the abelian group $(\mathbb{R}, +)$ for example, and we have $M$ queries and $N$ events. Suppose we have a discretized timestamp (by minutes, for example), then denote $G$ as the number of bins we can put timestamps into. We can have the cumulative sum from some starting time until now with the aggregates we’re interested in. Since inverses exist, we only need to find two cumulative sums and find the difference as the range query:
 
 
-![array_based_cumsum]({{ site.url }}/assets/array_based_cumsum.png)
+![array_based_cumsum]({{ site.url }}/assets/array_based_cumsum.png){:height="40%" width="40%"}
 
 
 This algorithm is fast because it uses the fact that inverses exist in abelian groups. If $G$ is small, this array can fit in memory. To populate all events, it takes $O(max(N,G))$, since we’ll need to create a cumulative sum array after putting $N$ elements into the array bins. Each query is $O(1)$, or $O(M)$ in total. Thus, the overall runtime is $O(max(N,G) + M)$. The space complexity would be $O(G)$ since there are $G$ elements in the array.
@@ -140,7 +140,7 @@ It is important to note that we are sacrificing precision for speed in the trade
 
 Suppose we have a commutative monoid(note that abelian groups are also commutative monoids), then we can use a segment tree for range queries. Given the number of bins for timestamps $G$ as before, we can construct the segment tree with all events in $O(Nlog(G))$ time and query M times for $O(Mlog(G))$ time. Lazy propagation is an important optimization to prevent redundant updates down the tree. In total, we have $O((N+M) log(G))$ for runtime and $O(G)$ for space.
 
-![interval_tree_range_query]({{ site.url }}/assets/interval_tree_range_query.png)
+![interval_tree_range_query]({{ site.url }}/assets/interval_tree_range_query.png){:height="40%" width="40%"}
 
 Here, N is the number of discretized timestamps. Not to be confused with N as the number of events. Note that we can use [fenwick trees](https://en.wikipedia.org/wiki/Fenwick_tree) for the same purpose. To keep this blog fairly self-contained, we only discuss segment trees.
 
@@ -149,7 +149,7 @@ Here, N is the number of discretized timestamps. Not to be confused with N as th
 
 An observation we should make is that we don’t care about the order of elements on the time scale as long as we know which queries should take it into account(this implies that queries are fixed). One optimization we can make to the segment tree is to have leaves represent the spaces between endpoints of intervals in the query rather than the integral timestamps:
 
-![segment_tree_optimization]({{ site.url }}/assets/segment_tree_optimization.png)
+![segment_tree_optimization]({{ site.url }}/assets/segment_tree_optimization.png){:height="40%" width="40%"}
 
 For any $M$ number of queries, we have at most $2M$ leaves in this segment tree, thus insertion and query will take $O(Mlog(M))$. The total runtime is $O((N+M)log(M))$, which is independent of $G$. The space complexity is now $O(M)$.
 
@@ -160,7 +160,7 @@ Skiplists are data structures which allow access of a particular element in $O(l
 Before we accept events, we tile the timeline into window sizes, each window size geometrically larger than the previous (refer to the below diagram for an example). For any event, it would need to update a single window in each granularity (which is a logarithmic amount of updates). This algorithm works for any commutative monoids. In practice, the precision is limited to some granularity and we then create special intervals which Zipline calls **accumulations** which are query-specific intervals between the smallest granularity and the endpoint, which are used to construct the “tails'' of intervals that do not fit nicely into the smallest granularity.
 
 
-![skiplist]({{ site.url }}/assets/skiplist.png)
+![skiplist]({{ site.url }}/assets/skiplist.png){:height="40%" width="40%"}
 
 
 The accumulations are used potentially to compute the remainders in the start and end of intervals.
@@ -168,7 +168,7 @@ The accumulations are used potentially to compute the remainders in the start an
 Without accumulations, the overall algorithm is $O((M+N) log(G))$ time complexity and $O(G)$ space complexity. With accumulations, we must deal with the case that there are multiple interval endpoints that lie between the smallest granularity. In the case that all intervals lie within the same accumulation, the case degenerates into the above tree algorithm.
 
 
-![skiplist_cumulations]({{ site.url }}/assets/skiplist_cumulations.png)
+![skiplist_cumulations]({{ site.url }}/assets/skiplist_cumulations.png){:height="40%" width="40%"}
 
 
 Overall, the worst case is a logarithmic number of skip list queries with a logarithmic range query in the accumulation. This amounts to $O((M+N) (log(G) + log(M)))$ for time complexity and $O(G+M)$ for space complexity.
@@ -212,7 +212,7 @@ We describe a set of queries to be “windowed” if each query can have an arbi
 One such optimization would be to take advantage of the fact that we can answer all the queries in a batch setting offline. We can construct a partial aggregate separated by end times of the queries in an array. To insert an event, we perform binary search on the boundary timelines which takes $O(log(M))$. Finally, we perform an accumulation of the partial sums in-place:
 
 
-![unwindowed_optimization]({{ site.url }}/assets/unwindowed_optimization.png)
+![unwindowed_optimization]({{ site.url }}/assets/unwindowed_optimization.png){:height="40%" width="40%"}
 
 
 To insert a particular event into an optimized segment tree(separated by endpoints of queries, not time), previously we had to search in $O(log(M))$ time and update in $O(log(M))$ time. Now, we only need to construct partial sums which only requires a single update, with an accumulation afterwards.
@@ -232,7 +232,7 @@ As the online system stays online longer, the bigger the segment tree becomes. A
 Because we don’t know when the queries will come, we cannot apply the optimization to the segment tree to only consider the query windows as ranges. Therefore, we must opt for a segment tree with ranges on time intervals. To have a fully binary segment tree, storage would be inefficient since there are $10^{10}$ milliseconds in a year. Although it may be able to store the segment tree completely in high memory instances, we can do better. An observation is that we don’t need the full segment tree to be specified. The tree itself can be relatively sparse, and only contain a leaf at an event’s timestamp. The absence of a tree node signifies $0$ events within that range. Below is an illustration of that:
 
 
-![distributed_segment_tree]({{ site.url }}/assets/distributed_segment_tree.png)
+![distributed_segment_tree]({{ site.url }}/assets/distributed_segment_tree.png){:height="40%" width="40%"}
 
 
 Then, at any point in time the tree will have at $max(G, N)$ leaves. If we’re dealing on the 1-year max range scale and a binary segment tree, then every leaf(which associates with an event) would require on the order of $\sim30$ traversals down the tree. It is likely that with a high number of events, the tree would not be sparse, and the traversals will lead to cache misses. If ultra low-latency was not a primary concern, this design would be very efficient.
@@ -254,7 +254,7 @@ Given a query of 10 days, the entire query can be done in memory. Since 10 days 
 The reason we’ve mentioned the skiplist based algorithm above even though it performs slightly worse than the segment tree approach is because a segment tree is fixed to a specific interval. The skiplist alternative can be easily fitted for online feature serving because we can simply add new windows for aggregates. The simplest generalization of skiplist to the online equivalent rests on the assumption that the immediate features must be taken into account, but the window size could be slightly off. We will begin by rounding the start times of queries down to fit the biggest sub-intervals, then increasingly add smaller intervals until we reach the cumulation. Below is a diagram for this:
 
 
-![skiplist_error]({{ site.url }}/assets/skiplist_error.png)
+![skiplist_error]({{ site.url }}/assets/skiplist_error.png){:height="40%" width="40%"}
 
 
 If we define the ratio of error interval with the original interval, we can prove that for any window size that grows exponentially(with integral growth factor > 1), the range of error can be anywhere in $[0, 1)$. Having a near-100% error ratio is bad for various reasons, but there is a way to trade off constant overhead for a lower error margin. We can define the max size window used for ranges of intervals to decrease the error margin. For example, if we have doubling window sizes, and we have an interval of length 9, then by default we’d use 2 windows of size 8, as it’s the biggest interval we used. However, that is almost a 100% error ratio(⅞), and we can decrease this by forcing intervals of length 8-16 to use window sizes that only go up to 4, not 8. In this case, we’d use 3 windows of size 4, leaving the error ratio to be closer to 50%(⅜). In the doubling window case, we can get the error to $1/ 2^k$ if we increase our expected number of windows by $2^k$ times. Similar arguments hold for different exponentially growing window sizes. In Zipline, these restrictions on max window sizes are called “hops”.
