@@ -243,13 +243,13 @@ We take care of any query requiring more precise windows with a concept in Zipli
 
 **Accumulations** in Zipline are query-specific intervals between the smallest granularity and the endpoint, which are used to construct the “tails'' of intervals that do not fit nicely into the smallest granularity. One good thing about accumulations are that it works well with "infinite precision" ranges which can include irrational, trascendental, or repeating decimals.
 
-![skiplist]({{ site.url }}/assets/skiplist.png){:height="50%" width="50%"}
+![skiplist]({{ site.url }}/assets/skiplist.png){:height="35%" width="35%"}
 
 As we can see in the diagram above, the accumulations are used to compute the remainders in the start and end of intervals.
 
 Without accumulations, the overall algorithm is $O((M+N) log(G))$ time complexity and $O(G)$ space complexity. With accumulations, we must deal with the case that there are multiple interval endpoints that lie between the smallest granularity. In the case that all intervals lie within the same accumulation, the case degenerates into the above segment tree algorithm in the alternative form.
 
-![skiplist_cumulations]({{ site.url }}/assets/skiplist_cumulations.png){:height="50%" width="50%"}
+![skiplist_cumulations]({{ site.url }}/assets/skiplist_cumulations.png){:height="35%" width="35%"}
 
 So the basic idea of accumulations is to *delegate the smaller remainder interval aggregate calculation to a different algorithm, one that can handle arbitrary precision on the start and end times of intervals.*
 </details>
