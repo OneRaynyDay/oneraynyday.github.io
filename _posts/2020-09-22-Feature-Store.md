@@ -1,10 +1,12 @@
 ---
 published: true
-title: WIP - What is a Feature Store?
+title: What is a Feature Store?
 use_math: true
 category: cs
 layout: default
 ---
+
+The 
 
 # Table of Contents
 
