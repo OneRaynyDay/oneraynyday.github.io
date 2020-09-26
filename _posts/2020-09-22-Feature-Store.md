@@ -337,3 +337,11 @@ Note that the above greedy approach is the same as the coin change greedy algori
 In addition, in the real world, performance may come second as compared to the concept of **online-offline consistency**. To be consistent, any range queries performed in the offline setting must also report the same result in the online setting. This is because model prototyping, training and backtesting is often done in an offline setting. To feed a model slightly different input could lead to large perturbations in performance metrics. In the world of general software engineering, consistency is often chosen in the tradeoff between consistency and performance. Since Zipline is implemented using the skiplist approach and requires consistency, the offline equivalent used in Zipline returns an approximation of the range query by rounding the start date to ensure the online and offline algorithms are identical.
 
 Theoretically speaking, although the skiplist approach sacrifices correctness slightly, it is faster in practice since it would theoretically incur less cache misses(all of the partial sums of a particular window size are contiguous in memory) and is simpler to implement. For large aggregates, such as hyperloglog and topK, this architecture can handle large queries better than the segment tree approach due to sequential reads on disk for large aggregates.
+
+<script src="https://utteranc.es/client.js"
+        repo="OneRaynyDay/oneraynyday.github.io"
+        issue-term="pathname"
+        theme="preferred-color-scheme"
+        crossorigin="anonymous"
+        async>
+</script>
