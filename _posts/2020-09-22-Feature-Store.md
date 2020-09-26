@@ -230,22 +230,28 @@ For any $M$ number of queries, we have at most $2M$ leaves in this segment tree,
 
 [Skiplists](https://en.wikipedia.org/wiki/Skip_list) are data structures which allow access of a particular element in $O(logN)$ time, by creating hopping links in a linkedlist that requires logarithmic traversals to get to any point in the list using exponentially increasing sizes of hops. In the same way, we can decompose any query into a(roughly) logarithmic number of queries, each which can be performed in $O(1)$ time. Skiplists are commonly used in the index engines for relational databases and K/V stores, and Zipline is currently using the skiplist approach for both the online and offline use cases. As a result, there are more empirical results and recommendations I've provided for this algorithm.
 
-Before we accept events, we tile the timeline into window sizes, each window size geometrically larger than the previous (refer to the below diagram for an example). For any event, it would need to update a single window in each granularity (there are logarithmic number of different window sizes). This algorithm works for any commutative monoids. In practice, the precision is limited to some granularity to reduce memory pressure (e.g. using seconds as the smallest window size, when events come in at the millisecond scale). 
+Before we accept events, we tile the timeline into window sizes, each window size geometrically larger than the previous (refer to the below diagram for an example). For any event, it would need to update a single window in each granularity (there are logarithmic number of different window sizes). This algorithm works for any commutative monoids. In practice, the precision is limited to some granularity to reduce memory pressure, e.g. using seconds as the smallest window size, when events come in at the millisecond scale.
 
-![skiplist]({{ site.url }}/assets/skiplist.png){:height="50%" width="50%"}
+![skiplist_integral]({{ site.url }}/assets/skiplist_integral.png){:height="50%" width="50%"}
 
-We take care of any query requiring more precise windows with a concept called **accumulations**(coined by Zipline). This part isn't necessary for understanding the skiplist implementation if you don't care about fine-grained precision.
+The number of windows we need to query for any given range is logarithmic as we can see in the example above. If many queries have large overlaps, the windows' results can be cached for quick re-access.
+
+We take care of any query requiring more precise windows with a concept in Zipline called **accumulations**. This part isn't necessary for understanding the skiplist implementation if you don't care about fine-grained precision, i.e. if we're only dealing with queries with integral precision in the example above.
 
 <details><summary markdown='span' class='collapse'>**So what are accumulations?**
 </summary>
+
 **Accumulations** in Zipline are query-specific intervals between the smallest granularity and the endpoint, which are used to construct the “tails'' of intervals that do not fit nicely into the smallest granularity. One good thing about accumulations are that it works well with "infinite precision" ranges which can include irrational, trascendental, or repeating decimals.
 
-The accumulations are used potentially to compute the remainders in the start and end of intervals.
+![skiplist]({{ site.url }}/assets/skiplist.png){:height="50%" width="50%"}
+
+As we can see in the diagram above, the accumulations are used to compute the remainders in the start and end of intervals.
 
 Without accumulations, the overall algorithm is $O((M+N) log(G))$ time complexity and $O(G)$ space complexity. With accumulations, we must deal with the case that there are multiple interval endpoints that lie between the smallest granularity. In the case that all intervals lie within the same accumulation, the case degenerates into the above segment tree algorithm in the alternative form.
 
 ![skiplist_cumulations]({{ site.url }}/assets/skiplist_cumulations.png){:height="50%" width="50%"}
 
+So the basic idea of accumulations is to *delegate the smaller remainder interval aggregate calculation to a different algorithm, one that can handle arbitrary precision on the start and end times of intervals.*
 </details>
 {: .red}
 
