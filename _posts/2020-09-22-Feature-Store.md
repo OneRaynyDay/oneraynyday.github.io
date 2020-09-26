@@ -295,7 +295,7 @@ Although it’s not an asymptotic upgrade in runtime(both require logarithmic ti
 
 ## Online equivalents
 
-In an online system, the problem becomes invariably harder. In the offline setting, we mostly cared about **correctness and performance in terms of throughput.** In the online case, we additionally care about **performance in terms of latency. **In the case we want to unify online and offline systems into a single abstraction, we also care about **consistency**. The consistency guarantee is that the online and offline results must be identical given the same inputs. We obviously wish to have all of these properties but under specific load and conditions, we may need to sacrifice one or more of these requirements.
+In an online system, the problem becomes invariably harder. In the offline setting, we mostly cared about **correctness and performance in terms of throughput.** In the online case, we additionally care about **performance in terms of latency.** In the case we want to unify online and offline systems into a single abstraction, we also care about **consistency**. The consistency guarantee is that the online and offline results must be identical given the same inputs. We obviously wish to have all of these properties but under specific load and conditions, we may need to sacrifice one or more of these requirements.
 
 
 ### Tree-based Algorithms
