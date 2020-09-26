@@ -2,7 +2,7 @@
 published: true
 title: WIP - What is a Feature Store?
 use_math: true
-category: CS
+category: cs
 layout: default
 ---
 
