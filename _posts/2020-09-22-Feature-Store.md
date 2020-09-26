@@ -214,7 +214,7 @@ We are considering an offline algorithm in which the queries and events will not
 Suppose we use the abelian group $(\mathbb{R}, +)$ for example, and we have $M$ queries and $N$ events. Suppose we have a discretized timestamp (by minutes, for example), then denote $G$ as the number of bins we can put timestamps into. We can have the cumulative sum from some starting time until now with the aggregates we’re interested in. Since inverses exist, we only need to find two cumulative sums and find the difference as the range query:
 
 
-![array_based_cumsum]({{ site.url }}/assets/array_based_cumsum.png){:height="50%" width="50%"}
+![array_based_cumsum]({{ site.url }}/assets/array_based_cumsum.png){:height="60%" width="60%"}
 
 
 This algorithm is fast because it uses the fact that inverses exist in abelian groups. If $G$ is small, this array can fit in memory. To populate all events, it takes $O(max(N,G))$, since we’ll need to create a cumulative sum array after putting $N$ elements into the array bins. Each query is $O(1)$, or $O(M)$ in total. Thus, the overall runtime is $O(max(N,G) + M)$. The space complexity would be $O(G)$ since there are $G$ elements in the array.
@@ -226,7 +226,7 @@ It is important to note that we are sacrificing precision for speed in the trade
 
 Suppose we have a commutative monoid(note that abelian groups are also commutative monoids), then we can use a segment tree for range queries. Given the number of bins for timestamps $G$ as before, we can construct the segment tree with all events in $O(Nlog(G))$ time and query M times for $O(Mlog(G))$ time. In total, we have $O((N+M) log(G))$ for runtime and $O(G)$ for space.
 
-![interval_tree_range_query]({{ site.url }}/assets/interval_tree_range_query.png){:height="50%" width="50%"}
+![interval_tree_range_query]({{ site.url }}/assets/interval_tree_range_query.png){:height="60%" width="60%"}
 
 Here, N is the number of discretized timestamps. Not to be confused with N as the number of events. This is a very typical use-case of segment trees, and so typical optimizations like lazy propagation play important practical roles to prevent redundant updates. Note that we can use [fenwick trees](https://en.wikipedia.org/wiki/Fenwick_tree) for the same purpose. To keep this blog fairly self-contained, we only discuss segment trees.
 
@@ -235,7 +235,7 @@ Here, N is the number of discretized timestamps. Not to be confused with N as th
 
 An observation we should make is that we don’t care about the order of elements on the time scale as long as we know which queries should take it into account(this implies that queries are fixed). One optimization we can make to the segment tree is to have leaves represent the spaces between endpoints of intervals in the query rather than the integral timestamps:
 
-![segment_tree_optimization]({{ site.url }}/assets/segment_tree_optimization.png){:height="50%" width="50%"}
+![segment_tree_optimization]({{ site.url }}/assets/segment_tree_optimization.png){:height="60%" width="60%"}
 
 For any $M$ number of queries, we have at most $2M$ leaves in this segment tree, thus insertion and query will take $O(Mlog(M))$. The total runtime is $O((N+M)log(M))$, which is independent of $G$. The space complexity is now $O(M)$.
 
@@ -245,7 +245,7 @@ For any $M$ number of queries, we have at most $2M$ leaves in this segment tree,
 
 Before we accept events, we tile the timeline into window sizes, each window size geometrically larger than the previous (refer to the below diagram for an example). For any event, it would need to update a single window in each granularity (there are logarithmic number of different window sizes). This algorithm works for any commutative monoids. In practice, the precision is limited to some granularity to reduce memory pressure, e.g. using seconds as the smallest window size, when events come in at the millisecond scale.
 
-![skiplist_integral]({{ site.url }}/assets/skiplist_integral.png){:height="50%" width="50%"}
+![skiplist_integral]({{ site.url }}/assets/skiplist_integral.png){:height="60%" width="60%"}
 
 The number of windows we need to query for any given range is logarithmic as we can see in the example above. If many queries have large overlaps, the windows' results can be cached for quick re-access.
 
@@ -309,7 +309,7 @@ We describe a set of queries to be “windowed” if each query can have an arbi
 One such optimization would be to take advantage of the fact that we can answer all the queries in a batch setting offline. We can construct a partial aggregate separated by end times of the queries in an array. To insert an event, we perform binary search on the boundary timelines which takes $O(log(M))$. Finally, we perform an accumulation of the partial sums in-place:
 
 
-![unwindowed_optimization]({{ site.url }}/assets/unwindowed_optimization.png){:height="50%" width="50%"}
+![unwindowed_optimization]({{ site.url }}/assets/unwindowed_optimization.png){:height="60%" width="60%"}
 
 
 To insert a particular event into an optimized segment tree(separated by endpoints of queries, not time), previously we had to search in $O(log(M))$ time and update in $O(log(M))$ time. Now, we only need to construct partial sums which only requires a single update, with an accumulation afterwards.
@@ -329,7 +329,7 @@ As the online system stays online longer, the bigger the segment tree becomes. A
 Because we don’t know when the queries will come, we cannot apply the optimization to the segment tree to only consider the query windows as ranges. Therefore, we must opt for a segment tree with ranges on time intervals. To have a fully binary segment tree, storage would be inefficient since there are $10^{10}$ milliseconds in a year. Although it may be able to store the segment tree completely in high memory instances, we can do better. An observation is that we don’t need the full segment tree to be specified. The tree itself can be relatively sparse, and only contain a leaf at an event’s timestamp. The absence of a tree node signifies $0$ events within that range. Below is an illustration of that:
 
 
-![distributed_segment_tree]({{ site.url }}/assets/distributed_segment_tree.png){:height="50%" width="50%"}
+![distributed_segment_tree]({{ site.url }}/assets/distributed_segment_tree.png){:height="60%" width="60%"}
 
 
 Then, at any point in time the tree will have at $max(G, N)$ leaves. If we’re dealing on the 1-year max range scale and a binary segment tree, then every leaf(which associates with an event) would require on the order of $\sim30$ traversals down the tree. It is likely that with a high number of events, the tree would not be sparse, and the traversals will lead to cache misses. If ultra low-latency was not a primary concern, this design would be very efficient.
