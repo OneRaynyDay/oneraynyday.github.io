@@ -250,7 +250,7 @@ The definition of what is a prvalue and what isn't has been changing frequently,
 
 ### More on RVO
 
-Before we move forward, it's important to note what kinds of RVO there are. There is the type of RVO that works on lvalues, which is also called NRVO, for "named return value optimization". There is also another RVO that works on prvalues. Usually, RVO on prvalues is often more powerful than NRVO. **In the standard there is no RVO for xvalues.** This will be very important for our discussions.
+It's important to note what kinds of RVO there are. There is the type of RVO that works on lvalues, which is also called NRVO, for "named return value optimization". There is also another RVO that works on prvalues. Usually, RVO on prvalues is often more powerful than NRVO. **In the standard there is no RVO for xvalues.**
 
 ```c++
 #include <iostream>
