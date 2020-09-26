@@ -21,7 +21,20 @@ layout: default
   .collapse:hover {
     cursor: pointer;
   }
+  .video-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 */
+    height: 0;
+  }
+  .video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
 </style>
+
 
 
 # What is a Feature Store?
@@ -356,12 +369,17 @@ Of course, this blog focused on the engine portion of the whole process, but did
 --- 
 
 **Nikhil at Strange Loop**
+<div class="video-container">
 <iframe width="1120" height="630" src="https://www.youtube.com/embed/0HttRa2cXig" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
 
 ---
 
 **Varant and Evgeny at Spark Summit**
+<div class="video-container">
 <iframe width="1120" height="630" src="https://www.youtube.com/embed/iUnO4MLAGDU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+
 
 # Conclusion
 
