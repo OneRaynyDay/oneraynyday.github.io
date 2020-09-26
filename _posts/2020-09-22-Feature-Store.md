@@ -6,8 +6,6 @@ category: cs
 layout: default
 ---
 
-The 
-
 # Table of Contents
 
 * TOC
@@ -386,5 +384,7 @@ Of course, this blog focused on the engine portion of the whole process, but did
 # Conclusion
 
 Feature stores are an upcoming technology that enables accelerated development of robust and powerful machine learning applications. Large parts of boilerplate offline model training can be abstracted away, and data scientists can now use point-in-time correct features in an online setting. For Airbnb, this was a humongous leap in efficacy of machine learning models, especially within the fraud detection organization. As with any adequately complicated piece of infrastructure, there will always be theoretical and practical improvements in the future that this blog fails to cover. I hope to update this entry when I'm notified of future developments!
+
+*Disclaimer: The opinions expressed in this post are my own and not necessarily those of my employer.*
 
 <script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>
