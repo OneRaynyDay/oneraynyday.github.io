@@ -349,4 +349,18 @@ In addition, in the real world, performance may come second as compared to the c
 
 Theoretically speaking, although the skiplist approach sacrifices correctness slightly, it is faster in practice since it would theoretically incur less cache misses(all of the partial sums of a particular window size are contiguous in memory) and is simpler to implement. For large aggregates, such as hyperloglog and topK, this architecture can handle large queries better than the segment tree approach due to sequential reads on disk for large aggregates.
 
+# Conference Talks
+
+Of course, this blog focused on the engine portion of the whole process, but did not cover some crucial details such as the DSL(domain specific language) for the feature store queries, the integration of feature store with existing data sources in a typical company, implementation using Spark, etc. These topics are covered in my coworker's talks shown below, specifically for Airbnb's Zipline project:
+
+**Nikhil at Strange Loop**
+<iframe width="560" height="315" src="https://www.youtube.com/embed/0HttRa2cXig" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+**Varant and Evgeny at Spark Summit**
+<iframe width="560" height="315" src="https://www.youtube.com/embed/iUnO4MLAGDU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+# Conclusion
+
+Feature stores are an upcoming technology that enables accelerated development of robust and powerful machine learning applications. Large parts of boilerplate offline model training can be abstracted away, and data scientists can now use point-in-time correct features in an online setting. For Airbnb, this was a humongous leap in efficacy of machine learning models, especially within the fraud detection organization. As with any adequately complicated piece of infrastructure, there will always be theoretical and practical improvements in the future that this blog fails to cover. I'll hope to update this entry when I'm notified of future developments!
+
 <script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>
