@@ -1,6 +1,6 @@
 ---
 published: true
-title: WIP - The Story of Value Categories in C++
+title: The Story of Value Categories in C++
 use_math: true
 category: dev
 layout: default
@@ -295,7 +295,11 @@ Foo make_foo() {
 }
 ```
 
-Before, compiler writers could technically invoke the move in case (2), resulting in identical performance as (1). Now, they _must_ enforce zero-copy pass-by-value semantics on (2) since `Foo()` is a prvalue.
+Before, compiler writers could technically invoke the move in case (2), resulting in identical performance as (1). Now, they _must_ enforce zero-copy pass-by-value semantics on (2) since `Foo()` is a prvalue. In `clang` and `gcc` that support C++14 and below, passing in `-fno-elide-constructors` allows for (2) to not be optimized and manually create the object and then perform a move(if move semantics are valid for `Foo`). In C++17, the compilers ignores the flag and continues to elide it anyways because `Foo()` is a prvalue and it must be copy elided. I suggest this [blogpost](https://jonasdevlieghere.com/guaranteed-copy-elision/) if you're interested in the subject.
+
+# Conclusion
+
+From loosely used terms in CPL to an almost lawyer-level specification, value categories has come a long way. With a clean and clear set of rules on value categories, it is easier for the standard commitee to add optimizations to the language, like move semantics and improvements on return value optimization. This is also one of the few things in the C++ standard that is ubiquitously used in other concepts, so with a basic fundamental knowledge on these value categories you'll an easier time navigating [cppreference.com](www.cppreference.com). Hope you enjoyed!
 
 
 
