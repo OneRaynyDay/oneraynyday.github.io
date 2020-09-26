@@ -228,21 +228,26 @@ For any $M$ number of queries, we have at most $2M$ leaves in this segment tree,
 
 ## Skiplist-based Algorithms
 
-Skiplists are data structures which allow access of a particular element in $O(logN)$ time, by creating hopping links in a linkedlist that requires logarithmic traversals to get to any point in the list using exponentially increasing sizes of hops. In the same way, we can decompose any query into a(roughly) logarithmic number of queries, each which can be performed in $O(1)$ time. 
+[Skiplists](https://en.wikipedia.org/wiki/Skip_list) are data structures which allow access of a particular element in $O(logN)$ time, by creating hopping links in a linkedlist that requires logarithmic traversals to get to any point in the list using exponentially increasing sizes of hops. In the same way, we can decompose any query into a(roughly) logarithmic number of queries, each which can be performed in $O(1)$ time. Skiplists are commonly used in the index engines for relational databases and K/V stores, and Zipline is currently using the skiplist approach for both the online and offline use cases. As a result, there are more empirical results and recommendations I've provided for this algorithm.
 
-Before we accept events, we tile the timeline into window sizes, each window size geometrically larger than the previous (refer to the below diagram for an example). For any event, it would need to update a single window in each granularity (which is a logarithmic amount of updates). This algorithm works for any commutative monoids. In practice, the precision is limited to some granularity and we then create special intervals which Zipline calls **accumulations** which are query-specific intervals between the smallest granularity and the endpoint, which are used to construct the “tails'' of intervals that do not fit nicely into the smallest granularity.
-
+Before we accept events, we tile the timeline into window sizes, each window size geometrically larger than the previous (refer to the below diagram for an example). For any event, it would need to update a single window in each granularity (there are logarithmic number of different window sizes). This algorithm works for any commutative monoids. In practice, the precision is limited to some granularity to reduce memory pressure (e.g. using seconds as the smallest window size, when events come in at the millisecond scale). 
 
 ![skiplist]({{ site.url }}/assets/skiplist.png){:height="50%" width="50%"}
 
+We take care of any query requiring more precise windows with a concept called **accumulations**(coined by Zipline). This part isn't necessary for understanding the skiplist implementation if you don't care about fine-grained precision.
+
+<details><summary markdown='span' class='collapse'>**So what are accumulations?**
+</summary>
+**Accumulations** in Zipline are query-specific intervals between the smallest granularity and the endpoint, which are used to construct the “tails'' of intervals that do not fit nicely into the smallest granularity. One good thing about accumulations are that it works well with "infinite precision" ranges which can include irrational, trascendental, or repeating decimals.
 
 The accumulations are used potentially to compute the remainders in the start and end of intervals.
 
-Without accumulations, the overall algorithm is $O((M+N) log(G))$ time complexity and $O(G)$ space complexity. With accumulations, we must deal with the case that there are multiple interval endpoints that lie between the smallest granularity. In the case that all intervals lie within the same accumulation, the case degenerates into the above tree algorithm.
-
+Without accumulations, the overall algorithm is $O((M+N) log(G))$ time complexity and $O(G)$ space complexity. With accumulations, we must deal with the case that there are multiple interval endpoints that lie between the smallest granularity. In the case that all intervals lie within the same accumulation, the case degenerates into the above segment tree algorithm in the alternative form.
 
 ![skiplist_cumulations]({{ site.url }}/assets/skiplist_cumulations.png){:height="50%" width="50%"}
 
+</details>
+{: .red}
 
 Overall, the worst case is a logarithmic number of skip list queries with a logarithmic range query in the accumulation. This amounts to $O((M+N) (log(G) + log(M)))$ for time complexity and $O(G+M)$ for space complexity.
 
