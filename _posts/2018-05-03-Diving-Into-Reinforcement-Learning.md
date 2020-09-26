@@ -47,3 +47,4 @@ Expect to be seeing more soon! Whoever is reading this should keep me accountabl
 
 In the end, I'll try my best to write some basic library like last time, but this time for RL.
 
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

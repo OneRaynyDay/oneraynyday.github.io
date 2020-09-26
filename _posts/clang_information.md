@@ -13,3 +13,5 @@ The consumer would want to use a custom AST visitor to traverse the populated no
 `SourceManager` is an object that takes care of a single source file. You can get `SourceLocation`s from SourceManager which can then be "promoted" to `FullSourceLoc`s which has the exact location of the AST node in the source.
 
 You can also get `FileEntry` associated with the `SourceManager`. 
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

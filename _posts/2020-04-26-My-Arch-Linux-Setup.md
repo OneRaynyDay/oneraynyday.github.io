@@ -351,3 +351,5 @@ We want to have a sexy login manager to greet us for logins. Let's use `lightdm`
 ---
 
 There are of course, different offerings for each of these tools. Feel free to use your own! It's a constant learning experience so I'll also be trying to change things up once in a while.
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

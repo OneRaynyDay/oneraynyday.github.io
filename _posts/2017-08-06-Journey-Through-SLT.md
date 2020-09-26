@@ -265,3 +265,5 @@ NOTE: Some people who are already familiar might ask why we use Hoeffding instea
 Next time, we talk about finite hypothesis classes, and how we can use hoeffding for **a class of hypotheses** using uniform bound. Here, we've only talked about a single hypothesis, which is not practical.
 
 EDIT: Thanks to Andy for the typo fix :)
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

@@ -356,3 +356,4 @@ Another observation we can see is that **Q-learning's average reward is bad**. T
 Another interesting phenomenon observed in the above diagram is that _Monte Carlo actually starts to degrade in performance near the end._ This... I have no explanation for (and I'd love to discuss it!).
 
 
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

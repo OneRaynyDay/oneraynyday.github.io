@@ -240,3 +240,5 @@ void bar(std::shared_ptr<Foo> f, int v){
 std::shared_ptr<Foo> f(new Foo()); // On its own line
 bar(f, bad_function()); // ALWAYS SAFE!
 ```
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

@@ -19,4 +19,4 @@ Erata is a tool that allows you to visualize your memory layout. By giving the d
 
 ![massif-visualizer]({{ site.url }}/assets/massif-visualizer.png)
 
-# 
+# <script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

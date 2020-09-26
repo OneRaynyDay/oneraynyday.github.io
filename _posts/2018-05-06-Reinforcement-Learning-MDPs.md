@@ -446,3 +446,4 @@ So, our little exploration into MDP's have been nice. We learned about how to fo
 One major downside of these algorithms is that it's not applicable for **continuous-value** domains. This means, for even a simple problem as [Cart Pole](https://github.com/openai/gym/wiki/CartPole-v0), we won't have a very smooth way of solving it(discretizing and running our algorithms might work, but it's real hacky). We will explore ways to solve that issue next time!
 
 [^1]: Sutton, Richard S., and Andrew G. Barto. *Reinforcement Learning: an Introduction*. The MIT Press, 2012.
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

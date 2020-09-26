@@ -174,11 +174,4 @@ t2 = std::move(t1); // uh oh!
 Here, `t2`'s original active context will be removed, without `join()`'s or `detach()`'s.
 We can only expect an `std::terminate` here.
 
-
-
-
-
-
-
-
-
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

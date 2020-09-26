@@ -143,3 +143,5 @@ And this:
 ![PCA Word embedding 2]({{ site.url }}/assets/pca_embedding_2.png)
 
 As you can see, the PCA distillation process was able to keep the relationships between the numbers close, but a little bit **too close**. There is no local structure, but rather PCA just assumed they were the same numbers. This dimensionality reduction technique does not explain local structure in an interpretable manner.
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

@@ -221,3 +221,5 @@ pair<int, int> partitionYaros(vector<int>& nums, int start, int end){
 This one actually runs **a ton faster than the original single pivot, despite the single pivot behaving well to the binary-ness of our computers.** It runs asymptotically faster(It is log base 3 rather than log base 2, since now we have 3 regions.) and behaves better in certain conditions, such as duplicate elements. The 3-Way partition is, in a way, basically this but in a specific case.
 
 I really enjoyed learning about these partitioning methods which improve the speed of algorithms. Pretty cool :)
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

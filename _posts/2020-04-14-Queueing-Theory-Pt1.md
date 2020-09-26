@@ -363,3 +363,5 @@ P(X=j) = \frac{n_j P(Y=j)}{\sum_i n_i P(Y=i)}
 $$
 
 Since in our queueing theory example, $n_j \approx j$ ($\pm$ some constants), we were able to express the bottom sum as $E(Y) + C$.
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

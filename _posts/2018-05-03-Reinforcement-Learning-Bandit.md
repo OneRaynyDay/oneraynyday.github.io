@@ -258,3 +258,4 @@ Although some of these methods are considered simple, it is not at all poorly pe
 
 
 
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

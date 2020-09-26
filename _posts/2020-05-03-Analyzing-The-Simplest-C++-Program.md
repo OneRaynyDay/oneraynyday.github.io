@@ -1106,3 +1106,5 @@ What do we get after `objdump`'ing it? We see something very surprising:
 ```
 
 **There appears to be cloned versions of the original function upon the C++ attribute being applied!** These clone functions must've been registered onto the clone table(configured in static runtime) that will point to the transaction clones when called from a `synchronized` block! It makes sense for the registration to happen before runtime if any functions with such attributes are defined. *The functions `de/register_tm_clones` are there in case we want to enable this language feature.*
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

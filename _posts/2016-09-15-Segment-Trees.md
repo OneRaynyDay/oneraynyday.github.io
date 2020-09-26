@@ -84,3 +84,5 @@ This one was a litle trickier than the construction. But here we know that the m
 But anyways, the maximum sum interval is easy in this respect. And our query function can define a specific range's max as well. We can solve in O(1) the entire range, and we can solve in O(nlogn) for some range that's within the root's range.
 
 Sounds good? Sounds good!
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

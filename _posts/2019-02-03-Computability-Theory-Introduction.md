@@ -94,3 +94,5 @@ Though Ackermann is not something we can practically compute for high digits, it
 
 
 \*: _By answer, I don't mean that answer to the universe and to life is 42, but rather, a concrete answer detailing why "there's no way we will ever find out"._
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

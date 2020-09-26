@@ -61,5 +61,4 @@ $$max(\frac{NF}{u_s + \sum_i u_i}, \frac{F}{d_{min}}, \frac{F}{u_s})$$
 since we have the time it takes to distribute N copies of files, using upload speeds of all computers, as well as the minimum 
 download time bottleneck, and the shards of files initially required to send to each client, we get the respective parts of the equation above.
 
-
-
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

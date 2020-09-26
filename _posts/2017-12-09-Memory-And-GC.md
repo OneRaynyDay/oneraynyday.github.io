@@ -145,3 +145,5 @@ In addition, when an object has lived in the young heap for long enough, it can 
     - allows false positives.
     - does not manage fragmentation.
     - Leads to garbage cycles.
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

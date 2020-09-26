@@ -338,10 +338,4 @@ In addition, in the real world, performance may come second as compared to the c
 
 Theoretically speaking, although the skiplist approach sacrifices correctness slightly, it is faster in practice since it would theoretically incur less cache misses(all of the partial sums of a particular window size are contiguous in memory) and is simpler to implement. For large aggregates, such as hyperloglog and topK, this architecture can handle large queries better than the segment tree approach due to sequential reads on disk for large aggregates.
 
-<script src="https://utteranc.es/client.js"
-        repo="OneRaynyDay/oneraynyday.github.io"
-        issue-term="pathname"
-        theme="preferred-color-scheme"
-        crossorigin="anonymous"
-        async>
-</script>
+</script><script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

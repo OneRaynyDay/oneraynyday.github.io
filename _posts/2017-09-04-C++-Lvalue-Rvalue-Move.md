@@ -170,14 +170,4 @@ In fact, in C++11 and above, the stl containers implemented `std::move` internal
 
 If you've got a large object that you want to `std::move`, aka swap pointers with large memory members, then implement your own move constructor!
 
-
-
-
-
-
-
-
-
-
-
-
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

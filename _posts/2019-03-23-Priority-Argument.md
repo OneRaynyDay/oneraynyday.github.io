@@ -82,3 +82,4 @@ The astute reader, at this point, would be frustrated - "I see you've constructe
 
 So why did I do all this? Because although our construction was not of r.e. sets, we showed that $$\leq_T$$ is not a total order defined on all subsets of natural numbers. In addition, the proof we will introduce next time is an incremental improvement on the intuitions introduced this time. So stay tuned for the r.e. version! 
 
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

@@ -98,3 +98,4 @@ _TL;DR_: Agile is one method to allow for frequently changing specifications and
 
 
 
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>
