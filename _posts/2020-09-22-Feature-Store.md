@@ -268,8 +268,9 @@ So the basic idea of accumulations is to *delegate the smaller remainder interva
 </details>
 {: .red}
 
-Overall, the worst case is a logarithmic number of skip list queries with a logarithmic range query in the accumulation. This amounts to $O((M+N) (log(G) + log(M)))$ for time complexity and $O(G+M)$ for space complexity.
+Overall, the worst case is a logarithmic number of skip list queries with a logarithmic range query in the accumulation. This amounts to $O((M+N) (log(G) + log(M)))$ for time complexity and $O(G+M)$ for space complexity. 
 
+*NOTE: The skiplist approach has many similarities with the tree approach, and one can think of the two as equivalent.*
 
 ### Theoretical Optimization
 
