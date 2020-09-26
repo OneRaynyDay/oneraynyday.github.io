@@ -102,7 +102,7 @@ Some useful examples of abelian group operators with sets as real numbers includ
 
 <details><summary markdown='span' class='collapse'>**How can average be represented as an abelian group?**
 </summary>
-Average can be expressed as an abelian group by using a 2-tuple in the form $(s, n)$, where $s \in \mathbb{R}, n \in \mathbb{N}$. When a value $s_t$ comes in and we want to update the average, we simply perform the following:
+Average can be expressed as an abelian group by using a 2-tuple in the form $(s, n)$, where $s \in \mathbb{R}, n \in \mathbb{N}$, where $s$ is the sum and $n$ is the count. When a value $s_t$ comes in and we want to update the average, we convert the value into the 2-tuple and add them:
 
 $$(s, n) + (s_t, 1) = (s+s_t, n+1)$$
 
@@ -139,7 +139,11 @@ which is the right side of the join. The join looks like:
 
 ![joined_temporal]({{ site.url }}/assets/joined_temporal.png){:height="40%" width="40%"}
 
-which is essentially a left join aggregated by name. Below we show an equivalent example in SQL.
+which is essentially a left join aggregated by name. 
+
+<details><summary markdown='span' class='collapse'>**This looks like it can be done in SQL!**
+</summary>
+You're right, we can answer the question above with a SQL setup:
 
 ```sql
 CREATE TABLE IF NOT EXISTS `queries` (
@@ -175,6 +179,10 @@ SELECT queries.name, queries.starttime, queries.endtime, SUM(events.value) FROM 
 ```
 
 The problem statement, formulated in SQL, only accounts for the offline application for the feature store and not the online applications. We discuss efficient ways to solve the offline feature store below, and try to unify the solution in the online case.
+
+In the meantime, if you're comfortable thinking about the problem setup as joining tables in relational databases, it's a great analogy to use for the rest of the blog.
+</details>
+{: .red}
 
 
 # Query Engine (Offline)
