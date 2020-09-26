@@ -66,7 +66,7 @@ After some digging, you found daily hive table exports in S3 with "dollars spent
 
 ## Scenario 2: Logs
 
-After some digging, you found a raw data stream that contains the number of dollars spent for a user with a timestamp of the transaction. Great! You can create a table containing the total number of dollars spent for the day and export snapshots of it daily. Now you're back at scenario 1.
+After some digging, you found a raw data stream that contains the number of dollars spent for a user with a timestamp of the transaction. Great! You can create a table containing the total number of dollars spent for the day populated by the raw data stream, and export snapshots of it daily. Now you're back at scenario 1.
 
 But what if you want the past 7-days window to take into account the data received up until the very present? Then you would need to build something akin to a KV store that is updated every time a transaction occurs. Needless to say, this is a pretty complicated setup that wouldn’t be worth the marginal gain for most cases.
 
