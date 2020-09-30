@@ -6,6 +6,8 @@ category: cs
 layout: default
 ---
 
+At my time at Airbnb, I've witnessed the development of the feature store effort on the machine learning infrastructure team. The project's name is **Zipline**, and it has been presented at many [conferences](#conference-talks). As it's one of the first open-sourced feature engineering platforms, I made sure to cover its implementation details in the query engine sections of the blog. The feature store problem is one of the most technically exciting problems for the data engineering space that many companies are trying to solve. I start by discussing the necessity of a feature store for ML applications and move on to talk about fundamental mathematical structures involved and some methods to solve the problem. The most important concepts are in the section [about offline query engines](#query-engine-offline), but the more novel ideas are in the section [about the online query engines](#online-equivalents).
+
 # Table of Contents
 
 * TOC
@@ -41,11 +43,12 @@ layout: default
 
 A machine learning model does not typically use raw data as its features because of the following:
 
-1. Raw data often doesn't show the bigger picture - it's not a statistic representing a large quantity of data.
+1. Raw data often doesn't show the bigger picture - it's not a statistic representing a large quantity of data. Sometimes we may want to sum, average, etc the raw data for it to be useful.
 2. The raw data firehose and the sheer scale of it may negatively affect the training process(large aws costs for a single epoch), and require a much more complex online serving architecture to meet latency requirements.
 3. A lot of raw data is not useful - there could be nulls or missing information that require imputing on the fly.
+4. Raw data might not be in the form that the model can readily consume. (i.e. categorical variables are sometimes turned into one-hot encoding vectors)
 
-Because of the reliance on processed data, there has been a growing demand for a component that can process and store these features. Feature stores are the solutions - they hold processed data that is used as input to machine learning models for inference, training, etc. It's an abstract concept that can be implemented in many ways depending on the scale and specificity of your application. Generally, feature stores can deliver features to models in both online and offline settings (for both training and scoring), where in the online case latency is more important and in the offline case throughput is more important.
+Because of the reliance on processed data, there has been a growing demand for a component that can process and store these features. Feature stores are the solutions - they hold processed data that is used as input to machine learning models for inference, training, etc. Feature stores naturally can extend to support feature versioning, observability/monitoring tools and ad-hoc visualization tools in order to improve and understand the lineage and efficacy of features. It's an abstract concept that can be implemented in many ways depending on the scale and specificity of your application. Generally, feature stores can deliver features to models in both online and offline settings (for both training and scoring), where in the online case latency is more important and in the offline case throughput is more important.
 
 In the real world, data sources can come from anywhere - logs of applications (think Kibana log ingestion streams), daily database snapshots, pubsub messages (think Kafka messages), database commit logs and even data from other feature stores! It's the feature store's job to support and process these different data sources.
 
@@ -73,10 +76,21 @@ But what if you want the past 7-days window to take into account the data receiv
 
 After doing this for a while, you quickly realize that collecting and cleaning data to create your features takes a long time and is repetitive. What if you can just declaratively express the data sources and the aggregations for your features and be done with it?
 
+## Requirements of a feature store
+
+From the example above, you probably already have an idea of some requirements we need the feature store to support:
+
+1. **Data recency**: The daily exports scenario gives us features made from 1-day stale data, and that may not be acceptable for a system that's sensitive to recent data or biases more towards intra-day events.
+2. **Throughput**: Table exports can be extremely large, and to enable newest features right after exports land, the feature store must be able to sustain high throughput to compute offline features.
+3. **Online-offline consistency**: The offline system that computes daily features and the online system that gives you the most up-to-date features must output the same result given the same inputs. We should expect identical setup if we were to bring an offline model to an online production environment.
+4. **Feature repository**: There are many features that can be shared among different models. This allows collaboration of multiple ML researchers and reduces duplication of effort.
+5. **Monitoring system**: If a feature recently changed anomalously, the researchers should be alerted in case their model isn't trained to be robust under novel scenarios.
+
+This is by no means an exhaustive list of requirements, but it should give you an idea of the challenges in designing such a distributed system aside from the typical consistency, availability, etc problems.
 
 # Aggregation types
 
-Typical aggregation types belong in two categories, which we can rigorously define in mathematical terms. We’ll explain them briefly below.
+It is sometimes necessary to aggregate features for them to be more useful. In the above example we used the sum of all purchases in the past 7 days. The key to understanding aggregation types is to focus on the word "sum" and "purchases", i.e. an operator(in this case, the plus operator) working with a set of elements(in this case, numbers). In essence, we are combining raw data to create **aggregations**. Typical aggregation types belong in two categories, which we can rigorously define in mathematical terms. We’ll explain them briefly below.
 
 
 ## Abelian Groups
@@ -228,8 +242,7 @@ Suppose we have a commutative monoid(note that abelian groups are also commutati
 
 ![interval_tree_range_query]({{ site.url }}/assets/interval_tree_range_query.png){:height="60%" width="60%"}
 
-Here, N is the number of discretized timestamps. Not to be confused with N as the number of events. This is a very typical use-case of segment trees, and so typical optimizations like lazy propagation play important practical roles to prevent redundant updates. Note that we can use [fenwick trees](https://en.wikipedia.org/wiki/Fenwick_tree) for the same purpose. To keep this blog fairly self-contained, we only discuss segment trees.
-
+Here, N is the number of discretized timestamps - not to be confused with N as the number of events. This is a very typical use-case of segment trees, and so typical optimizations like lazy propagation play important practical roles to prevent redundant updates. The segment tree displayed in the diagram above is binary but does not need to be - increasing the branching factor decreases the depth of the tree but adds overhead to queries. Note that we can use [fenwick trees](https://en.wikipedia.org/wiki/Fenwick_tree) for the same purpose. To keep this blog fairly self-contained, we only discuss segment trees.
 
 ### Alternative Segment Tree Representation
 
@@ -241,7 +254,7 @@ For any $M$ number of queries, we have at most $2M$ leaves in this segment tree,
 
 ## Skiplist-based Algorithms
 
-[Skiplists](https://en.wikipedia.org/wiki/Skip_list) are data structures which allow access of a particular element in $O(logN)$ time, by creating hopping links in a linkedlist that requires logarithmic traversals to get to any point in the list using exponentially increasing sizes of hops. In the same way, we can decompose any query into a(roughly) logarithmic number of queries, each which can be performed in $O(1)$ time. Skiplists are commonly used in the index engines for relational databases and K/V stores, and Zipline is currently using the skiplist approach for both the online and offline use cases. As a result, there are more empirical results and recommendations I've provided for this algorithm.
+[Skiplists](https://en.wikipedia.org/wiki/Skip_list) are data structures which allow access of a particular element in $O(logN)$ time, by creating hopping links in a linkedlist that requires logarithmic traversals to get to any point in the list using exponentially increasing sizes of hops. In the same way, we can decompose any query into a(roughly) logarithmic number of queries, each which can be performed in $O(1)$ time. Skiplists are commonly used in the index engines for relational databases and K/V stores, and **Zipline is currently using the skiplist approach for both the online and offline use cases**. As a result, there are more empirical results and recommendations I've provided for this algorithm.
 
 Before we accept events, we tile the timeline into window sizes, each window size geometrically larger than the previous (refer to the below diagram for an example). For any event, it would need to update a single window in each granularity (there are logarithmic number of different window sizes). This algorithm works for any commutative monoids. In practice, the precision is limited to some granularity to reduce memory pressure, e.g. using seconds as the smallest window size, when events come in at the millisecond scale.
 
@@ -254,7 +267,7 @@ We take care of any query requiring more precise windows with a concept in Zipli
 <details><summary markdown='span' class='collapse'>**So what are accumulations?**
 </summary>
 
-**Accumulations** in Zipline are query-specific intervals between the smallest granularity and the endpoint, which are used to construct the “tails'' of intervals that do not fit nicely into the smallest granularity. One good thing about accumulations are that it works well with "infinite precision" ranges which can include irrational, trascendental, or repeating decimals.
+**Accumulations** in Zipline are query-specific intervals between the smallest granularity and the endpoint, which are used to construct the “tails'' of intervals that do not fit nicely into the smallest granularity. One good thing about accumulations is that it works well with "infinite precision" ranges which can include irrational, trascendental, or repeating decimals.
 
 ![skiplist]({{ site.url }}/assets/skiplist.png){:height="35%" width="35%"}
 
@@ -320,7 +333,7 @@ Although it’s not an asymptotic upgrade in runtime(both require logarithmic ti
 
 ## Online equivalents
 
-In an online system, the problem becomes invariably harder. In the offline setting, we mostly cared about **correctness and performance in terms of throughput.** In the online case, we additionally care about **performance in terms of latency.** In the case we want to unify online and offline systems into a single abstraction, we also care about **consistency**. The consistency guarantee is that the online and offline results must be identical given the same inputs. We obviously wish to have all of these properties but under specific load and conditions, we may need to sacrifice one or more of these requirements.
+In an online system, the problem becomes invariably harder. In the offline setting, we mostly cared about **correctness and performance in terms of throughput.** In the online case, we additionally care about **performance in terms of latency.** In the case we want to unify online and offline systems into a single abstraction, we also care about **consistency**, or as we previously called it: **online-offline consistency**. The consistency guarantee is that the online and offline results must be identical given the same inputs. We obviously wish to have all of these properties but under specific load and conditions, we may need to sacrifice one or more of these requirements.
 
 
 ### Tree-based Algorithms
@@ -367,7 +380,7 @@ Theoretically speaking, although the skiplist approach sacrifices correctness sl
 
 Of course, this blog focused on the engine portion of the whole process, but did not cover some crucial details such as the DSL(domain specific language) for the feature store queries, the integration of feature store with existing data sources in a typical company, implementation using Spark, etc. These topics are covered in my coworker's talks shown below, specifically for Airbnb's Zipline project:
 
---- 
+---
 
 **Nikhil at Strange Loop**
 <div class="video-container">
