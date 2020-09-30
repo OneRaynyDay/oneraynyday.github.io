@@ -1,6 +1,6 @@
 ---
 published: true
-title: Interviewing During Covid - Google, Apple, Bytedance, Databricks, Citadel, Hudson River Trading and Jane Street
+title: Interviewing During Covid - Google, Apple, Bytedance, Databricks, Citadel, HRT and Jane Street
 category: misc
 layout: default
 ---
@@ -11,6 +11,7 @@ layout: default
 
 The structure of this blog is inspired by my friend [Han's medium blogpost.](https://medium.com/@XiaohanZeng/i-interviewed-at-five-top-companies-in-silicon-valley-in-five-days-and-luckily-got-five-job-offers-25178cf74e0f)
 
+![interviews]({{ site.url }}/assets/interviews.png)
 
 # Table of Contents
 
@@ -48,8 +49,6 @@ Make sure you know some fundamental ideas about distributed systems like the **m
 I have not seen an interview question this cycle that was an exact question I've seen online or in books. Your mileage may vary.
 
 # The interview process
-
-![interviews]({{ site.url }}/assets/interviews.png)
 
 Interviewing and talking with all of these companies was a great experience, even with COVID in place. Obviously, as shelter-in-place continues, these companies are conducting virtual on-site interviews and trying to make this process as smooth as possible. Without getting into the specifics, I'll outline some common things I've noticed during the process in the COVID era.
 
