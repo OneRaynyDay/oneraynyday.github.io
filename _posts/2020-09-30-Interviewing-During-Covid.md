@@ -121,3 +121,5 @@ Although I felt like the decision making process was least impacted by COVID, if
 # Conclusion
 
 Interviewing during COVID is definitely a different experience. It was a lot of stress and I'm glad to be over with it. In the future, for my sanity, I would not go through the process with so many companies in different time zones at the same time. I'd like to thank my family & friends for supporting me through the entire process and cheering me on. I couldn't have done it without you all :)
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>
