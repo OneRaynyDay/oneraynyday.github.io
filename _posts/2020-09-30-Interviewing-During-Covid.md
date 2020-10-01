@@ -1,6 +1,6 @@
 ---
 published: true
-title: Interviewing During Covid - Google, Apple, Bytedance, Databricks, Citadel, HRT and Jane Street
+title: Interviewing During Covid
 category: misc
 layout: default
 ---
