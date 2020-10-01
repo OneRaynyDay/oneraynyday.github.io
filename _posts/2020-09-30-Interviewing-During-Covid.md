@@ -32,7 +32,7 @@ I wrote the solutions in either python and C++(sometimes both) and went back to 
 I also spent a few days on problems elsewhere:
 
 - [Codejam problems](https://codingcompetitions.withgoogle.com/codejam/archive). Round 1 and 2 are feasible, but round 3 was very difficult. I'd suggest studying round 1's if you only care about interviews.
-- [Codeforce contests](https://codeforces.com/). There are 3 tiers(or Divs, as they call it), and for interviews I suggest Div 1 and Div 2. Don't bother with the D+ questions in Div 2.
+- [Codeforce contests](https://codeforces.com/). There are 3 tiers(or Divs, as they call it), and for interviews I suggest Div 3 and Div 2. Don't bother with the D+ questions in Div 2, and definitely don't bother with Div 1.
 
 ## Systems Design
 
