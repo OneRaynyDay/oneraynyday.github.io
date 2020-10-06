@@ -66,7 +66,7 @@ In the $\impliedby$direction, consider an arbitrary sequence. If we have finite 
 
 We call $\Omega$ **compact** if every open covering of $\Omega$ has a finite subcovering. Additionally, the **Heine-Borel** theorem states that a set in $\mathbb{R}^n$ is compact $\iff$ it's closed and bounded. An example of a compact set is $\{\frac{1}{n} : {n \in \mathbb{N}}\} \cup \{0\}$. It's bounded in the range $[0, 1]$, and it's closed, because the limit point is $0$.
 
-**Theorem**: In metric spaces $\Omega$ is compact $\iff$ every sequence $\{z_n\}$ in $\Omega$ has a subsequence that converges to a point in $\Omega$ (sequentially compact).
+**Theorem: In metric spaces $\Omega$ is compact $\iff$ every sequence $\{z_n\}$ in $\Omega$ has a subsequence that converges to a point in $\Omega$ (sequentially compact).**
 
 **"Proof"**: In the $\implies$ direction, if we assume that the set $\Omega$ is not sequentially compact, then there exists a pathological sequence $\{x_n\}$ such that there are no convergent subsequences. If that's the case, then for any point $x \in \Omega$, there is an adequately small radius $\epsilon > 0$ such that no point in $x_n$ is in it (other than $x$ itself, if it's in the sequence). Then we have a collection of open balls that form an open covering of the compact set. It's obvious to see that we can't use any finite subset of this collection to form the whole set, as each set only contains a single point in the space.
 
