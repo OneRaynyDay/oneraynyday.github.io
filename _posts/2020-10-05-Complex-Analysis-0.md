@@ -14,12 +14,14 @@ $\mathbb{R}, \mathbb{C}$ are fields, which are sets equipped with addition and m
 
 We can easily prove it using $i \in \mathbb{C}$. Due to [trichotomy](https://en.wikipedia.org/wiki/Trichotomy_(mathematics)), $i < 0$ or $i = 0$ or $i > 0$. $i = 0$ is trivially absurd. If $i > 0$ then the order axiom $a, b > 0 \implies ab > 0$ is violated (pick $i$ for both $a, b$). If $i < 0$ then we pick $-i > 0$ as both $a, b$ and we violate the same axiom again.
 
-A sequence in $\mathbb{C}$, $\{z_n\}$ **converges** to $w \in \mathbb{C}$ if $lim_{n \to \infty} |z_n - w| = 0$.
+A sequence in $\mathbb{C}$, $\{z_n\}$ **converges** to $w \in \mathbb{C}$ if $lim_{n \to \infty} \|z_n - w\| = 0$.
 
 Because $\mathbb{C}$ is **complete** (which we'll prove later), **cauchy** sequences which have the property:
+
 $$
 |z_n-z_m| \to 0 \ \text{as} \ n,m \to \infty
 $$
+
 Must also converge to some value $w \in \mathbb{C}$. Convergence and cauchy are equivalent in a complete metric space.
 
 ---
