@@ -37,9 +37,13 @@ A metric space is a set $S$ equipped with a function $d: S \times S \to \mathbb{
 In this case, $\mathbb{C}$ is a metric space if we consider the **bilinear form** of $\mathbb{C}$ over $\mathbb{R}$, defined as $\langle z, w \rangle = z \bar{w}$. We'll be using the bilinear form as the distance function. The **norm form**, another important concept, is equal to $N(z) = z \bar{z}$.
 
 In metric spaces(and more generally topology) we're concerned with open and closed sets. An **open disc** with fixed radius $r$ as a function of point $z_0 \in \mathbb{C}$ is defined as:
+
+
 $$
 D_r(z_0) = \{z \in \mathbb{C} : |z-z_0| < r\}
 $$
+
+
 In a set $\Omega$, $z_0$ is an **interior point** if there exists some open disc around it that's also contained within $\Omega$.
 
 A set is **open** if every point in the set is an interior point. A complement of an open set is a **closed set**. A closed set contains all the limit points of the set, which are defined as the limits of convergent sequences $\\{z_n\\} \in \Omega$. The **closure** of a set is the union of $\Omega$ and its limit points, and is denoted by $\bar{\Omega}$. The **boundary** of a set $\Omega$ is the closure subtracted by all of the interior points, and is denoted $\partial \Omega$.
