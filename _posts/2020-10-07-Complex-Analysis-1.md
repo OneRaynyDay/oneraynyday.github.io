@@ -14,19 +14,19 @@ WIP.
 
 Consider two complex numbers $z = a + bi$ and $w = c + di$ in the following:
 
-The **conjugation** of a complex number $$z$$ is defined as $$\bar{z} = a - bi$$. This is an [isomorphic](https://en.wikipedia.org/wiki/Isomorphism#:~:text=In%20mathematics%2C%20an%20isomorphism%20is,an%20isomorphism%20exists%20between%20them.) map of $$\mathbb{C} \to \mathbb{C}$$.
+- The **conjugation** of a complex number $$z$$ is defined as $$\bar{z} = a - bi$$. This is an [isomorphic](https://en.wikipedia.org/wiki/Isomorphism#:~:text=In%20mathematics%2C%20an%20isomorphism%20is,an%20isomorphism%20exists%20between%20them.) map of $$\mathbb{C} \to \mathbb{C}$$.
 
-The **norm form** of a complex number $z$ is a measure of its distance from the origin: $$N(z) = a^2 + b^2$$, and is the squared distance: $$N(z) = \|z\|^2$$. The **bilinear form** of two complex numbers $$z,w$$ is defined as $$\langle z, w \rangle = Re(z\bar{w}) = \frac{(ac-b(-d))^2+(a(-d) + bc)^2}{2} = \frac{(ac+bd)^2 + (-ad + bc)^2}{2}$$.
+- The **norm form** of a complex number $z$ is a measure of its distance from the origin: $$N(z) = a^2 + b^2$$, and is the squared distance: $$N(z) = \|z\|^2$$. The **bilinear form** of two complex numbers $$z,w$$ is defined as $$\langle z, w \rangle = Re(z\bar{w}) = \frac{(ac-b(-d))^2+(a(-d) + bc)^2}{2} = \frac{(ac+bd)^2 + (-ad + bc)^2}{2}$$.
 
-The **$$Re : \mathbb{C} \to \mathbb{R}$$** gives the real part of a complex number $z$ is $a$, and can be derived as $$Re(z) = \frac{z+\bar{z}}{2}$$. Similarly, the **$$Im : \mathbb{C} \to \mathbb{R}$$** part of a complex number is $$b$$ and can be derived as $$Im(z) = \frac{z - \bar{z}}{2i}$$. We have the property $$\|Re(z)\|, \|Im(z)\| \leq \|z\| \leq \|Re(z)\| + \|Im(z)\|$$ (draw a triangle).
+- The **$$Re : \mathbb{C} \to \mathbb{R}$$** gives the real part of a complex number $z$ is $a$, and can be derived as $$Re(z) = \frac{z+\bar{z}}{2}$$. Similarly, the **$$Im : \mathbb{C} \to \mathbb{R}$$** part of a complex number is $$b$$ and can be derived as $$Im(z) = \frac{z - \bar{z}}{2i}$$. We have the property $$\|Re(z)\|, \|Im(z)\| \leq \|z\| \leq \|Re(z)\| + \|Im(z)\|$$ (draw a triangle).
 
-The **addition** of two complex numbers $z, w$ is defined as $z+w = (a+c) + (b+d)i$. This is a translation mapping in the real and imaginary axes.
+- The **addition** of two complex numbers $z, w$ is defined as $z+w = (a+c) + (b+d)i$. This is a translation mapping in the real and imaginary axes.
 
-The **subtraction** of two complex numbers $z,w$ is defined as $z-w = (a-c) + (b-d)i$.
+- The **subtraction** of two complex numbers $z,w$ is defined as $z-w = (a-c) + (b-d)i$.
 
-The **multiplication** of two complex numbers $$z,w$$ is defined as $$zw=(a + bi)(c+di) = ac + adi + cbi + bdi^2 = (ac - bd) + (ad + bc)i$$. This is a rotation and scaling operation if we interpret complex numbers as polar coordinates.
+- The **multiplication** of two complex numbers $$z,w$$ is defined as $$zw=(a + bi)(c+di) = ac + adi + cbi + bdi^2 = (ac - bd) + (ad + bc)i$$. This is a rotation and scaling operation if we interpret complex numbers as polar coordinates.
 
-The **division** of two complex numbers $z,w$ is defined as $$\frac{z}{w} = \frac{a+bi}{c+di} = \frac{a (c-di)}{(c+di)(c-di)} + \frac{bi(c-di)}{(c+di)(c-di)} = \frac{(ac + bd) + (bc - ad)i}{c^2+d^2}$$. It can also be written concisely as $$z \cdot \frac{1}{w} = z \frac{\bar{w}}{N(w)} = \frac{(a+bi)(c-di)}{c^d+d^2} = \frac{(ac + bd) + (bc - ad)i}{c^2+d^2}$$.
+- The **division** of two complex numbers $z,w$ is defined as $$\frac{z}{w} = \frac{a+bi}{c+di} = \frac{a (c-di)}{(c+di)(c-di)} + \frac{bi(c-di)}{(c+di)(c-di)} = \frac{(ac + bd) + (bc - ad)i}{c^2+d^2}$$. It can also be written concisely as $$z \cdot \frac{1}{w} = z \frac{\bar{w}}{N(w)} = \frac{(a+bi)(c-di)}{c^d+d^2} = \frac{(ac + bd) + (bc - ad)i}{c^2+d^2}$$.
 
 ## Complex exponentials
 
@@ -55,7 +55,7 @@ $$
 lim_{h \to 0} \frac{f(z_0 + h) - f(z_0)}{h} = f'(z_0) \in \mathbb{C}
 $$
 
-Or, by delta epsilon definitions, it is differentiable at $z_0$ with derivative $f'(z_0)$ if $\forall \epsilon > 0 \exist \delta > 0$ such that for all $\|z-z_0\| < \delta$:
+Or, by delta epsilon definitions, it is differentiable at $z_0$ with derivative $f'(z_0)$ if $\forall \epsilon > 0 \exists \delta > 0$ such that for all $\|z-z_0\| < \delta$:
 
 $$
 |\frac{f(z)-f(z_0)}{z-z_0} - f'(z_0)| < \epsilon
