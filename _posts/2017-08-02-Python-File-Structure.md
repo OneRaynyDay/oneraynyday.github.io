@@ -125,3 +125,5 @@ Simple: it's a directory with an `__init__.py` file in it. It's used to gather a
 If you `import library.plugin.foo`, it will look at `__init__.py` in `library`, then execute all of its statements, and then `__init__.py` in `plugin`, and then finally look for a file called `foo.py`, where it will add all of its names to scope.
 
 The issue with adding too much code to `__init__.py` is that if you have a deep directory structure, you need to call `__init__.py` many times. **This will slow down imports.** Thus, the standard solution is to minimize your code in `__init__.py`, as much as possible.
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

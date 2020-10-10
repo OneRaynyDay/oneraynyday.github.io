@@ -81,3 +81,5 @@ for I=0,1,2,...
 ```
 
 What we are doing here is **computably guessing whether the predicate $$\phi_e^A(x)\uparrow \forall x$$ is true**. If it fails, we know it will fail finitely many times, and our program will eventually reach the result from part 1.  
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

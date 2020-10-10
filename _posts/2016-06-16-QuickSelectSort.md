@@ -168,3 +168,5 @@ void partialQuicksort(vector<int>& vec, int k, int start, int end){
         return;
 }
 ```
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

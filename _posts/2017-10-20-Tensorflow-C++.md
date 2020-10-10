@@ -251,3 +251,5 @@ On Python's Tensorflow library, training for 10000 epochs on the Iris dataset fo
 So it seems, surprisingly, Scikit runs the fastest out of all of these. It may be because we're not doing huge matrix multiplications. It may be that tensorflown had to take an extra compilation step, with variable initializers and what not. Or, it's perhaps we had to run loops inside of python rather than in C(python loops are **really bad!**). I'm not sure myself.
 
 I am fully aware that this is by no means a comprehensive benchmarking test, as it only is applied to a single data point, and in a specific situation. However, the performance of this library is not meant to be state of the art, since **we don't ever want to roll our own tensorflow**.
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

@@ -465,14 +465,4 @@ You don't know which one's going to be used, so what are you gonna do?
 
 Is the cleanest way.
 
-
-
-
-
-
-
-
-
-
-
-
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

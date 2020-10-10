@@ -246,3 +246,5 @@ Foo& foo(){ // Remind you of singleton by any chance?
 int x = foo().num();
 ```
 This way, calling the function will be first, then we will be forced to create `foo` before `bar` is initialized statically.
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

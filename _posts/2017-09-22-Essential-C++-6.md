@@ -474,20 +474,4 @@ dp->foo(); // Derived! 1
 
 So you're going to be very confused. Don't do it. One way to prevent this is to use NVI design, and have the private virtual function not accept any defaults.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

@@ -207,3 +207,5 @@ BTW, this is one way of looking at bias-variance. I learned it by completely exp
 Although we have retrieved something concrete here, the resulting find is quite pessimistic for now. Why? **Because this cannot be used for even linear models, let alone neural nets!** The number of different hypotheses for linear models in $\Re^d$ space is not let alone finite, it's not even countable! How can we ever hope to use uniform bound on such a large hypothesis class?
 
 Enter **VC Dimensions**! They'll be the main topic for next time, which, together with our grand equation, is the **single most important theorem in learning theory**.
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

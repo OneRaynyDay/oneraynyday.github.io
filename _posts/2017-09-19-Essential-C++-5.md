@@ -739,3 +739,5 @@ We should be well aware of the cons as well. **It's obvious that if we take less
 So what should you do?
 
 The **best possible answer is to use decoupling during development, and replace it with concrete classes with inlining for production.**
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

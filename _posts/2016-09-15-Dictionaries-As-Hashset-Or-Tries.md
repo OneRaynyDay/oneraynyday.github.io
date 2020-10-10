@@ -171,3 +171,4 @@ private:
 
 I mean... This looks a little more elegant too. :) However, if I were to really care about security I would make this an actual stack to prevent stack overflow. Going character by character could really fuck with our stack limit on the computer.
 
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

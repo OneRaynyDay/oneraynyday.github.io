@@ -196,3 +196,5 @@ string shortestPalindrome(string _s_) {
 ```
 
 Anyways. This was a pretty lengthy blog. I'm gonna go to the gym bye
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

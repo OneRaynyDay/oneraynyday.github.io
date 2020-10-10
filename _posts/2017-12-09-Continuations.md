@@ -167,3 +167,5 @@ To capture state, we need to have a state variable.
 (next) ; 2
 (next) ; 3
 ```
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

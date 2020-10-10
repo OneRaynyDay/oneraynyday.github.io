@@ -211,3 +211,5 @@ Using rademacher complexity, we can reach a similar bound as VC dimensions.
 ---
 
 Thanks for sticking around! As school starts, I'll be glancing elsewhere, hoping to learn more on the statistics side. I might come back to write one more piece on Rademacher if I have time, but I'm sure you're all bored with learning theory already. ;)
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

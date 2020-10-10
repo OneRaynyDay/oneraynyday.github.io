@@ -144,4 +144,4 @@ The **Church-Turing** thesis states that **a function is computable if and only 
 
 Note: Technically, this is an injection into $\mathbb{N}$, and to prove that it is countable we need to show that there exists an injection from $\mathbb{N}$ to $\mathcal{R}_\mu$ via Schroder-Bernstein Theorem, or to construct a bijective mapping instead into $\mathbb{N}$ instead, but since the set of recursive functions is obviously infinite, and it has to be at most countable, it's countable.
 
- 
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

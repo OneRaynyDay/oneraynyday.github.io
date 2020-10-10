@@ -536,3 +536,4 @@ In the XNORNet paper, the authors suggested to take the average magnitude of eac
 
 
 
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

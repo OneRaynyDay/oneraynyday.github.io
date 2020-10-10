@@ -29,4 +29,4 @@ SomeObject(int arg1, std::string arg2) : m_arg1(arg1), m_arg2(arg2) {
 } /* Destruction happens second! */
 ```
 
-	
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>
