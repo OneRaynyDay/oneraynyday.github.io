@@ -18,7 +18,7 @@ Consider two complex numbers $z = a + bi$ and $w = c + di$ in the following:
 - The **conjugation** of a complex number $$z$$ is defined as $$\bar{z} = a - bi$$. This is an [isomorphic](https://en.wikipedia.org/wiki/Isomorphism#:~:text=In%20mathematics%2C%20an%20isomorphism%20is,an%20isomorphism%20exists%20between%20them.) map of $$\mathbb{C} \to \mathbb{C}$$.
 - A non-zero complex number can be written uniquely in **polar form** as $z = re^{i\theta}$, $r > 0, \theta \in \mathbb{R}$, and $\theta$ is called the **argument**.
 - The **norm form** of a complex number $z$ is a measure of its distance from the origin: $$N(z) = a^2 + b^2$$, and is the squared distance: $$N(z) = \|z\|^2$$. The **bilinear form** of two complex numbers $$z,w$$ is defined as $$\langle z, w \rangle = Re(z\bar{w}) = \frac{(ac-b(-d))^2+(a(-d) + bc)^2}{2} = \frac{(ac+bd)^2 + (-ad + bc)^2}{2}$$.
-- The **$$Re : \mathbb{C} \to \mathbb{R}$$** gives the real part of a complex number $z$ is $a$, and can be derived as $$Re(z) = \frac{z+\bar{z}}{2}$$. Similarly, the **$$Im : \mathbb{C} \to \mathbb{R}$$** part of a complex number is $$b$$ and can be derived as $$Im(z) = \frac{z - \bar{z}}{2i}$$. We have the property $$\|Re(z)\|, \|Im(z)\| \leq \|z\| \leq \|Re(z)\| + \|Im(z)\|$$ (draw a triangle).
+- The **$$Re : \mathbb{C} \to \mathbb{R}$$** gives the real part of a complex number $z$ is $a$, and can be derived as $$Re(z) = \frac{z+\bar{z}}{2}$$. Similarly, the **$$Im : \mathbb{C} \to \mathbb{R}$$** part of a complex number is $$b$$ and can be derived as $$Im(z) = \frac{z - \bar{z}}{2i}$$. We have the property $\|Re(z)\|, \|Im(z)\| \leq \|z\| \leq \|Re(z)\| + \|Im(z)\|$ (draw a triangle).
 - The **addition** of two complex numbers $z, w$ is defined as $z+w = (a+c) + (b+d)i$. This is a translation mapping in the real and imaginary axes.
 - The **subtraction** of two complex numbers $z,w$ is defined as $z-w = (a-c) + (b-d)i$.
 - The **multiplication** of two complex numbers $$z,w$$ is defined as $$zw=(a + bi)(c+di) = ac + adi + cbi + bdi^2 = (ac - bd) + (ad + bc)i$$. This is a rotation and scaling operation. 
@@ -117,7 +117,7 @@ If $L = \infty \implies R = 0$, that means there exists a single subsequence of 
 **Let's take care of convergence.** We want to test that the series converges absolutely if $\|z\| < R$:
 
 $$
-\sum_{n=0}^\infty \|a_nz^n\| \leq \sum_{n=0}^\infty \|a_n\|\|z\|^n < \infty
+\sum_{n=0}^\infty |a_nz^n| \leq \sum_{n=0}^\infty |a_n||z|^n < \infty
 $$
 
 Then we want to bound $\|a_n\|\|z^n\|$ by some geometrically decaying ratio. This ratio can be obtained in several ways, but fundamentally it's because of the two below statements:
@@ -128,7 +128,7 @@ Then we want to bound $\|a_n\|\|z^n\|$ by some geometrically decaying ratio. Thi
 We start by picking some $\delta$ such that $\|z\| + \delta R < R$. For arbitrary $\epsilon$, there is a sufficiently large $N$ where for all $n \geq N, \|a_n\|^{1/n} - \frac{1}{R} < \frac{\epsilon}{R}$ (we removed the absolute value but it's still true). Then, we throw away all finite $k < N$ in the above series because finite series converge, and we observe:
 
 $$
-\sum_{n\geq N} \|a_n\|\|z\|^n < \sum_{n\geq N} (\frac{1+\epsilon}{R})^n\|z\|^n < \sum_{n\geq N} (\frac{1+\epsilon}{R})^n((1-\delta)R)^n = \sum_{n\geq N} ((1+\epsilon)(1-\delta))^n
+\sum_{n\geq N} |a_n||z|^n < \sum_{n\geq N} (\frac{1+\epsilon}{R})^n|z|^n < \sum_{n\geq N} (\frac{1+\epsilon}{R})^n((1-\delta)R)^n = \sum_{n\geq N} ((1+\epsilon)(1-\delta))^n
 $$
 
 We'll choose an $\epsilon$ sufficiently small so that the ratio $(1+\epsilon)(1-\delta) < 1$. Then the series converges geometrically.
@@ -140,7 +140,7 @@ We'll choose an $\epsilon$ sufficiently small so that the ratio $(1+\epsilon)(1-
 In that case, we can pick some $\delta$ such that $\|z\| > R + \delta R$. For arbitrary $\epsilon$, there is sufficiently large $N, \forall n\geq N \|a_n\|^{1/n} > \frac{1}{R} - \frac{\epsilon}{R}$ (we removed the absolute value in the other way). We have the following inequality:
 
 $$
-\sum_{n\geq N} \|a_n\|\|z\|^n > \sum_{n\geq N} (\frac{1-\epsilon}{R})^n\|z\|^n > \sum_{n\geq N} (\frac{1-\epsilon}{R})^n((1+\delta)R)^n = \sum_{n\geq N} ((1-\epsilon)(1+\delta))^n
+\sum_{n\geq N} |a_n||z|^n > \sum_{n\geq N} (\frac{1-\epsilon}{R})^n|z|^n > \sum_{n\geq N} (\frac{1-\epsilon}{R})^n((1+\delta)R)^n = \sum_{n\geq N} ((1-\epsilon)(1+\delta))^n
 $$
 
 We'll choose an $\epsilon$ sufficiently small so that the ratio $(1-\epsilon)(1+\delta) > 1$. Then the series diverges. $\blacksquare$
