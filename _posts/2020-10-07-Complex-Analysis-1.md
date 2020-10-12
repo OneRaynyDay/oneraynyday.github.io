@@ -69,7 +69,7 @@ $$
 
 ... in the interpretation of $\mathbb{C}$ as the [Argand plane](https://en.wikipedia.org/wiki/Complex_plane#Argand_diagram).
 
-Because holomorphic functions are essentially a subset of real-valued multivariable differentia \sum_n^\infty (-1)^n \frac{x^{2n+1}}{(2n+1)!} \\ble functions, it carries with it the equivalent laws of differentiation. In the below statements, $f, g: \mathbb{C} \to \mathbb{C}$ and are complex differentiable at $z_0$.
+Because holomorphic functions are essentially a subset of real-valued multivariable differentiable functions, it carries with it the equivalent laws of differentiation. In the below statements, $f, g: \mathbb{C} \to \mathbb{C}$ and are complex differentiable at $z_0$.
 
 1. **Linearity**: $h = f+g \implies h'(z_0) = f'(z_0) + g'(z_0)$ 
 
