@@ -108,7 +108,7 @@ $$
 \sum_{n=0}^\infty a_nz^n \ \text{where }  a_n, z \in \mathbb{C}
 $$
 
-**Theorem: For any power series, there exists $R > 0$ such that if $\|z\| < R$ the series converges absolutely and $\|z\| > R$ the series diverges. This $R$ is called the radius of convergence, and obeys the formula $\frac{1}{R} = \text{limsup} \|a_n\|^{1/n}$.**
+**Theorem: For any power series, there exists $R > 0$ such that if $\|z\| < R$ the series converges absolutely and $\|z\| > R$ the series diverges. This $R$ is called the radius of convergence, and is defined by $\frac{1}{R} = \text{limsup} \|a_n\|^{1/n}$.**
 
 **Proof:** **Let's take care of edge cases.** Let $L = \frac{1}{R}$. If $L = 0 \implies R = \infty$, that means all convergent subsequences of form $\|a_n\|^{1/n}$ converges to 0. Then $a_n$ decays faster than $z^n$ grows, and thus the series is geometric and convergent.
 
