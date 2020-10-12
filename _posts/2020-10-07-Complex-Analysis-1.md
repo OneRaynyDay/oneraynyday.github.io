@@ -50,7 +50,7 @@ If we look at $e^{-ix} = cos(-x) + isin(-x) = cos(x) - isin(x)$, we can derive t
 Given a function $f: \mathbb{C} \to \mathbb{C}$, it is **differentiable** at $z_0$ if:
 
 $$
-lim_{h \to 0} \frac{f(z_0 + h) - f(z_0)}{h} = f'(z_0) \in \mathbb{C}
+\text{lim}_{h \to 0} \frac{f(z_0 + h) - f(z_0)}{h} = f'(z_0) \in \mathbb{C}
 $$
 
 Or, by delta epsilon definitions, it is differentiable at $z_0$ with derivative $f'(z_0)$ if $\forall \epsilon > 0 \exists \delta > 0$ such that for all $\|z-z_0\| < \delta$:
@@ -80,7 +80,7 @@ Because holomorphic functions are essentially a subset of real-valued multivaria
 
 One function that might be "smooth" but not holomorphic is $f(z) = \bar{z}$. Individually speaking, $f(Re(z)) = Re(z)$, and $f(Im(z)) = -Im(z)i$. Both of these seem relatively differentiable in their own right but it's not holomorphic:
 $$
-lim_{h\to 0} \frac{f(z_0+h) - f(z_o)}{h} = \frac{\bar{h}}{h}
+\text{lim}_{h\to 0} \frac{f(z_0+h) - f(z_o)}{h} = \frac{\bar{h}}{h}
 $$
 In the direction of $h$ from a real number, the value is 1. In the direction of $h$ from a complex number, the value is $-1$. The limit must be uniformly equal to $f'(z_0) \in \mathbb{C}$ for the function to be considered holomorphic. In the sense that the real component is $x$ and the imaginary component is $y$, if we look at the jacobian of $f(x, y) = (u(x, y), v(x,y)) = (x, -y)$ we also see that:
 $$
