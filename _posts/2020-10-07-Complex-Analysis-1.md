@@ -96,40 +96,46 @@ the mapping does not conform to the generic type of rotation matrix with scaling
 Some examples of power series are:
 
 - The complex exponential: $e^z = \sum_{n=0}^\infty \frac{z^n}{n!}$ and the $sin(x)$ and $cos(x)$ functions that we've seen above.
-- The geometric series: $\frac{1}{1-z} = \sum_{n=0}^\infty z^n$ for $|z| < 1$.
+- The geometric series: $\frac{1}{1-z} = \sum_{n=0}^\infty z^n$ for $\|z\| < 1$.
 
 The general form of power series is in the form of:
 $$
 \sum_{n=0}^\infty a_nz^n \ \text{where }  a_n, z \in \mathbb{C}
 $$
-**Theorem: For any power series, there exists $R > 0$ such that if $|z| < R$ the series converges absolutely and $|z| > R$ the series diverges. This $R$ is called the radius of convergence, and obeys the formula $\frac{1}{R} = \text{limsup} |a_n|^{1/n}$.**
+**Theorem: For any power series, there exists $R > 0$ such that if $|z| < R$ the series converges absolutely and $\|z\| > R$ the series diverges. This $R$ is called the radius of convergence, and obeys the formula $\frac{1}{R} = \text{limsup} \|a_n\|^{1/n}$.**
 
-**Proof:** **Let's take care of edge cases.** Let $L = \frac{1}{R}$. If $L = 0 \implies R = \infty$, that means all convergent subsequences of form $|a_n|^{1/n}$ converges to 0. Then $a_n$ decays faster than $z^n$ grows, and thus the series is geometric and convergent.
+**Proof:** **Let's take care of edge cases.** Let $L = \frac{1}{R}$. If $L = 0 \implies R = \infty$, that means all convergent subsequences of form $\|a_n\|^{1/n}$ converges to 0. Then $a_n$ decays faster than $z^n$ grows, and thus the series is geometric and convergent.
 
-If $L = \infty \implies R = 0$, that means there exists a single subsequence of form $|a_n|^{1/n}$ that diverges. A single divergent subsequence implies divergence of the series, and so we must set all terms to 0 to make sure the series converge.
+If $L = \infty \implies R = 0$, that means there exists a single subsequence of form $\|a_n\|^{1/n}$ that diverges. A single divergent subsequence implies divergence of the series, and so we must set all terms to 0 to make sure the series converge.
 
-**Let's take care of convergence.** We want to test that the series converges absolutely if $|z| < R$:
+**Let's take care of convergence.** We want to test that the series converges absolutely if $\|z\| < R$:
+
 $$
-\sum_{n=0}^\infty |a_nz^n| \leq \sum_{n=0}^\infty |a_n||z|^n < \infty
+\sum_{n=0}^\infty \|a_nz^n\| \leq \sum_{n=0}^\infty \|a_n\|\|z\|^n < \infty
 $$
-Then we want to bound $|a_n||z^n|$ by some geometrically decaying ratio. This ratio can be obtained in several ways, but fundamentally it's because of the two below statements:
 
-- $|z| < R \implies \exists \delta > 0, |z|+\delta < R$  
-- $\forall \epsilon > 0 \exists N \text{ such that } \forall n \geq N, ||a_n|^{1/n} - \frac{1}{R}| < \epsilon$ due to  $\text{limsup}$ of the sequence.
+Then we want to bound $\|a_n\|\|z^n\|$ by some geometrically decaying ratio. This ratio can be obtained in several ways, but fundamentally it's because of the two below statements:
 
-We start by picking some $\delta$ such that $|z| + \delta R < R$. For arbitrary $\epsilon$, there is a sufficiently large $N$ where for all $n \geq N, |a_n|^{1/n} - \frac{1}{R} < \frac{\epsilon}{R}$ (we removed the absolute value but it's still true). Then, we throw away all finite $k < N$ in the above series because finite series converge, and we observe:
+- $\|z\| < R \implies \exists \delta > 0, \|z\|+\delta < R$  
+- $\forall \epsilon > 0 \exists N \text{ such that } \forall n \geq N, \|\|a_n\|^{1/n} - \frac{1}{R}\| < \epsilon$ due to  $\text{limsup}$ of the sequence.
+
+We start by picking some $\delta$ such that $\|z\| + \delta R < R$. For arbitrary $\epsilon$, there is a sufficiently large $N$ where for all $n \geq N, \|a_n\|^{1/n} - \frac{1}{R} < \frac{\epsilon}{R}$ (we removed the absolute value but it's still true). Then, we throw away all finite $k < N$ in the above series because finite series converge, and we observe:
+
 $$
-\sum_{n\geq N} |a_n||z|^n < \sum_{n\geq N} (\frac{1+\epsilon}{R})^n|z|^n < \sum_{n\geq N} (\frac{1+\epsilon}{R})^n((1-\delta)R)^n = \sum_{n\geq N} ((1+\epsilon)(1-\delta))^n
+\sum_{n\geq N} \|a_n\|\|z\|^n < \sum_{n\geq N} (\frac{1+\epsilon}{R})^n\|z\|^n < \sum_{n\geq N} (\frac{1+\epsilon}{R})^n((1-\delta)R)^n = \sum_{n\geq N} ((1+\epsilon)(1-\delta))^n
 $$
+
 We'll choose an $\epsilon$ sufficiently small so that the ratio $(1+\epsilon)(1-\delta) < 1$. Then the series converges geometrically.
 
-**Let's take care of divergence.** We want to test that the series diverges absolutely if $|z| > R$. In that case, we'll modify the first statement to:
+**Let's take care of divergence.** We want to test that the series diverges absolutely if $\|z\| > R$. In that case, we'll modify the first statement to:
 
-- $|z| > R \implies \exists \delta > 0, |z| > R + \delta$
+- $\|z\| > R \implies \exists \delta > 0, \|z\| > R + \delta$
 
-In that case, we can pick some $\delta$ such that $|z| > R + \delta R$. For arbitrary $\epsilon$, there is sufficiently large $N, \forall n\geq N |a_n|^{1/n} > \frac{1}{R} - \frac{\epsilon}{R}$ (we removed the absolute value in the other way). We have the following inequality:
+In that case, we can pick some $\delta$ such that $\|z\| > R + \delta R$. For arbitrary $\epsilon$, there is sufficiently large $N, \forall n\geq N \|a_n\|^{1/n} > \frac{1}{R} - \frac{\epsilon}{R}$ (we removed the absolute value in the other way). We have the following inequality:
 
-$\sum_{n\geq N} |a_n||z|^n > \sum_{n\geq N} (\frac{1-\epsilon}{R})^n|z|^n > \sum_{n\geq N} (\frac{1-\epsilon}{R})^n((1+\delta)R)^n = \sum_{n\geq N} ((1-\epsilon)(1+\delta))^n$
+$$
+\sum_{n\geq N} \|a_n\|\|z\|^n > \sum_{n\geq N} (\frac{1-\epsilon}{R})^n\|z\|^n > \sum_{n\geq N} (\frac{1-\epsilon}{R})^n((1+\delta)R)^n = \sum_{n\geq N} ((1-\epsilon)(1+\delta))^n
+$$
 
 We'll choose an $\epsilon$ sufficiently small so that the ratio $(1-\epsilon)(1+\delta) > 1$. Then the series diverges. $\blacksquare$
 
@@ -139,6 +145,6 @@ On the disc of convergence boundary, convergence or divergence is not so easily 
 
 **Theorem: Within the disc of convergence, a power series function $f(z) = \sum_{n=0}^\infty a_nz^n$ is holomorphic with derivative $f'(z) = \sum_{n=0}^\infty n a_nz^{n-1}$.**
 
-This proof is super tedious so... no. However, we can see that the derivative has the same radius of convergence as the original function. This is because $\text{limsup} |a_n|^{1/n} = \text{limsup} |n a_n|^{1/n}$ since the $\text{lim}_{n \to \infty} n^{1/n} = 1$ (applying sandwich theorem).
+This proof is super tedious so... no. However, we can see that the derivative has the same radius of convergence as the original function. This is because $\text{limsup} \|a_n\|^{1/n} = \text{limsup} \|n a_n\|^{1/n}$ since the $\text{lim}_{n \to \infty} n^{1/n} = 1$ (applying sandwich theorem).
 
 As a result of this finding, we see that **power series are infinitely complex differentiable!** Since power series are so important for complex analysis, we say that a function is **analytic** if it has a power series expansion, and thus also infinitely complex differentiable. 
