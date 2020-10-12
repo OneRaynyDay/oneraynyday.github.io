@@ -79,13 +79,17 @@ Because holomorphic functions are essentially a subset of real-valued multivaria
 4. **Chain rule**: $h = f \circ g \implies h'(z_0) = f'(g(z_0))g'(z_0)$
 
 One function that might be "smooth" but not holomorphic is $f(z) = \bar{z}$. Individually speaking, $f(Re(z)) = Re(z)$, and $f(Im(z)) = -Im(z)i$. Both of these seem relatively differentiable in their own right but it's not holomorphic:
+
 $$
 \text{lim}_{h\to 0} \frac{f(z_0+h) - f(z_o)}{h} = \frac{\bar{h}}{h}
 $$
+
 In the direction of $h$ from a real number, the value is 1. In the direction of $h$ from a complex number, the value is $-1$. The limit must be uniformly equal to $f'(z_0) \in \mathbb{C}$ for the function to be considered holomorphic. In the sense that the real component is $x$ and the imaginary component is $y$, if we look at the jacobian of $f(x, y) = (u(x, y), v(x,y)) = (x, -y)$ we also see that:
+
 $$
 \textbf{J} = \begin{bmatrix}\frac{\partial u(x,y)}{\partial x} & \frac{\partial u(x,y)}{\partial y} \\\frac{\partial v(x,y)}{\partial x} & \frac{\partial v(x,y)}{\partial y}\end{bmatrix}= \begin{bmatrix}1 & 0 \\0 & -1\end{bmatrix}
 $$
+
 the mapping does not conform to the generic type of rotation matrix with scaling. The **Cauchy-Riemann** equations essentially state this, with the following restrictions:
 
 - $\frac{\partial u}{\partial x} = \frac{\partial v}{\partial y}$, which is the $a = a$ portion in the above matrix along the diagonal.
@@ -99,9 +103,11 @@ Some examples of power series are:
 - The geometric series: $\frac{1}{1-z} = \sum_{n=0}^\infty z^n$ for $\|z\| < 1$.
 
 The general form of power series is in the form of:
+
 $$
 \sum_{n=0}^\infty a_nz^n \ \text{where }  a_n, z \in \mathbb{C}
 $$
+
 **Theorem: For any power series, there exists $R > 0$ such that if $|z| < R$ the series converges absolutely and $\|z\| > R$ the series diverges. This $R$ is called the radius of convergence, and obeys the formula $\frac{1}{R} = \text{limsup} \|a_n\|^{1/n}$.**
 
 **Proof:** **Let's take care of edge cases.** Let $L = \frac{1}{R}$. If $L = 0 \implies R = \infty$, that means all convergent subsequences of form $\|a_n\|^{1/n}$ converges to 0. Then $a_n$ decays faster than $z^n$ grows, and thus the series is geometric and convergent.
