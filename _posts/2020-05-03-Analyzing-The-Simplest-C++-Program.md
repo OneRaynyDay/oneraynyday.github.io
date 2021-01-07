@@ -241,12 +241,14 @@ We need different sections because two sections may need different permissions, 
 
 - `.text`, which holds the code to be executed. This should be in the `R E` section.
 - `.rodata`, which means *read-only data*. This usually holds static constants that are used in the program. This is in one of the `R` sections.
-- `.data`, which is read/write data containing the heap and the stack (usually). This is in the `RW` section. There's no execute because of buffer overflow security vulnerabilities leading to execution of code in the data section. In addition, we have `.bss` in this section as well. The name doesn't really mean too much now - you should just consider it as "zero-initialized data". It contains global variables and static variables that are zero-initialized. *The reason this segment exists is for space optimization in the executable itself*. (Imagine a lot of zero buffers adding space to the executable's size)
+- `.data`, which is read/write data. This is in the `RW` section. There's no execute because of buffer overflow security vulnerabilities leading to execution of code in the data section. In addition, we have `.bss` in this section as well. The name doesn't really mean too much now - you should just consider it as "zero-initialized data". It contains global variables and static variables that are zero-initialized. *The reason this segment exists is for space optimization in the executable itself*. (Imagine a lot of zero buffers adding space to the executable's size)
 - The ELF header information is in the other `R` section.
 </details>
 {: .red}
 
 The kernel is responsible here to memory map these segments into our runtime and set up our execution environment involving the stack, heap, our code, etc. Without this section, we would not have executables.
+
+It's also important to note that the union of all sections within a segment may not be the entire segment itself. For example, programming constructs like our stack and heap belong to the `LOAD` segment but it may not live in any of the sections within `LOAD`.
 
 ### DYNAMIC
 
