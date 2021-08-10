@@ -8,7 +8,7 @@ layout: default
 
 ## Preface
 
-If you haven't seen the previous blog, or not familiar with Hoeffding bounds, I suggest you read about it. This blog goes head first into the continuation of the previous blog [here]({{ site.url }}/2017/08/06/Journey-Through-SLT/).
+If you haven't seen the previous blog, or not familiar with Hoeffding bounds, I suggest you read about it. This blog goes head first into the continuation of the previous blog [here]({{ site.url }}/ml/2017/08/06/Journey-Through-SLT/).
 
 # What is a hypothesis?
 
@@ -92,7 +92,7 @@ which has a much more obvious probability:
 
 $$
 P(\{\cup(B_i)_{i=0}^M\}^c) = 1 - P(\{\cup(B_i)_{i=0}^M\}) = 1 - \sum_{i=0}^M P(B_i)
-$$ 
+$$
 
 due to an assumption on each hypothesis being disjoint, which is a broad assumption. This assumption on that they are disjoint means that we add up the probability for each one without accounting for the inclusion. Recall the inclusion-exclusion principle:
 
@@ -102,8 +102,14 @@ $$
 
 Here, we are assuming that $P(A \cap B) = 0$. If we didn't use this assumption, then it'd get ugly. Just for the sake of illustration, we would get:
 
-$-1^0*2C1P(B_i) + -1^1*2C2P(B_i \cap B_j)$ for 2 events...
-$-1^0*3C1P(B_i) + -1^1*3C2P(B_i \cap B_j) + -1^2*3C3P(B_i \cap B_j \cap B_k)$ for 3 events...
+$$
+-1^0*2C1P(B_i) + -1^1*2C2P(B_i \cap B_j)
+$$
+for 2 events...
+$$
+-1^0*3C1P(B_i) + -1^1*3C2P(B_i \cap B_j) + -1^2*3C3P(B_i \cap B_j \cap B_k)
+$$
+for 3 events...
 
 So we **could** utilize the fact that there are overlaps to get a tighter bound, but it's way too resource consuming for now. Thus, we use hoeffding on each individual **disjoint** event and get:
 
