@@ -34,7 +34,7 @@ and then wait for it to finish using `join()`.
 
 What if we called `detach()`? Then even after the instantiation `t` gets destroyed(after leaving its scope), the thread will still continue operations.
 
-After `join()` is done executing, we can guarrantee that 
+After `join()` is done executing, we can guarantee that 
 `t` is no longer associated with the actual thread, since
 the thread's execution actually finished.
 

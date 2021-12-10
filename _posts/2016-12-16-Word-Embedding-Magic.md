@@ -10,7 +10,7 @@ Word embeddings are vectors that represent the latent definition of a word. They
 
 In this case, we trained it straight through our own implemented recurrent neural net.
 
-The complete set of code and jupyter notebooks are in [here](https://github.com/OneRaynyDay/BibleNet/tree/master/models), feel free to play around with it. **Keep in mind that I implemented everything from barebone python, so it is not guarranteed to be fast for any application.** I called it BibleNet because its sole purpose was to be trained on the bible corpus.
+The complete set of code and jupyter notebooks are in [here](https://github.com/OneRaynyDay/BibleNet/tree/master/models), feel free to play around with it. **Keep in mind that I implemented everything from barebone python, so it is not guaranteed to be fast for any application.** I called it BibleNet because its sole purpose was to be trained on the bible corpus.
 
 Here's a picture of the word embeddings capturing the wh- words:
 

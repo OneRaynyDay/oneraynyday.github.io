@@ -246,7 +246,7 @@ This is basically an accurate picture of the current state of value semantics in
 
 ## C++17 (2017)
 
-The definition of what is a prvalue and what isn't has been changing frequently, but one of the most important and non-obvious things we should mention is the copy ellision rules involving returning prvalues. In C++17, copy ellision is now **guarranteed** for function calls returning prvalues, as in they never undergo temporary materialization. This is in a class of optimizations called RVO (return value optimization), and it has important implications. 
+The definition of what is a prvalue and what isn't has been changing frequently, but one of the most important and non-obvious things we should mention is the copy ellision rules involving returning prvalues. In C++17, copy ellision is now **guaranteed** for function calls returning prvalues, as in they never undergo temporary materialization. This is in a class of optimizations called RVO (return value optimization), and it has important implications. 
 
 ### More on RVO
 
@@ -278,7 +278,7 @@ int main() {
 }
 ```
 
-Previously, the standard didn't specify which one would be guarranteed to be faster than the other:
+Previously, the standard didn't specify which one would be guaranteed to be faster than the other:
 
 ```c++
 (1)

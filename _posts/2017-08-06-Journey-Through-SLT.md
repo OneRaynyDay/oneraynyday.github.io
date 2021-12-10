@@ -15,7 +15,7 @@ When I was just a practitioner, trying out algorithms and seeing which models di
 
 The main point that all of this is trying to prove is 3 fold:
 
-1. How can we guarrantee that a machine learning model **will generalize**?
+1. How can we guarantee that a machine learning model **will generalize**?
 2. The **Bias-Variance** tradeoff.
     - "linear models is like a honda, it will get you where you need. Neural nets are like luxury cars, it will get you there faster, but with a reckless driver, might crash along the way".
 3. Why do machine learning models work under very **pessimistic** conditions? i.e. No free lunch theorem.
@@ -256,7 +256,7 @@ This means that **as we increase samples, our confidence that our model is learn
 
 This is a huge leap in the correct direction for statistical learning theory, and is a great tool to use for any probability class as well.
 
-NOTE: Some people who are already familiar might ask why we use Hoeffding instead of something like chebyshev. Well, we kind of **can**, but it doesn't guarrantee a specific type of convergence, as we talked about above. Also, it's not as tight as it possibly could be, so why would we use something that's weaker? That means we may possibly need many, many more sample points than necessary to get to a specific confidence level of approximate correctness! Here's an illustration:
+NOTE: Some people who are already familiar might ask why we use Hoeffding instead of something like chebyshev. Well, we kind of **can**, but it doesn't guarantee a specific type of convergence, as we talked about above. Also, it's not as tight as it possibly could be, so why would we use something that's weaker? That means we may possibly need many, many more sample points than necessary to get to a specific confidence level of approximate correctness! Here's an illustration:
 
 ![hoeffding vs chebyshev]({{ site.url }}/assets/hoeffdingvschebyshev.png)
 
