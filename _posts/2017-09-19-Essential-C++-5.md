@@ -242,7 +242,7 @@ const Foo f; // bar = 0
 f.getBar() = 10; // f didn't modify bar, but we did! bar = 10
 ```
 
-So we guarranteed that getBar() can be accessible during `const`, and returned a value of `int&`. 
+So we guaranteed that getBar() can be accessible during `const`, and returned a value of `int&`. 
 
 We can then access this value and change it, making `const` completely pointless.
 
@@ -278,13 +278,13 @@ So try not to return a handle. It'll make debugging easier.
 
 # Strive for exception-safe
 
-Exception-safe functions offer 1 of these guarrantees:
+Exception-safe functions offer 1 of these guarantees:
 
-1. **Basic Guarrantee** : If an exception is thrown, the program is in **a valid state**. We don't know which one though.
+1. **Basic guarantee** : If an exception is thrown, the program is in **a valid state**. We don't know which one though.
     - A valid state by definition is one which no objects are corrupted(i.e. modified halfway)
-2. **Strong Guarrantee** : If an exception is thrown, the program is in **the valid state it was in before the function call**. This is also called **atomic**.
+2. **Strong guarantee** : If an exception is thrown, the program is in **the valid state it was in before the function call**. This is also called **atomic**.
     - If this type of function is called, a failure == no-op.
-3. **No-throw Guarrantee** : Promises to never throw exceptions.
+3. **No-throw guarantee** : Promises to never throw exceptions.
 
 ## `throw(...)` vs noexcept
 
@@ -339,17 +339,17 @@ The list includes(but not restricted to):
 3. `bad_typeid` can occur during `typeid(...)` where `...` is invalid. 
 4. `system_error` can occur during any system calls, i.e. detaching a nonthread, file system errors, etc.
 
-## A strategy for strong exception guarrantee - Copy & Swap
+## A strategy for strong exception guarantee - Copy & Swap
 
 Copy & swap goes like this:
 
 1. You create a clone
 2. Fill the clone up with the next state's values
-3. Use some strong exception guarrantee function to swap your current members and the clone's members.
+3. Use some strong exception guarantee function to swap your current members and the clone's members.
 
-The hardest part about this process is #3, since swapping all members might be difficult to do with the strong exception guarrantee.
+The hardest part about this process is #3, since swapping all members might be difficult to do with the strong exception guarantee.
 
-I should also note that **steps 1 and 2 must not edit the global state in any way(including the current instantiation that the member funcs are a part of)**. If they do, then all bets are off for strong guarrantees.
+I should also note that **steps 1 and 2 must not edit the global state in any way(including the current instantiation that the member funcs are a part of)**. If they do, then all bets are off for strong guarantees.
 
 However, the **PImpl** idiom saves the day here:
 

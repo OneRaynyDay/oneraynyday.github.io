@@ -73,7 +73,7 @@ To prevent any false negatives, we say that this is in fact a heap link.
 **Heap compaction moves all allocated blocks together at one end of the heap, and removes fragmentation in the heap.** To do this, we need to know what are
 all the current heap links and then simply copy all the contents into the beginning of the heap, and update the pointer values on the heap links.
 
-However, we can't guarrantee that we can do heap compaction on all languages. For example C cannot avoid inclusion errors(false positives) via the union example,
+However, we can't guarantee that we can do heap compaction on all languages. For example C cannot avoid inclusion errors(false positives) via the union example,
 and thus we could be moving values that are not actually alive, and fundamentally change the value of the variable.
 
 # Garbage Collection

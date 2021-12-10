@@ -371,7 +371,7 @@ However, the issue with the above is that it **won't link**. Why will it not lin
 
 Because we only **declared** the function, and we didn't **define** it. Defining it outside the
 function will not give us the solution because we declare a bunch of functions inside `Rational`
-but there's no guarrantee at all that the template friend function will be generated if it's
+but there's no guarantee at all that the template friend function will be generated if it's
 outside of our class.
 
 One solution is just make it inline:

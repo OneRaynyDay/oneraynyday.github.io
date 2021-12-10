@@ -114,7 +114,7 @@ implies that the steps will be "small enough to assure convergence to a finite n
 
 ---
 
-So why did we decide to set $\alpha_n(a) = \alpha \in (0,1]$? Isn't that a constant? Wouldn't we lose our guarrantees for convergence?
+So why did we decide to set $\alpha_n(a) = \alpha \in (0,1]$? Isn't that a constant? Wouldn't we lose our guarantees for convergence?
 
 **Yes, we do. But it's with good reason. We don't want to converge to a specific value. The optimal action-value is nonstationary.**
 

@@ -106,7 +106,7 @@ episode = generate_episode(pi, s, a) # loop through s, a at every iteration.
 
 ## On-Policy: $\epsilon$-Greedy Policies
 
-So what if we **can't** assume that we can start at any arbitrary state and take arbitrary actions? Well, then we can still guarrantee convergence as long as we're not too greedy and explore all states infinitely many times, right?
+So what if we **can't** assume that we can start at any arbitrary state and take arbitrary actions? Well, then we can still guarantee convergence as long as we're not too greedy and explore all states infinitely many times, right?
 
 The above is essentially one of the main properties of on-policy methods. An **on-policy method tries to improve the policy that is currently running the trials**, meanwhile an **off-policy method tries to improve a different policy than the one running the trials**.
 
@@ -130,9 +130,9 @@ $$v_{\pi'}(s) \geq v_\pi(s)$$
 
 Which is what we wanted for convergence. $\blacksquare$
 
-However, we need to find out what this policy can actually converge to. Obviously, since our policy is forced to be stochastic even if the optimal policy is deterministic, it's not guarranteed to converge to $\pi*$. However, we can reframe our problem:
+However, we need to find out what this policy can actually converge to. Obviously, since our policy is forced to be stochastic even if the optimal policy is deterministic, it's not guaranteed to converge to $\pi*$. However, we can reframe our problem:
 
-Suppose instead of having our policy hold the stochasticity of uniformly choosing actions with probability $\epsilon$, it is rather *the environment that randomly picks an action regardless of what our policy dictates.* Then, we can guarrantee an optimal solution. The outline of the proof is to show that in $(1)$, if the equality holds then we have $\pi = \pi'$ and thus we have $v_\pi = v_{\pi'}$, and the equation is optimal under stochasticity due to the environment.
+Suppose instead of having our policy hold the stochasticity of uniformly choosing actions with probability $\epsilon$, it is rather *the environment that randomly picks an action regardless of what our policy dictates.* Then, we can guarantee an optimal solution. The outline of the proof is to show that in $(1)$, if the equality holds then we have $\pi = \pi'$ and thus we have $v_\pi = v_{\pi'}$, and the equation is optimal under stochasticity due to the environment.
 
 ## Off-policy: Importance Sampling
 

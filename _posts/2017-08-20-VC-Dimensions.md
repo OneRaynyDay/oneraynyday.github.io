@@ -90,7 +90,7 @@ We know that since $m_\mathcal{H}^k(N)$ is built upon $m_\mathcal{H}^k(N-1)$, th
 
 $$m_\mathcal{H}^k(N-1) \geq \mathcal{A}_{N-1} + \mathcal{B}_{N-1}$$
 
-We also know that $m_\mathcal{H}^{k-1}(N-1) \geq \mathcal{B}_{N-1}$, via a similar argument to our lemma. If both a $+1, -1$ can be added, then take away the $+1, -1$ and you guarrantee the permutations satisfy a VC dimension of at least 1 less. This means if our permissible VC dimension was $\geq k$, it must now be $\geq k-1$.
+We also know that $m_\mathcal{H}^{k-1}(N-1) \geq \mathcal{B}_{N-1}$, via a similar argument to our lemma. If both a $+1, -1$ can be added, then take away the $+1, -1$ and you guarantee the permutations satisfy a VC dimension of at least 1 less. This means if our permissible VC dimension was $\geq k$, it must now be $\geq k-1$.
 
 We thus get the recurrence relation:
 
