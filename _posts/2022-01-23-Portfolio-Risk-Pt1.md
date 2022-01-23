@@ -99,7 +99,7 @@ Let's think of another scenario, where the relationship between stocks are not s
 
 Here are some properties about the factor model, which we'll discuss first.
 
-### Rank-preserving Linear Transformations
+### Rank-preserving linear transformations
 
 A factor model you get from Barra has semantic meaning for each factor exposure and loading vector, but you can apply a rank preserving linear transformation to the factors such that the returns are still the same. Let $C \in \mathbb{R}^{m \times m}$ be an invertible matrix, then:
 
@@ -148,7 +148,7 @@ $$
 
 To add the new factors $g$ and loadings $A$, we can just increase the length of the vector $f$ to include $g$ as the last few elements, and stack $B$ on top of $A$.
 
-### Log-returns Covariance Transformation
+### Log-returns covariance transformation
 
 If given our log-returns covariance matrix, then how do we know our actual returns' covariance matrix? Let the returns be $R \in \mathbb{R}^n, R_i = e^{r_i}, r = log(\frac{p_t}{p_{t-1}}) \sim \mathcal{N}(\mu_r, \Sigma_r)$. Here we want to calculate our actual return covariance matrix $\Sigma_R$ of the random vector $R$, which is returns (not logarithmic returns).
 

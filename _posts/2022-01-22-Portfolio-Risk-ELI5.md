@@ -20,7 +20,7 @@ What does it mean to "win" at the stock market? Do you want to become a bitcoin 
 
 To a greater extent, portfolio management tries to solve the latter problem. Most portfolio managers acrue large positions with leverage and try to beat the broader market in returns in order to pay themselves and grow their clients' net worth. How do they do this?
 
-## Modelling for returns
+## Modelling for Returns
 
 You might have heard of the terms "alpha" and "beta" used in a financial context before. They're terms used in a family of models that portfolio managers use, and are the main subjects of research in a typical hedge fund.
 
