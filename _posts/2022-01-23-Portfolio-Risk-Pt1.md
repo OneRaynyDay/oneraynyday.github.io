@@ -406,3 +406,4 @@ Which is a better model for extreme events. Lots of stress evaluation metrics su
 
 Portfolio modellings foundations rest on handcrafted factors, domain knowledge, and lots of linear regression. We first defined what a return is, and move on to modelling the returns using factor models. Then, we mentioned a few ways to formulate the modelling as an optimization problem so we can find the best positions for our portfolio. Lastly, we look at how to attribute money gained/lost and the worst case scenarios that may occur.  There's a lot of stuff I didn't yet mention (i.e. performance attribution) which I might include in a subsequent post, but I hope this survey into the different parts of risk/portfolio modelling helps!
 
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>

@@ -125,3 +125,5 @@ When it comes to building a portfolio that makes you money, there's a whole fiel
 
 [^1]: You would actually buy avocado *futures* - which allow cash settlement - so you wouldn't have to sell them to make your profit.
 [^2]: But it's also important to note that if the market does really well, we don't reap any of the benefits if we hedge!
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>
