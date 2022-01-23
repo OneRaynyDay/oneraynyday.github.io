@@ -41,13 +41,17 @@ When the beta is zero, it means one of two things: your portfolio is not correla
 Our observations can be formalized in the following way:
 
 **Returns for single stock:**
+
 $$
 r = \alpha + \beta m + \epsilon \quad \alpha,\beta,\epsilon \in \mathbb{R}\\
 $$
+
 **Returns for multiple stocks:**
+
 $$
 r = \sum_i^N \alpha_i + \beta_im + \epsilon_i
 $$
+
 where $r$ is the return of the portfolio and $m$ is the market return. Since we only have a single correlated factor to our portfolio in this equation (being $m$), we call this a (linear) **single-factor model**.
 
 ### Hedging
@@ -59,13 +63,17 @@ You've heard the word in "hedge funds", "hedge your bets", etc. Applied to the c
 We just considered the single factor model to describe the characteristics of return for our portfolio. We can do better by decomposing the market into a bunch of smaller factors. To be precise, we can model it as follows:
 
 **Returns for single stock:**
+
 $$
 r = \alpha + \beta^Tf + \epsilon \quad\alpha,\epsilon \in \mathbb{R}, \beta, f\in \mathbb{R^m}
 $$
+
 **Returns for multiple stocks:**
+
 $$
 r = \sum_i^N \alpha_i + \beta_i^Tf_i + \epsilon_i
 $$
+
 where $b$ is the vector of **loadings** of a stock to a vector of factors $f$. Selecting the factors that best explain the returns of a portfolio is an art, and there are many ways to do it.
 
 ### Investing in high beta stocks
@@ -80,24 +88,31 @@ There are many ways to think about the performance of a portfolio. One simple wa
 $$
 S = \frac{E(r) - R_b}{\sigma_r}
 $$
+
 where $R_b$ is some risk free return (i.e. putting it in a bank account to accrue interest) and $\sigma_r$ is the volatility of our portfolio. If we have high returns but we're living in [Zimbabwe](https://en.wikipedia.org/wiki/Hyperinflation_in_Zimbabwe) and using zimbabwe currency to measure our performance, maybe it's because of the hyperinflation, not because we're good portfolio managers. This corresponds to an extremely high risk free return, potentially making our sharpe ratio negative. If we're a US-based hedge fund that only invests in meme stocks, return may be very high but the volatility would be so high that no institutional investors would like to work with us. This corresponds to a very high volatility, making the sharpe ratio smaller.
 
 One common way to size our positions for our portfolio after we've established a reasonable $\alpha$ (expected returns) and $\sigma^2$ (variance) is by **proportion of alpha**:
+
 $$
 \text{position} \propto \alpha
 $$
+
 which seems very simple. The more money we make or lose, the bigger the magnitude we go long or short scaled linearly. One may think this is myopic and should take into the volatility of the asset, so some have tried **mean variance**:
+
 $$
 \text{position} \propto \alpha/\sigma^2
 $$
+
 However, it has a couple of shortcomings and has worse simulated sharpe ratio compared to the dumb proportion strategy. Without getting into the details, the reason mean variance fails is because the estimation error of the expected returns can cause drastic changes to the positions of a portfolio, which is detrimental to performance.
 
 ## Attributing Performance
 
 At the end of the day, we concretely see our PnL. How do we attribute our performance to individual factors?
+
 $$
 \text{PnL}(T) = \sum_{t=1}^T [\text{idioPnL}(t) + \sum_f \text{factorPnL}_f(t)]
 $$
+
 Usually, you'd like to plot the cumulative pnl for each factor and idiosyncratic returns to have a better idea which factors are performing well and which ones aren't. If some factors are doing badly, you would want to hedge more against the factors. If your idiosyncratic returns are doing badly, then that requires some more thought.
 
 For idiosyncratic returns, you're basically betting on the stock market - you're guessing which stocks will outperform the markets it belongs to. Well, how do you quantify how well you're betting on the stock market? It roughly is a combination of **selection, sizing and timing**, and are intrinsically harder to quantify.
