@@ -67,7 +67,7 @@ $$
 r = Bf + \epsilon
 $$
 
-where $r \in \mathbb{R}^n, B \in \mathbb{R}^{n\cross m}, f \in \mathbb{R}^m, \epsilon \in \mathbb{R}^n$. $r$ is the returns of a portfolio, $B$ is the factor loading matrix for each asset to each factor, $f$ is the factor returns, and $\epsilon$ is the idiosyncratic returns of the portfolio, which should(ideally) be a vector of uncorrelated random variables which capture the uniqueness of each asset in the portfolio. It is also worth noting that $\epsilon$ is uncorrelated from $f$ because it's residualized leftover from a regression using $f$, so it should have zero correlation with the factors as well. Here, idiosyncratic simply means returns not explained by the factor exposures. We can interpret this as a graphical, causal-inference model from underlying factors linearly impacting each asset's return with some weight. One important property we care about is the covariance matrix of returns, which can be expressed in terms of $\Sigma_f, \Sigma_\epsilon$:
+where $r \in \mathbb{R}^n, B \in \mathbb{R}^{n\\cross m}, f \in \mathbb{R}^m, \epsilon \in \mathbb{R}^n$. $r$ is the returns of a portfolio, $B$ is the factor loading matrix for each asset to each factor, $f$ is the factor returns, and $\epsilon$ is the idiosyncratic returns of the portfolio, which should(ideally) be a vector of uncorrelated random variables which capture the uniqueness of each asset in the portfolio. It is also worth noting that $\epsilon$ is uncorrelated from $f$ because it's residualized leftover from a regression using $f$, so it should have zero correlation with the factors as well. Here, idiosyncratic simply means returns not explained by the factor exposures. We can interpret this as a graphical, causal-inference model from underlying factors linearly impacting each asset's return with some weight. One important property we care about is the covariance matrix of returns, which can be expressed in terms of $\Sigma_f, \Sigma_\epsilon$:
 
 $$
 \Sigma_r = Var(r) = Var(Bf + \epsilon) = B\Sigma_fB^T + \Sigma_\epsilon
@@ -83,7 +83,7 @@ $$
 w' = Xw
 $$
 
-where $w' \in \mathbb{R}^{k}, X \in \mathbb{R}^{k \cross n}, k > n$. You can imagine $X$ containing column vectors:
+where $w' \in \mathbb{R}^{k}, X \in \mathbb{R}^{k \\cross n}, k > n$. You can imagine $X$ containing column vectors:
 
 $$
 X = \begin{bmatrix}
@@ -101,7 +101,7 @@ Here are some properties about the factor model, which we'll discuss first.
 
 #### Rank-preserving Linear Transformations
 
-A factor model you get from Barra has semantic meaning for each factor exposure and loading vector, but you can apply a rank preserving linear transformation to the factors such that the returns are still the same. Let $C \in \mathbb{R}^{m \cross m}$ be an invertible matrix, then:
+A factor model you get from Barra has semantic meaning for each factor exposure and loading vector, but you can apply a rank preserving linear transformation to the factors such that the returns are still the same. Let $C \in \mathbb{R}^{m \\cross m}$ be an invertible matrix, then:
 
 $$
 B' = BC \\
@@ -132,7 +132,7 @@ $$
 min_g E(||Bf - Ag||^2)
 $$
 
-where $A \in \mathbb{R}^{n \cross k}, g \in \mathbb{R}^k, k < m$. This is simple OLS which has a closed form solution if we are given the loadings $A$. The solution is:
+where $A \in \mathbb{R}^{n \\cross k}, g \in \mathbb{R}^k, k < m$. This is simple OLS which has a closed form solution if we are given the loadings $A$. The solution is:
 
 $$
 g = (A^TA)^{-1}A^TBf
