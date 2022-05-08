@@ -18,7 +18,7 @@ layout: default
   }
 </style>
 
-# Portfolio Risk - Part 1
+# Portfolio Risk - Part 1: Modeling
 
 The first step to making money in the stock market is having an accurate model of where the sources of profit(and losses) are coming from. We'll go through some basic (but time-tested) modelling assumptions and introduce some ways a portfolio manager might evaluate their positions in the market.
 
