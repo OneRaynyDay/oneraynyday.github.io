@@ -112,19 +112,19 @@ def cluster(vertices):
 
 For illustration purposes, here's a synthetic covariance matrix of 10 assets:
 
-![corr]({{ site.url }}/assets/clustering/original_corr.png)
+![corr]({{ site.url }}/assets/clustering/original_corr.png){:height="40%" width="40%"}
 
 This is after we re-ordered the row/column axes according to clusters:
 
-![reordered_corr]({{ site.url }}/assets/clustering/clustered.png)
+![reordered_corr]({{ site.url }}/assets/clustering/clustered.png){:height="40%" width="40%"}
 
 As we can see, the clustering did a pretty good job at including positive edges(darker colors is better):
 
-![cluster_mask]({{ site.url }}/assets/clustering/cluster_mask.png)
+![cluster_mask]({{ site.url }}/assets/clustering/cluster_mask.png){:height="40%" width="40%"}
 
 ... and excluding negative edges:
 
-![without_cluster_mask]({{ site.url }}/assets/clustering/without_cluster_mask.png)
+![without_cluster_mask]({{ site.url }}/assets/clustering/without_cluster_mask.png){:height="40%" width="40%"}
 
 Of course, there are also other approaches to clustering that may be useful, such as hierarchical clustering using dendrograms (example visualization [here](https://stackoverflow.com/a/3017704/3781180)). It's always a good idea to inspect the idiosyncratic correlation matrix clusters to get an intuitive idea of the relationship between assets in your investment universe.
 
@@ -163,11 +163,11 @@ $$
 
 with support $[a,b]$, where $a,b = \pm(1-\sqrt{c})^2$. The distribution looks like this with $c < 1$:
 
-![marchenko1]({{ site.url }}/assets/marchenko1.png)
+![marchenko1]({{ site.url }}/assets/marchenko1.png){:height="40%" width="40%"}
 
 For $c > 1$:
 
-![marchenko2]({{ site.url }}/assets/marchenko2.png)
+![marchenko2]({{ site.url }}/assets/marchenko2.png){:height="40%" width="40%"}
 
 If we can derive a reasonable $c$ either by getting a maximum likelihood estimate from our idiosyncratic covariance matrix or by an educated forecast, we can calculate the likelihood that the eigenvalues of our idiosyncratic covariance matrix is sampled from the Marchenko-Pastur distribution. The higher the likelihood, the more likely our idiosyncratic returns are gaussian random noise.
 
