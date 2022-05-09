@@ -35,7 +35,7 @@ B = \begin{bmatrix}
 \end{bmatrix}
 $$
 
-Loadings for a large factor model should be pervasive. This roughly means $||b_i|| = O(n)$ i.e. the norm of each loading should scale roughly linearly to the number of $n$ assets. If there are many zeros in a particular loading, it may be trying to capture small group structure amongst the assets and is not a good candidate as a factor.
+Loadings for a large factor model should be pervasive. This roughly means $\vert\vert b_i\vert\vert = O(n)$ i.e. the norm of each loading should scale roughly linearly to the number of $n$ assets. If there are many zeros in a particular loading, it may be trying to capture small group structure amongst the assets and is not a good candidate as a factor.
 
 Sometimes loadings are linearly dependent (or close enough) which leads to degeneracy during regression. Using ordinary least squares, we need to invert the gram matrix of $B$. If there is no ridge term, we would get an error during estimation.
 
@@ -201,7 +201,7 @@ Proxies are able to give a reasonable volatility estimate to use as labels to co
 $$
 \begin{split}
 \sigma^2 = (w^Tr)^2 \\
-\sigma = |w^Tr|
+\sigma =  \vert w^Tr \vert 
 \end{split}
 $$
 
@@ -229,7 +229,7 @@ Now that we have the two inputs to a loss function, let's choose our functions!
 MSE or mean squared error is the classic loss function everyone should know about. It's literally just the average euclidean distance between $\sigma^2$ and $\hat{\sigma}^2$ over dates:
 
 $$
-\text{MSE}(\hat{\sigma}^2, \sigma^2) := \frac{1}{T}||\hat{\sigma}^2 - \sigma^2||_2^2 = \frac{1}{T} \sum_t (\hat{\sigma}_t^2 - \sigma_t^2)^2
+\text{MSE}(\hat{\sigma}^2, \sigma^2) := \frac{1}{T} \vert  \vert \hat{\sigma}^2 - \sigma^2 \vert  \vert _2^2 = \frac{1}{T} \sum_t (\hat{\sigma}_t^2 - \sigma_t^2)^2
 $$
 
 The farther away our predicted portfolio variance, the higher the loss. If our prediction is exactly accurate, the loss would be 0. 
@@ -237,7 +237,7 @@ The farther away our predicted portfolio variance, the higher the loss. If our p
 One consequence of having a very noisy variance estimate is that the squared distance per time may be really different. Imagine our variance proxy outputted a total of 100$ the first day, and a total of 1,000,000$ the second day. If we were to predict 1$ the first day and 999,000$ the second day, the second day distance would dominate the loss function purely due to the magnitude of the proxy. In reality, we were really close to predicting the second day's variance - it's just harder to be exact when the magnitude is larger. To alleviate this problem, we typically use a normalized MSE:
 
 $$
-\text{MSE}'(\hat{\sigma}^2, \sigma^2) := \frac{1}{T}||\frac{\sigma^2}{\hat{\sigma}^2} - 1||_2^2
+\text{MSE}'(\hat{\sigma}^2, \sigma^2) := \frac{1}{T} \vert  \vert \frac{\sigma^2}{\hat{\sigma}^2} - 1 \vert  \vert _2^2
 $$
 
 which removes the noise introduced by varying magnitudes.
@@ -255,14 +255,14 @@ Note the logarithmic term doesn't allow any negative variance predictions which 
 If we set $x := \frac{\sigma^2}{\hat{\sigma}^2}$ and perform a taylor expansion at $x = 1$, we see the following:
 
 $$
-\text{QLIKE}(x) \approx 0 + (-1+1)(x-1) + \frac{(1)(x-1)^2}{2} + o(||x^3||)\approx \text{MSE}'(x)
+\text{QLIKE}(x) \approx 0 + (-1+1)(x-1) + \frac{(1)(x-1)^2}{2} + o( \vert  \vert x^3 \vert  \vert )\approx \text{MSE}'(x)
 $$
 
 Locally, it seems like quasi likelihood is very similar to a normalized mean squared error! So what is this **quasi**-likelihood and why do we care?
 
 #### What is Quasi-Likelihood?
 
-Recall that in a typical linear regression, we assume $E(y|x)$ is a linear function in $x$, so that:
+Recall that in a typical linear regression, we assume $E(y \vert x)$ is a linear function in $x$, so that:
 
 $$
 y = \beta^Tx + \epsilon
@@ -280,13 +280,13 @@ $$
 y = e^{\beta^Tx} + \epsilon
 $$
 
-which is better modeling choice when $y \geq 0$. Denoting $E(y|x) = \mu$, the noise from a gamma regression is assumed to be:
+which is better modeling choice when $y \geq 0$. Denoting $E(y \vert x) = \mu$, the noise from a gamma regression is assumed to be:
 
 $$
 \epsilon \sim \Gamma(0, \frac{\mu}{\beta^2})
 $$
 
-However, when the underlying distribution is unknown (e.g. the variance of our portfolio), how can we assign a likelihood function? One way to get around this is to construct a quasi-likelihood model, which not only assumes $y = h(\beta^Tx) + \epsilon$ for some $h$, but also $\epsilon$ is a zero-mean distribution with variance as a function of the mean of $y|x$:
+However, when the underlying distribution is unknown (e.g. the variance of our portfolio), how can we assign a likelihood function? One way to get around this is to construct a quasi-likelihood model, which not only assumes $y = h(\beta^Tx) + \epsilon$ for some $h$, but also $\epsilon$ is a zero-mean distribution with variance as a function of the mean of $y \vert x$:
 
 $$
 \mathbb{V}(\epsilon) = \phi V(\mu)
@@ -409,7 +409,7 @@ It is important to note that although the hedged portfolio has zero factor expos
 Aside from using the portfolio to compare predicted variance and variance proxies, there are other considerations when it comes to evaluating a risk model. The turnover of a portfolio is defined as:
 
 $$
-\text{turnover}(w_0,...,w_T) = \sum_t^T ||w_{t-1} \circ r_{t-1} - w_t||_2^2
+\text{turnover}(w_0,...,w_T) = \sum_t^T  \vert  \vert w_{t-1} \circ r_{t-1} - w_t \vert  \vert _2^2
 $$
 
 Intuitively, the above expression gives us a measurement of how much a portfolio "moves" over time. In an ideal world, we'd like a portfolio that which moves minimally but still makes a boatload of money. Unfortunately we live in a society, so that means the turnover and alpha potential of the portfolio are often at odds with each other. Large turnover doesn't only mean more work - the market impact of moving large amounts of capital is nontrivial. If we had to suddenly purchase 1 million shares of GOOG under a minute, we would crash through the order book and get filled at very suboptimal prices as well as shifting GOOG's price up significantly.
