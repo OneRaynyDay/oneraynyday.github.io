@@ -163,11 +163,11 @@ $$
 
 with support $[a,b]$, where $a,b = \pm(1-\sqrt{c})^2$. The distribution looks like this with $c < 1$:
 
-![marchenko1]({{ site.url }}/assets/marchenko1.png){:height="40%" width="40%"}
+![marchenko1]({{ site.url }}/assets/marchenko1.png){:height="60%" width="60%"}
 
 For $c > 1$:
 
-![marchenko2]({{ site.url }}/assets/marchenko2.png){:height="40%" width="40%"}
+![marchenko2]({{ site.url }}/assets/marchenko2.png){:height="60%" width="60%"}
 
 If we can derive a reasonable $c$ either by getting a maximum likelihood estimate from our idiosyncratic covariance matrix or by an educated forecast, we can calculate the likelihood that the eigenvalues of our idiosyncratic covariance matrix is sampled from the Marchenko-Pastur distribution. The higher the likelihood, the more likely our idiosyncratic returns are gaussian random noise.
 
