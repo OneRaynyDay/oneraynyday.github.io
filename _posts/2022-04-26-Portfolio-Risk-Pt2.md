@@ -247,12 +247,12 @@ which removes the noise introduced by varying magnitudes.
 QLike or quasi-likelihood is an improvement on MSE for $\sigma^2$ estimations. It's defined as follows:
 
 $$
-\text{QLIKE}(\hat{\sigma}^2, \sigma^2) := -log(\frac{\sigma^2}{\hat{\sigma}^2}) + \frac{\sigma^2}{\hat{\sigma}^2} - 1
+\text{QLIKE}(\hat{\sigma}^2, \sigma^2) := \frac{1}{T} \sum_t -log(\frac{\sigma_t^2}{\hat{\sigma_t}^2}) + \frac{\sigma_t^2}{\hat{\sigma_t}^2} - 1
 $$
 
 Note the logarithmic term doesn't allow any negative variance predictions which is great (MSE doesn't care in comparison). When the ratio of proxy to prediction is small, the negative log term dominates the loss function. When the ratio of proxy to prediction is large, the linear term dominates the loss function. The sum of these convex functions form a convex function with a single minima at the ratio being 1.
 
-If we set $x := \frac{\sigma^2}{\hat{\sigma}^2}$ and perform a taylor expansion at $x = 1$, we see the following:
+If we set $x := \frac{\sigma_t^2}{\hat{\sigma_t}^2}$ and perform a taylor expansion at $x = 1$, we see the following:
 
 $$
 \text{QLIKE}(x) \approx 0 + (-1+1)(x-1) + \frac{(1)(x-1)^2}{2} + o( \vert  \vert x^3 \vert  \vert )\approx \text{MSE}'(x)
