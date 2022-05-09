@@ -234,7 +234,7 @@ $$
 
 The farther away our predicted portfolio variance, the higher the loss. If our prediction is exactly accurate, the loss would be 0. 
 
-One consequence of having a very noisy variance estimate is that the squared distance per time may be really different. Imagine our variance proxy outputted a total of 100$ the first day, and a total of 1,000,000$ the second day. If we were to predict 1$ the first day and 999,000$ the second day, the second day distance would dominate the loss function purely due to the magnitude of the proxy. In reality, we were really close to predicting the second day's variance - it's just harder to be exact when the magnitude is larger. To alleviate this problem, we typically use a normalized MSE:
+One consequence of having a very noisy variance estimate is that the squared distance per time may be really different. Imagine our variance proxy outputted a total of 100\$ the first day, and a total of 1,000,000\$ the second day. If we were to predict 1\$ the first day and 999,000\$ the second day, the second day distance would dominate the loss function purely due to the magnitude of the proxy. In reality, we were really close to predicting the second day's variance - it's just harder to be exact when the magnitude is larger. To alleviate this problem, we typically use a normalized MSE:
 
 $$
 \text{MSE}'(\hat{\sigma}^2, \sigma^2) := \frac{1}{T} \vert  \vert \frac{\sigma^2}{\hat{\sigma}^2} - 1 \vert  \vert _2^2
