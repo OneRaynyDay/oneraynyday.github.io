@@ -145,13 +145,13 @@ $$
 Plug back in to get:
 
 $$
-e^{sx} \leq \frac{x-a}{b-a} e^{sb} + \frac{b+x}{b-a} e^{sa}
+e^{sx} \leq \frac{x-a}{b-a} e^{sb} + \frac{b-x}{b-a} e^{sa}
 $$
 
 Then, this is the crucial step to get rid of our pesky $x$'s, and to reveal where we started off: **Take the expectation!**
 
 $$
-E[e^{sx}] \leq \frac{a}{b-a} e^{sb} + \frac{b}{b-a} e^{sa}
+E[e^{sx}] \leq \frac{-a}{b-a} e^{sb} + \frac{b}{b-a} e^{sa}
 $$
 
 We see that $E[e^{sx}]$ is what we're trying to bound, and the right side already looks somewhat promising!
@@ -169,28 +169,46 @@ Then, another magic trick:
 Replace/denote all $s(a-b)$ with $u$, and we get:
 
 $$
-E[e^{sx}] \leq e^{u\theta}(1-\theta+\theta e^{u}) = e^{u\theta + log(1-\theta+\theta e^{u})}
+E[e^{sx}] \leq e^{-u\theta}(1-\theta+\theta e^{u}) = e^{-u\theta + log(1-\theta+\theta e^{u})}
 $$
 
-Via a taylor expansion on $f(x) = u\theta + log(1-\theta+\theta e^{u})$ we get:
+Via a first-order Taylor expansion on $f(u) = -u\theta + log(1-\theta+\theta e^{u})$ around 0 we get:
 
 $$
-f(x) = o(\frac{1}{2}\theta(1-\theta)u^2)
+P_f(u) = f(0) + f'(0)u
 $$
 
-Since we know $\theta$, by definition, is an expression of the convex combination ratio, it must be $\in [0,1]$. Taking the argmax gives us that $\theta^* = 0.5$, and consequently we get that 
+Using **Taylor's Remainder Theorem**, for some $v \in [0, u]$ the error between $f(u)$ and its Taylor expansion satisfies the inequality
 
 $$
-f(x) = \frac{1}{8}u^2 + O(u^3)
+f(u) - P_f(u) \leq \frac{1}{2}f''(v)u^2
 $$
 
-Which is nice! Plugging back in, we get:
+After some painful differentiation, we get that
+
+$$
+f(0) = 0, f'(0) = 0, f''(u) = t(1-t)
+$$
+
+where $t = \frac{\theta e^{u}}{1-\theta+\theta e^{u}}$. Thus, $P_f(u) = 0$ and the inequality becomes:
+
+$$
+f(u) \leq \frac{1}{2}t(1-t)u^2
+$$
+
+Taking the argmax with respect to $t$ gives us $t^* = 0.5$, and after substituting we get:
+
+$$
+f(u) \leq \frac{1}{8}u^2
+$$
+
+Which is nice! As $e^{x}$ is an increasing function, $e^{f(u)} \leq e^{\frac{1}{8}u^2}$ by the inequality above, so we get:
 
 $$
 E[e^{sx}] \leq e^{\frac{1}{8}u^2} = e^{\frac{1}{8}(s(a-b))^2}
 $$
 
-This is the hoeffding lemma. We see that we were able to recover an exponential bound on the possible $E[e^{sx}]$, which is not great, but good enough. Let's plug it back in. For our purposes, the 0/1 loss has $(a-b) = 1$, so we'll simply use the lemma in the form:
+This is Hoeffding's Lemma. We see that we were able to recover an exponential bound on the possible $E[e^{sx}]$, which is not great, but good enough. Let's plug it back in. For our purposes, the 0/1 loss has $(a-b) = 1$, so we'll simply use the lemma in the form:
 
 $$
 E[e^{sx}] \leq e^{\frac{1}{8}s^2}
