@@ -181,7 +181,7 @@ $$
 Using **Taylor's Remainder Theorem**, for some $v \in [0, u]$ the error between $f(u)$ and its Taylor expansion satisfies the inequality
 
 $$
-f(u) - P_f(u) \leq \max_v|\frac{1}{2}f''(v)u^2|
+f(u) - P_f(u) \leq \frac{1}{2}f''(v)u^2
 $$
 
 After some painful differentiation, we get that
@@ -193,7 +193,7 @@ $$
 where $t = \frac{\theta e^{u}}{1-\theta+\theta e^{u}}$. Thus, $P_f(u) = 0$ and the inequality becomes:
 
 $$
-f(u) \leq \max_v|\frac{1}{2}t(1-t)u^2|
+f(u) \leq \frac{1}{2}t(1-t)u^2
 $$
 
 Taking the argmax with respect to $t$ gives us $t^* = 0.5$, and after substituting we get:
