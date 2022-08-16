@@ -64,4 +64,5 @@ Then, someone could also just say:
 $$
 P(\{\omega_1, \omega_2, ..., \omega_n\}) = P(X^{-1}(x))
 $$
+
 <script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>
