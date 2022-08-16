@@ -29,8 +29,11 @@ $$
 Which is a contradiction. Also, $U \subset [-1, 2]$ because 
 
 $$r \geq -1, a \geq 0 \implies a+r \geq -1 \forall a \in A, r \in \mathbb{Q}_{[-1,1]}$$ 
+
 and 
+
 $$r \leq 1, a \leq 1 \implies a+r \leq 2 \forall a \in A, r \in \mathbb{Q}_{[-1,1]}$$
+
 Because lebesgue measures are translation invariant:
 
 $$
