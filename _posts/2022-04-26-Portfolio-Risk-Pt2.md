@@ -422,3 +422,5 @@ Model evaluation is a **really** hard problem with no clear answers. It requires
 
 
 [^1]: I lied to make this simpler. For a general Wishart ensemble the pdf is parametrized with $\beta$ in the exponentiation and is called the dyson index. For the construction we defined, $\beta = 1$ because we've constructed a wishart ensemble using real numbers in $M$.
+
+<script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>
