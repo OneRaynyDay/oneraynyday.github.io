@@ -55,25 +55,31 @@ A^c \in \Sigma \\
 \implies (\cup_n A_n)^c = \cap_n A_n^c \in \Sigma
 \end{align}
 $$
+
 This is a stronger statement than what $\pi$-system states, so it should be one as well. This set should also be a $\lambda$-system because you can just set each $A_n$ in the countable union to be disjoint.
 
 In the other direction, if a set $\Sigma$ is both a $\pi$-system and a $\lambda$-system then we'll show it's also a $\sigma$-algebra. Specifically, we'd like to show that countable unions of **not necessarily disjoint sets** $(A_n)_n$ is in the set (since all the other properties are basically inherited from $\lambda$-systems). Note that:
 
+
 $$
 A \cup B = S - (A^c \cap B^c) \in \Sigma
 $$
+
 The complement, set subtraction is inherited from $\lambda$-system (and since $S$ is the whole set, that satisfies the subset requirement). The intersection is inherited from $\pi$-system. This allows us to union two sets even if they're not disjoint! To finish, we construct a set $G_n := \cup_{i \leq n} A_i$ and its limit $G \in \Sigma$ because it's a $\lambda$-system.
 
 **Surprisingly, $\lambda$-systems generated from a $\pi$-system are $\pi$-systems themselves. This result, paired with our previous result, gives us that the generated $\lambda$-system contains a $\sigma$-algebra.**
 
 Suppose we have the set:
 
+
 $$
 D = \{B \in \lambda(I) : B \cap C \in \lambda (I), \forall C \in \lambda(I)\}
 $$
+
 Is $D$ a $\pi$-system? It should be, since we have by definition that this set is closed under intersection. This set should also be nonempty since $S \cap C = C, \forall C \in \lambda(I)$ so the whole set $S$ must belong in $D$. 
 
 Is $D$ a $\lambda$-system? It should be as well. We already know from the above result that $S \in \lambda(I)$. For two sets $B \subset A \in D$, we have to show $A - B \in D$. For all $C \in \lambda(I)$, $(A - B) \cap C$ must be in $D$ for $A - B \in D$. Thankfully, 
+
 
 $$
 \begin{align}
@@ -84,6 +90,7 @@ A \cap C \subset B \cap C \quad \text{(intersection preserves subset)}\\
 \implies (A-B) \cap C \in D
 \end{align}
 $$
+
 
 Finally, for disjoint countable unions of $A_n \in  D$, each $A_n \cap C \in \lambda(I) \forall i, n$, so by definition of a $\lambda$-system we have $(\cup_n A_n) \cap C \in \lambda(I)$. Now recall $\lambda(I)$ is defined as the smallest $\lambda$-system containing $I$. Here, $D$ is a subset of $\lambda(I)$ but it _also_ is a $\lambda$-system containing $I$, so $D = \lambda(I)$! This means any $\pi$-system extended to a $\lambda$-system is also a $\pi$-system (since $D$ _is_ that $\lambda$-system), and thus a $\sigma$-algebra is always contained within this extension.
 
@@ -97,11 +104,13 @@ To do this, we need to loop in a $\lambda$-system constructed as:
 $$
 D = \{A \in \sigma(I): \mu_1(A) = \mu_2(A)\}
 $$
+
 Let's show that it is indeed a $\lambda$-system. Obviously, $S \in \sigma(I)$ for any $I$, and we have that the measures are equal on the whole set. To show that $B - A \in D, \forall A \subset B \in D$, note that 
 
 $$
 \mu_1(B - A) = \mu_1(B) - \mu_1(A) = \mu_2(B) - \mu_2(A) = \mu_2(B - A)
 $$
+
 Since measures of disjoint sets are additive. In fact, measures of disjoint sets are *countably* additive, which also conveniently proves $\cup_n A_n \in D$, if $A_n \in D$ and disjoint (hint: use monotone convergence theorem again). Since we just proved that $D$ is a $\lambda$-system, we know it contains a $\sigma$-algebra within it by our previous result. However, $D \subset \sigma(I)$ by construction, yet it contains $\sigma(I)$, which means $D = \sigma(I)$! This means the measures $\mu_1, \mu_2$ will agree on the generated $\sigma$-algebra (which turns out to be $D$).
 
 ### Borel $\sigma$-algebra
