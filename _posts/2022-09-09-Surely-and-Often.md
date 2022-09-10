@@ -22,6 +22,7 @@ $$
 
 The inner countable union means "fix an $n$, take all the outcomes that could happen in the rest of the sequence". The outer intersection pushes $n$ to infinity, thus filtering out events that could only happen finitely many times. An example $E_n$ is $E_n := \{\text{the n-th coin flip is heads}\}$. In a fair coin toss, this event is intuitively likely to happen half of the time and as we take $n$ to infinity this should happen infinitely often. The **Borel-Cantelli lemmas** state:
 
+
 $$
 \begin{align}
 \sum_n P(E_n) < \infty \implies P(\text{limsup}_{n \to \infty} E_n) = 0 \\
@@ -29,19 +30,25 @@ $$
 \end{align}
 $$
 
+
 The proof for the first statement is pretty simple and we'll omit the second:
+
 
 $$
 P(\cup_nE_n) \leq \sum_n P(E_n) < \infty
 $$
+
+
 The monotonic sequence $S_k = \sum_i^k P(E_i)$ converging to some $S$ implies that $\forall \epsilon \exists N \in \mathbb{N}$ such that $S - S_n < \epsilon \forall n > N$. Here, $S - S_n = \sum_{m\geq n}P(E_m) \geq P(\cap_{m\geq n} \cup_{k \geq m} E_k)$, so the probability of some outcome happening infinitely often converges to zero.
 
 ## Infinity, Monkeys, and Shakespeare
+
 We have countably many monkeys at your service, each with their own type writer minding their own business. Say we made them all start typing at $T = 0$ and waited. Now that we're equipped with the second Borel-Cantelli lemma, we see that the event $A_i = \{\text{i-th monkey types shakespeare}\}$ is extremely unlikely, but $P(A_i) > 0$. We also know that these monkeys mind their own business so the events $A_i \perp A_j$ , so therefore:
 
 $$
 \sum_i P(A_i) = \infty \implies P(\text{limsup}_{n \to \infty} A_i) = 1
 $$
+
 In other words, *almost surely*, the monkeys would produce an entire Shakespeare collection.
 
 <script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>
