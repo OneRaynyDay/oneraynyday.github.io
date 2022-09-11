@@ -48,7 +48,7 @@ In a set $\Omega$, $z_0$ is an **interior point** if there exists some open disc
 
 A set is **open** if every point in the set is an interior point. A complement of an open set is a **closed set**. A closed set contains all the limit points of the set, which are defined as the limits of convergent sequences $\\{z_n\\} \in \Omega$. The **closure** of a set is the union of $\Omega$ and its limit points, and is denoted by $\bar{\Omega}$. The **boundary** of a set $\Omega$ is the closure subtracted by all of the interior points, and is denoted $\partial \Omega$.
 
-An open set is considered **connected** if it's not possible to find disjoint non-empty sets $\Omega_1, \Omega_2$ such that $\Omega = \Omega_1 \bigcup \Omega_2$.
+An open set is considered **connected** if it's not possible to find disjoint non-empty sets $\Omega_1, \Omega_2$ such that $\Omega = \Omega_1 \cup \Omega_2$.
 
 ## Sequential compactness
 

@@ -13,11 +13,11 @@ $$
 [0, 1] \subset \bigcup_{r \in \mathbb{Q}_{[-1,1]}}\{a+r: a \in A\} := U
 $$
 
-Where $$\mathbb{Q}_{[-1,1]} := \{x: x \in \mathbb{Q}, -1 \leq x \leq 1\}$$. Denote each $$X_r := \{a+r:a \in A\}$$. $U$ covers $[0,1]$ because $$\forall x \in [0,1], x \sim a$$ for some $a \in A$ by definition, and so $$x - a \in \mathbb{Q}_{[-1,1]}$$. For $r \neq s$, $X_r \bigcap X_s = \emptyset$ because suppose they're not disjoint, then: 
+Where $$\mathbb{Q}_{[-1,1]} := \{x: x \in \mathbb{Q}, -1 \leq x \leq 1\}$$. Denote each $$X_r := \{a+r:a \in A\}$$. $U$ covers $[0,1]$ because $$\forall x \in [0,1], x \sim a$$ for some $a \in A$ by definition, and so $$x - a \in \mathbb{Q}_{[-1,1]}$$. For $r \neq s$, $X_r \cap X_s = \emptyset$ because suppose they're not disjoint, then: 
 
 $$
 \begin{align}
-x \in X_r \bigcap X_s \\
+x \in X_r \cap X_s \\
 \implies \exists a_r, a_s \in A \text{ s.t. } a_r+r = a_s + s = x \\
 \implies a_r - a_s = s-r \in \mathbb{Q} \\
 \implies a_r \sim a_s \\
