@@ -84,7 +84,7 @@ $$
 
 and obviously $$\mathcal{I}_N \neq \emptyset$$. A similar argument can be made for $$\mathcal{J}_N$$. These $\pi$-systems are independent since each $X_i$ are independent and by our previous result in the independence section, we have $$\mathcal{X}_N \perp \mathcal{T}_N$$. But we know that $$\mathcal{T} \subset \mathcal{T}_N \forall N$$! This means $$\mathcal{T} \perp \mathcal{X}_N \forall N$$. Now let's push $$N \to \infty$$ - is $$\mathcal{X}_\infty \perp \mathcal{T}$$? We know that $$
 \mathcal{X}_N \subset \mathcal{X}_{N+1} \forall N
-$$As with most "monotonically increasing sets of sets", this is probably a $\pi$-system!
+$$, and as with most "monotonically increasing sets of sets" this is probably a $\pi$-system!
 
 $$
 \begin{align}
