@@ -54,7 +54,7 @@ $$
 & log(1-P(E_n)) \leq (1-P(E_n)) - 1 \quad \text{(taylor expansion, concavity)} \\
 & \implies log(1-P(E_n)) \geq P(E_n) \\
 & \implies \sum_n log(1-P(E_n)) \geq \sum_n P(E_n) = S \\
-& \implies log(\prod_n log(1-P(E_n))) \geq S > 0 \\
+& \implies log(\prod_n 1-P(E_n)) \geq S > 0 \\
 & \implies \prod_n (1-P(E_n)) > 0 \\
 & \implies P(\bigcup_n \bigcap_{k \geq n} E_k^c) > 0
 \end{align}
