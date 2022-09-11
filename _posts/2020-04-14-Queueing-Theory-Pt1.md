@@ -219,7 +219,7 @@ And the expected value is equal to $\frac{1}{\mu}$. The exponential distribution
 A common application of exponential distributions is $X = min(X_1, X_2)$, where $X_1 \sim exp(\mu_1), X_2 \sim exp(\mu_2), X_1 \perp X_2$. The complementary cumulative distribution is equal to:
 
 $$
-P(X > t) = P(X_1 > t \cap X_2 > t) = P(X_1>t)P(X_2>t) = e^{-\mu_1 t}e^{-\mu_2 t} = e^{-(\mu_1 + \mu_2)t}
+P(X > t) = P(X_1 > t \bigcap X_2 > t) = P(X_1>t)P(X_2>t) = e^{-\mu_1 t}e^{-\mu_2 t} = e^{-(\mu_1 + \mu_2)t}
 $$
 
 Taking the derivative of the cdf yields the density function and we see that $X \sim exp(\mu_1 + \mu_2)$.
@@ -227,7 +227,7 @@ Taking the derivative of the cdf yields the density function and we see that $X 
 Another common application, using the same $X_1, X_2$ is to calculate the probability $P(X_1 < X_2)$. We calculate it with:
 
 $$
-P(X_1 < X_2) = \int_{-\infty}^\infty dP(X_1 = x \cap X_2 > x) \\
+P(X_1 < X_2) = \int_{-\infty}^\infty dP(X_1 = x \bigcap X_2 > x) \\
 = \int_0^\infty f_{X_1}(x) (1-F_{X_2}(x))dx \\
 = \int_0^\infty \mu_1 e^{-\mu_1 x} e^{-\mu_2 x} dx \\
 = \mu_1 \int_0^\infty \frac{\mu_1 + \mu_2}{\mu_1 + \mu_2} e^{-(\mu_1 + \mu_2) x} dx \\

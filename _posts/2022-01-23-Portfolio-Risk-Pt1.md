@@ -40,7 +40,7 @@ $$
 This is great because returns became a unit-less number, one that doesn't change as the price of the asset becomes larger or smaller, which is great when we may potentially have many assets to worry about in a portfolio. Also, this equation is obviously a simplification of the real world, so it misses some details like dividends and stuff. With this, we can define **cumulative returns** as:
 
 $$
-R_t = \Pi_tr_t
+R_t = \prod_tr_t
 $$
 
 If we assume that $r_t$ is normally distributed which sort of makes sense if you were a [blindfolded monkey throwing darts at stocks](https://www.forbes.com/sites/rickferri/2012/12/20/any-monkey-can-beat-the-market/?sh=2e56b4fe630a), you would find that analyzing $R_t$ is going to be very hard because the product of gaussians is not gaussian. So as a solution to this, people tried to tractably model returns by assuming $p_t$ is distributed log normally, which kind of makes sense because prices must(at least in equities) be greater than zero. If we plug it in, we would see that $log(r_t)$ (log-returns) is actually normally distributed:
@@ -53,7 +53,7 @@ $$
 This is great because we want to analyze cumulative log-returns, which is now:
 
 $$
-R_t = log(\Pi_tr_t) = \sum_t log(r_t) = log(p_t) - log(p_{t-1}) + log(p_{t-1}) - log(p_{t-2}) + ... - log(p_0) \\
+R_t = log(\prod_tr_t) = \sum_t log(r_t) = log(p_t) - log(p_{t-1}) + log(p_{t-1}) - log(p_{t-2}) + ... - log(p_0) \\
 = log(p_t) - log(p_0) \sim \mathcal{N}(\mu, \sigma^2)
 $$
 

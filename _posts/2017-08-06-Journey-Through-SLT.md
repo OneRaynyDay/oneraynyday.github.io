@@ -110,7 +110,7 @@ $$
 Which is equivalent to our previous statement. Since each r.v. is i.i.d., we get:
 
 $$
-\frac{\Pi_i^N E[e^{s (X_i - E[X])}]}{e^{sNt}} = \frac{E[e^{s (X_i - E[X])}]^N}{e^{sNt}}
+\frac{\prod_i^N E[e^{s (X_i - E[X])}]}{e^{sNt}} = \frac{E[e^{s (X_i - E[X])}]^N}{e^{sNt}}
 $$
 
 Now, if we can get a bound on $E[e^{s(X_i-E[X])}]$, that'd be great...

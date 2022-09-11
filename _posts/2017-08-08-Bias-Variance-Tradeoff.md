@@ -76,7 +76,7 @@ $$
 
 Then the event that none of the hypotheses are bad is:
 $
-\{\cap (B_i^c)_{i=0}^M\}
+\{\bigcap (B_i^c)_{i=0}^M\}
 $
 , which translates to 
 
@@ -85,29 +85,29 @@ $
 If we apply De Morgan's law to this, we get:
 
 $$
-\{\cap (B_i^c)_{i=0}^M\} = \{\cup (B_i)_{i=0}^M\}^c
+\{\bigcap (B_i^c)_{i=0}^M\} = \{\bigcup (B_i)_{i=0}^M\}^c
 $$
 
 which has a much more obvious probability: 
 
 $$
-P(\{\cup(B_i)_{i=0}^M\}^c) = 1 - P(\{\cup(B_i)_{i=0}^M\}) = 1 - \sum_{i=0}^M P(B_i)
+P(\{\bigcup(B_i)_{i=0}^M\}^c) = 1 - P(\{\bigcup(B_i)_{i=0}^M\}) = 1 - \sum_{i=0}^M P(B_i)
 $$
 
 due to an assumption on each hypothesis being disjoint, which is a broad assumption. This assumption on that they are disjoint means that we add up the probability for each one without accounting for the inclusion. Recall the inclusion-exclusion principle:
 
 $$
-P(A \cup B) = P(A) + P(B) - P(A \cap B)
+P(A \bigcup B) = P(A) + P(B) - P(A \bigcap B)
 $$
 
-Here, we are assuming that $P(A \cap B) = 0$. If we didn't use this assumption, then it'd get ugly. Just for the sake of illustration, we would get:
+Here, we are assuming that $P(A \bigcap B) = 0$. If we didn't use this assumption, then it'd get ugly. Just for the sake of illustration, we would get:
 
 $$
--1^0*2C1P(B_i) + -1^1*2C2P(B_i \cap B_j)
+-1^0*2C1P(B_i) + -1^1*2C2P(B_i \bigcap B_j)
 $$
 for 2 events...
 $$
--1^0*3C1P(B_i) + -1^1*3C2P(B_i \cap B_j) + -1^2*3C3P(B_i \cap B_j \cap B_k)
+-1^0*3C1P(B_i) + -1^1*3C2P(B_i \bigcap B_j) + -1^2*3C3P(B_i \bigcap B_j \bigcap B_k)
 $$
 for 3 events...
 

@@ -87,8 +87,8 @@ We will prove some properties about them below:
 1. **$$A$$ is r.e. $$\implies A = \{x \mid g(x)\downarrow\}$$ .** What this means is that $$A$$ is the domain of some partial recursive function $$g$$. We know $$A$$ is the enumeration of $$f$$, then $$\forall x, \exists y, T(\hat{f}, x, y)$$ by Kleene's Normal Form theorem. Then, we define the partial $$g(y) := \mu_z [ T(\hat{f}, (z)_0, (z)_1) \& U((z)_1) = y] $$. By definition, $$g$$ will only converge on some $$y$$ if it is the result of some computation where the input is $$(z)_0$$, and the output computation state is $$(z)_1$$. We solved for both unknowns using Godel coding to dovetail.
 2. **We can further allow $$f$$ to be injective if $$A$$ is infinite.** We define $$B = \{ z \in \mathbb{N} \mid T(\hat{f}, (z)_0, (z)_1) \& \forall n < z,[T(\hat{f}, (n)_0, (n)_1) \implies (z)_1 \neq (n)_1]]\}$$. This set $$B$$ is a set that contains all inputs and outputs of $$f$$ such that the output cannot be the same for two different inputs, i.e. the definition of injection. $$B$$ is recursively enumerated by some recursive total function $$g$$, since it is clear that we can write a function that asks for $$\mu_z$$ of that giant predicate describing the set, then simply define $$\bar{f}(n) = (g(n))_1$$ then $$\bar{f}$$ enumerates the outputs of the original function $$f$$ injectively.
 3. **The relation $$x \in A$$ is semirecursive**. This is true since $$x \in A \iff \exists n [ f(n) = x ]$$.  Since $$f$$ is recursive, this is by definition a semirecursive relation. This has some implications. Given $$A,B$$ recursive enumerable, 
-   1. $$A \cup B$$ is also r.e.
-   2. $$A \cap B$$ is also r.e.
+   1. $$A \bigcup B$$ is also r.e.
+   2. $$A \bigcap B$$ is also r.e.
    3. $$A^c$$ is not always r.e. - it is **co-recursively enumerable**. If $$A$$ and $$A^c$$ are both recursively enumerable, then $$A$$ is recursive.
    4.  $$f[A]$$, and $$f^{-1}[A]$$, i.e. the image and inverse image of $$A$$ under $$f$$ is r.e.
 
@@ -100,7 +100,7 @@ For sake of brevity, I'll list out a few properties without proofs (which can be
 
 From what we learned so far, we can classify the sets into three sets: 
 1. Recursive enumerable sets, we denote these $$\Sigma^0_1$$.
-2. Co-recursively enumerable sets, we denote these $$\Pi^0_1$$.
+2. Co-recursively enumerable sets, we denote these $$\prod^0_1$$.
 3. Recursive sets, we denote these $$\Delta^0_1$$.
 
 Then we have constructed the first level of a hierarchy of sets, where the intersection of recursive enumerable sets and co-recursively enumerable is the recursive set. Here's an illustration of what I mean:

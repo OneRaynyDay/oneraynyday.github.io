@@ -18,7 +18,7 @@ Suppose we have a sequence $E_n$ of events. We want to denote that $E_n$ happens
 
 
 $$
-\text{limsup}_{n \to \infty} E_n = \cap_n\cup_{k \geq n} E_k
+\text{limsup}_{n \to \infty} E_n = \bigcap_n\bigcup_{k \geq n} E_k
 $$
 
 
@@ -36,10 +36,10 @@ $$
 The proof for the first statement is pretty simple and we'll omit the second:
 
 $$
-P(\cup_nE_n) \leq \sum_n P(E_n) < \infty
+P(\bigcup_nE_n) \leq \sum_n P(E_n) < \infty
 $$
 
-The monotonic sequence $S_k = \sum_i^k P(E_i)$ converging to some $S$ implies that $\forall \epsilon \exists N \in \mathbb{N}$ such that $S - S_n < \epsilon \forall n > N$. Here, $S - S_n = \sum_{m\geq n}P(E_m) \geq P(\cap_{m\geq n} \cup_{k \geq m} E_k)$, so the probability of some outcome happening infinitely often converges to zero.
+The monotonic sequence $S_k = \sum_i^k P(E_i)$ converging to some $S$ implies that $\forall \epsilon \exists N \in \mathbb{N}$ such that $S - S_n < \epsilon \forall n > N$. Here, $S - S_n = \sum_{m\geq n}P(E_m) \geq P(\bigcap_{m\geq n} \bigcup_{k \geq m} E_k)$, so the probability of some outcome happening infinitely often converges to zero.
 
 Note that if the second statement's summation isn't unbounded:
 
@@ -56,7 +56,7 @@ $$
 & \implies \sum_n log(1-P(E_n)) \geq \sum_n P(E_n) = S \\
 & \implies log(\prod_n log(1-P(E_n))) \geq S > 0 \\
 & \implies \prod_n (1-P(E_n)) > 0 \\
-& \implies P(\cup_n \cap_{k \geq n} E_k^c) > 0
+& \implies P(\bigcup_n \bigcap_{k \geq n} E_k^c) > 0
 \end{align}
 $$
 

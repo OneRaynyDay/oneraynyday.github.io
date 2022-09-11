@@ -156,15 +156,15 @@ One intuitive way you can think about it is: "If $b$ chooses $a$ a lot, and $\pi
 
 So that's pretty much what **importance-sampling ratio** is. Given a trajectory $\{(S_i, A_i)\}_{i=t}^T$, the probability of this exact trajectory happening given policy $\pi$ is:
 
-$$ P_\pi(\{(S_i, A_i)\}_{i=t}^T) = \Pi_{i=t}^T \pi(A_i|S_i)p(S_{i+1}|S_i, A_i)$$
+$$ P_\pi(\{(S_i, A_i)\}_{i=t}^T) = \prod_{i=t}^T \pi(A_i|S_i)p(S_{i+1}|S_i, A_i)$$
 
 The ratio between $\pi$ and $b$ is simply:
 
 $$ \rho_{t:T-1} = \frac{P_\pi(\{(S_i, A_i)\}_{i=t}^T)}{P_b(\{(S_i, A_i)\}_{i=t}^T)} $$
 
-$$ = \frac{\Pi_{i=t}^T \pi(A_i|S_i)p(S_{i+1}|S_i, A_i)}{\Pi_{i=t}^T b(A_i|S_i)p(S_{i+1}|S_i, A_i)} $$
+$$ = \frac{\prod_{i=t}^T \pi(A_i|S_i)p(S_{i+1}|S_i, A_i)}{\prod_{i=t}^T b(A_i|S_i)p(S_{i+1}|S_i, A_i)} $$
 
-$$= \frac{\Pi_{i=t}^T \pi(A_i|S_i)}{\Pi_{i=t}^T b(A_i|S_i)}$$ 
+$$= \frac{\prod_{i=t}^T \pi(A_i|S_i)}{\prod_{i=t}^T b(A_i|S_i)}$$ 
 
 ### Ordinary Importance Sampling
 
@@ -264,15 +264,15 @@ $$\rho_{t:T-1}G_{t:T} = \rho_{t:T-1} (\sum_{k=0}^{T-t} \gamma^kR_{t+k+1})$$
 
 For each term, we have $\rho_{t:T-1}\gamma^kR_{t+k+1}$. Expanding $\rho$, we can see:
 
-$$= \frac{\Pi_{i=t}^T \pi(A_i|S_i)}{\Pi_{i=t}^T b(A_i|S_i)} \gamma^k R_{t+k+1}$$
+$$= \frac{\prod_{i=t}^T \pi(A_i|S_i)}{\prod_{i=t}^T b(A_i|S_i)} \gamma^k R_{t+k+1}$$
 
 Taking the expectation without the constant $\gamma^k$:
 
-$$E_b (\rho_{t:T-1}G_{t:T}) = E_b(\frac{\Pi_{i=t}^T \pi(A_i|S_i)}{\Pi_{i=t}^T b(A_i|S_i)} R_{t+k+1})$$
+$$E_b (\rho_{t:T-1}G_{t:T}) = E_b(\frac{\prod_{i=t}^T \pi(A_i|S_i)}{\prod_{i=t}^T b(A_i|S_i)} R_{t+k+1})$$
 
 Recall that you can only take $E(AB) = E(A)E(B)$ iff they are independent. It is obvious from the markov property that any $\pi(A_i\vert S_i)$ and $b(A_i\vert S_i)$ is independent of $R_{t+k+1}$ if $i \geq t+k+1$, and $\pi(A_i\vert S_i) \perp \pi(A_j\vert S_j) i \neq j$ (and same for $b$'s). We can take them out and get:
 
-$$E_b(\frac{\Pi_{i=t}^{t+k} \pi(A_i|S_i)}{\Pi_{i=t}^{t+k} b(A_i|S_i)} R_{t+k+1}) \Pi_{i=t+k+1}^T E_b(\frac{\pi(A_i|S_i)}{b(A_i|S_i)})$$
+$$E_b(\frac{\prod_{i=t}^{t+k} \pi(A_i|S_i)}{\prod_{i=t}^{t+k} b(A_i|S_i)} R_{t+k+1}) \prod_{i=t+k+1}^T E_b(\frac{\pi(A_i|S_i)}{b(A_i|S_i)})$$
 
 This may look extremely ugly, but one can observe that:
 
@@ -280,7 +280,7 @@ $$E_b(\frac{\pi(A_i|S_i)}{b(A_i|S_i)}) = \sum_a b(a|S_i) \frac{\pi(a|S_i)}{b(a|S
 
 So we can really just completely ignore the second half:
 
-$$ E_b(\frac{\Pi_{i=t}^{t+k} \pi(A_i|S_i)}{\Pi_{i=t}^{t+k} b(A_i|S_i)} R_{t+k+1}) \Pi_{i=t+k+1}^T E_b(\frac{\pi(A_i|S_i)}{b(A_i|S_i)}) =  E_b(\frac{\Pi_{i=t}^{t+k} \pi(A_i|S_i)}{\Pi_{i=t}^{t+k} b(A_i|S_i)} R_{t+k+1}) = \rho_{t:t+k}R_{t+k+1}$$
+$$ E_b(\frac{\prod_{i=t}^{t+k} \pi(A_i|S_i)}{\prod_{i=t}^{t+k} b(A_i|S_i)} R_{t+k+1}) \prod_{i=t+k+1}^T E_b(\frac{\pi(A_i|S_i)}{b(A_i|S_i)}) =  E_b(\frac{\prod_{i=t}^{t+k} \pi(A_i|S_i)}{\prod_{i=t}^{t+k} b(A_i|S_i)} R_{t+k+1}) = \rho_{t:t+k}R_{t+k+1}$$
 
 What does this mean? We can really express our original sum in expectation:
 

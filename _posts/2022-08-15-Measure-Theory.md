@@ -13,7 +13,7 @@ $$
 \begin{align}
 \emptyset, X \in \mathcal{A} \\
 A \in \mathcal{A} \implies A^c \in \mathcal{A} \\
-A_i \in \mathcal{A} \implies \cup_{i} A_i \in \mathcal{A}
+A_i \in \mathcal{A} \implies \bigcup_{i} A_i \in \mathcal{A}
 \end{align}
 $$
 
@@ -24,8 +24,8 @@ Also, given a set $X$, $\tau$ is a **topology** on the set if:
 $$
 \begin{align}
 \emptyset, X \in \mathcal{A} \\
-A_i \in \tau \implies \cup_{i} A_i \in \tau \\
-A_i \in \tau \implies \cap_{i}^N A_i \in \tau, N \in \mathbb{N}
+A_i \in \tau \implies \bigcup_{i} A_i \in \tau \\
+A_i \in \tau \implies \bigcap_{i}^N A_i \in \tau, N \in \mathbb{N}
 \end{align}
 $$
 
@@ -38,7 +38,7 @@ Given the measurable space $(X, \mathcal{A})$, a map $\mu: B(X) \to [0, \infty]$
 $$
 \begin{align}
 \mu(\emptyset) = 0 \\
-\forall i \neq j, A_i \cap A_j = \emptyset \implies \mu(\cup_i A_i) = \Sigma_i \mu(A_i)
+\forall i \neq j, A_i \bigcap A_j = \emptyset \implies \mu(\bigcup_i A_i) = \Sigma_i \mu(A_i)
 
 \end{align}
 $$
