@@ -37,7 +37,7 @@ $$
 If we were to fix $I$, then we can see that the measure $\mu'(J) := P(I \cap J)$ agrees with $\mu$ fixed on $\mathcal{J}$. These two measures are the same, so it'll be the same measure on $\sigma(\mathcal{J}) = \mathcal{G}$, which implies independence on the $\sigma$-algebra level. So now we know that $\mathcal{I}$, a $\pi$-system, is independent with $\mathcal{G}$, a $\sigma$-algebra. Now let's fix some $G \in \mathcal{G}$ and apply the same argument to $I$, so that $\mathcal{G}$ is independent with $\sigma(\mathcal{I}) = \mathcal{H}$. Now we have $\mathcal{H}, \mathcal{G}$ independent.
 
 ## Tail $\sigma$-algebra
-Recall in the [5th tidbit](https://oneraynyday.github.io/math/2022/09/11/Random-Variables/) we said that a random variable $X$ can generate a $\sigma$-algebra:
+Recall in the [5th tidbit](https://oneraynyday.github.io/math/2022/09/10/Random-Variables/) we said that a random variable $X$ can generate a $\sigma$-algebra:
 
 $$
 \sigma(X) := \sigma(\{\{\omega \in \Omega: X(\omega) \in B\} : B \in \mathcal{B}\})
@@ -57,7 +57,7 @@ Here, $\mathcal{T}$ is the **tail $\sigma$-algebra** consisting of **tail events
 
 ## $P$-trivial
 
-This term, though not as commonly used, is pretty simple. The most trivial probability measure is one where the probability can be either 1 or 0. In the measurable space $(\mathbb{R}, \mathcal{B})$, a trivial measure $P$ is one where $P(X = c) = 1$ for some $c \in \mathbb{R}$, and consequently 0 everywhere else. Plotting its corresponding distribution function, this looks like a right-continuous step function (recall from [tidbit 4](https://oneraynyday.github.io/math/2022/09/11/Random-Variables/), all distribution functions are right continuous).
+This term, though not as commonly used, is pretty simple. The most trivial probability measure is one where the probability can be either 1 or 0. In the measurable space $(\mathbb{R}, \mathcal{B})$, a trivial measure $P$ is one where $P(X = c) = 1$ for some $c \in \mathbb{R}$, and consequently 0 everywhere else. Plotting its corresponding distribution function, this looks like a right-continuous step function (recall from [tidbit 5](https://oneraynyday.github.io/math/2022/09/10/Random-Variables/), all distribution functions are right continuous).
 
 ## Kolmogorov's 0-1 Law
 Now that we have all the setup, let's figure out why Kolmogorov's law is true. To remind us: **The law states that for independent random variables $$\{X_n\}_n$$ its tail $\sigma$-algebra $\mathcal{T}$ is $P$-trivial.** Let's start off with these $\sigma$-algebras:
