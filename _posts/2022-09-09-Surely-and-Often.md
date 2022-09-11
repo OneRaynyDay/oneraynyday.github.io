@@ -10,7 +10,7 @@ layout: default
 
 Suppose we have a probability space $(\Omega, \mathcal{F}, P)$, an **event** is some $E \in \mathcal{F}$ and **outcomes** are $\omega \in \Omega$. It'd be nice to characterize behavior events on uncountably infinite measurable spaces like $(\mathbb{R}, B(\mathbb{R}))$.
 
-Let's roll a six-sided die. The set is $\Omega = \{1,2,3,4,5,6\}$. An example outcome is rolling the number 3. The outcome of rolling 3 could be in event of $E = \{\text{rolling an odd number}\}$.
+Let's roll a six-sided die. The set is $$\Omega = \{1,2,3,4,5,6\}$$. An example outcome is rolling the number 3. The outcome of rolling 3 could be in event of $$E = \{\text{rolling an odd number}\}$$.
 
 An event $E \in \mathcal{F}$ happens **almost surely** if $P(E) = 1$. Suppose you were to throw a dart on a board - denote the event of you hitting the center as $E$. $P(E) = 0$ obviously, so $P(E^c) = 1$. Here, $E$ happens **almost never** and $E^c$ happens **almost surely**.
 

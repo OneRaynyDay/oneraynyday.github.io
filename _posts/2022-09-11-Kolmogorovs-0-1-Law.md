@@ -82,7 +82,7 @@ A \cap B = \{\omega: X_i(\omega) \leq \text{min}(a_i, b_i) \forall i \leq N\} \i
 \end{align}
 $$
 
-and obviously $\mathcal{I}_N \neq \emptyset$. A similar argument can be made for $\mathcal{J}_N$. These $\pi$-systems are independent since each $X_i$ are independent and by our previous result in the independence section, we have $\mathcal{X}_N \perp \mathcal{T}_N$. But we know that $\mathcal{T} \subset \mathcal{T}_N \forall N$! This means $\mathcal{T} \perp \mathcal{X}_N \forall N$. Now let's push $N \to \infty$ - is $\mathcal{X}_\infty \perp \mathcal{T}$? We know that $$
+and obviously $$\mathcal{I}_N \neq \emptyset$$. A similar argument can be made for $$\mathcal{J}_N$$. These $\pi$-systems are independent since each $X_i$ are independent and by our previous result in the independence section, we have $$\mathcal{X}_N \perp \mathcal{T}_N$$. But we know that $$\mathcal{T} \subset \mathcal{T}_N \forall N$$! This means $$\mathcal{T} \perp \mathcal{X}_N \forall N$$. Now let's push $$N \to \infty$$ - is $$\mathcal{X}_\infty \perp \mathcal{T}$$? We know that $$
 \mathcal{X}_N \subset \mathcal{X}_{N+1} \forall N
 $$As with most "monotonically increasing sets of sets", this is probably a $\pi$-system!
 
@@ -94,11 +94,12 @@ A, B \in \bigcup_n \mathcal{X}_n \\
 \end{align}
 $$
 
-Let's denote this $\pi$-system as $$\mathcal{K} := \bigcup_n \mathcal{X}_n$$. We know that $\mathcal{K} \perp \mathcal{T}$, since for any element in $\mathcal{K}$, we have that it belongs to some $\mathcal{X}_n$ which is independent of $\mathcal{T}$. We also know that $\sigma(\mathcal{K}) \perp \mathcal{T}$ since $\pi$-systems independence extend to its generated $\sigma$-algebra. But wait - $\mathcal{T} \subset \sigma(\mathcal{K})$! This is true since $\mathcal{T} := \bigcap_n \sigma(X_n, X_{n+1}, ...) \subset \sigma(X_1,X_2,...)$. This means $\mathcal{T} \perp \mathcal{T}$, so that
+Let's denote this $\pi$-system as $$\mathcal{K} := \bigcup_n \mathcal{X}_n$$. We know that $$\mathcal{K} \perp \mathcal{T}$$, since for any element in $\mathcal{K}$, we have that it belongs to some $$\mathcal{X}_n$$ which is independent of $\mathcal{T}$. We also know that $$\sigma(\mathcal{K}) \perp \mathcal{T}$$ since $\pi$-systems independence extend to its generated $\sigma$-algebra. But wait - $$\mathcal{T} \subset \sigma(\mathcal{K})$$! This is true since $$\mathcal{T} := \bigcap_n \sigma(X_n, X_{n+1}, ...) \subset \sigma(X_1,X_2,...)$$. This means $$\mathcal{T} \perp \mathcal{T}$$, so that
 
 $$
 T \in \mathcal{T}, P(T \cap T) = P(T)P(T) \implies P(T) \in \{0, 1\}
 $$
+
 Thus $\mathcal{T}$ is $P$-trivial. With Kolmogorov's law, we now know that if a tail event $T$ will either happen with probability 0 or 1 - there is no in between (kind of like a law of excluded middle). We used this in the converse of the second Borel-Cantelli lemma to show that if the probability of the tail event $\text{limsup}_{n \to \infty} E_n$ **not** occurring is greater than 0, then the tail event must have probability 0.
 
 <script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>
