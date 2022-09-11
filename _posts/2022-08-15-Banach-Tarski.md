@@ -40,7 +40,7 @@ $$
 \begin{align}
 \mu(X_r) = \mu(A) \quad \forall r \in \mathbb{Q}_{[-1,1]} \\
 \implies \mu([0,1]) \leq \mu(\bigcup_{r \in \mathbb{Q}_{[-1,1]}} X_r) \leq \mu([-1,2]) \\
-1 \leq \Sigma_{r \in \mathbb{Q}_{[-1,1]}} \mu(A) \leq 3
+1 \leq \sum_{r \in \mathbb{Q}_{[-1,1]}} \mu(A) \leq 3
 \end{align}
 $$
 which is impossible.

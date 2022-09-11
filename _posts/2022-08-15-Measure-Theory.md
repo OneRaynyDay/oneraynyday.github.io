@@ -38,7 +38,7 @@ Given the measurable space $(X, \mathcal{A})$, a map $\mu: B(X) \to [0, \infty]$
 $$
 \begin{align}
 \mu(\emptyset) = 0 \\
-\forall i \neq j, A_i \bigcap A_j = \emptyset \implies \mu(\bigcup_i A_i) = \Sigma_i \mu(A_i)
+\forall i \neq j, A_i \bigcap A_j = \emptyset \implies \mu(\bigcup_i A_i) = \sum_i \mu(A_i)
 
 \end{align}
 $$
