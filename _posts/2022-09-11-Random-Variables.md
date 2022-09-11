@@ -11,7 +11,7 @@ layout: default
 Random variables aren't actually variables. They're measurable functions (see previous post [here](https://oneraynyday.github.io/math/2022/08/15/Measure-Theory/)) between a measurable space $(\Omega, \mathcal{F})$ and $(\mathbb{R}, \mathcal{B})$ (I'm going to use $\mathcal{B}$ instead of $\mathcal{B}(\mathbb{R})$ as I've done previously as shorthand). Recall that for a measurable function $h: \Omega \to \mathbb{R}$, $\forall B \in \mathcal{B}, h^{-1}(B) \in \mathcal{F}$.
 
 ## Why do we care?
-Why do we work with random variables instead of the probability space $(\Omega, \mathcal{F}, P)$$ in the first place? This is more of a philosophical question about statistics than a concrete explanation, but I'll try my best:
+Why do we work with random variables instead of the probability space $(\Omega, \mathcal{F}, P)$ in the first place? This is more of a philosophical question about statistics than a concrete explanation, but I'll try my best:
 
 We often deal with discrete decisions based of uncountably many outcomes. When we want to go outside, our brain asks "is it going to be hot or cold?". When we perform experiments to either reject or fail to reject the null hypothesis, we are tasked also with a binary outcome. Temperature range can be expressed as  $[0, \infty) \subset \mathbb{R}$, and there are uncountably many outcomes. We don't really ask the question "will the temperature be exactly 3 degrees Kelvin" to decide whether we should wear a heavy coat, but instead we express it in terms of $P(\{\omega: \omega \leq T\})$ as "what's the probability it's going to be cold, i.e. below some threshold temperature $T$". An intuitive way to represent this is via a random variable:
 
