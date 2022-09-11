@@ -60,7 +60,7 @@ $$
 \end{align}
 $$
 
-as in $P(\text{limsup}_{n \to \infty} E_n) \neq 1$ or the events **doesn't happen infinitely often**, then by Kolmolgorov's 0-1 law (will have a future blog post about this) the events will happen finitely often and thus $P(\text{limsup}_{n \to \infty} E_n) = 0$.
+as in $$P(\text{limsup}_{n \to \infty} E_n) \neq 1$$ or the events **doesn't happen infinitely often**, then by Kolmolgorov's 0-1 law (will have a future blog post about this) the events will happen finitely often and thus $$P(\text{limsup}_{n \to \infty} E_n) = 0$$.
 
 ## Infinity, Monkeys, and Shakespeare
 We have countably many monkeys at your service, each with their own type writer minding their own business. Say we made them all start typing at $T = 0$ and waited. Now that we're equipped with the second Borel-Cantelli lemma, we see that the event $A_i = \{\text{i-th monkey types shakespeare}\}$ is extremely unlikely, but $P(A_i) > 0$. We also know that these monkeys mind their own business so the events $A_i \perp A_j$ , so therefore:
