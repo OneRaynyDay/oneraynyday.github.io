@@ -7,7 +7,7 @@ layout: default
 ---
 
 # Probability Tidbits 6 - Kolmogorov's 0-1 Law
-In the [4th tidbit](https://oneraynyday.github.io/math/2022/09/09/Surely-and-Often/) we discussed the definition of **almost surely** and **infinitely often**. In the discussion of the converse of the second **Borel-Cantelli lemma**, we referenced the **Kolmogorov 0-1 Law**, but didn't prove it or even state the general result. **The law states that for independent random variables $$\{X_n\}_n$$ its tail $\sigma$-algebra is $P$-trivial.** Let's define some terms I just threw out in that word salad.
+In the [4th tidbit](https://oneraynyday.github.io/math/2022/09/09/Surely-and-Often/) we discussed the definition of **almost surely** and **infinitely often**. In the discussion of the converse of the second **Borel-Cantelli lemma**, we referenced the **Kolmogorov 0-1 Law**, but didn't prove it or even state the general result. **The law states that for independent random variables $$\{X_n\}_n$$ its tail $\sigma$-algebra is $P$-trivial.** Let's define some terms in that word salad.
 
 ## Independence
 The definition of independence taught in undergrad probability theory concerns events, in that for event $A, B \in \mathcal{F}$ where $F$ is some $\sigma$-algebra, these events are independent if:
