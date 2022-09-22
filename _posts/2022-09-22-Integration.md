@@ -162,7 +162,7 @@ If this holds, then $$f \in \mathcal{L}^1(\Omega, \mathcal{F}, \mu)$$, and $$\mu
 
 $$|f_n - f| < 2g \implies h_n := 2g - |f_n - f|$$
 
-Here, $(h_n)$ is a sequence of positive measurable functions. We can prove that $\mu(|f_n - f|)$ vanishes:
+Here, $(h_n)$ is a sequence of positive measurable functions. We can prove that $\mu(\mid f_n - f\mid)$ vanishes:
 
 $$
 \begin{align}
