@@ -27,7 +27,7 @@ $$
 	\end{cases}
 $$
 
-This map basically partitions the space of $\Omega$ into elements that are in $A$ and those that aren't. This function is obviously measurable, since $A$ is measurable and $A^c$ must be measurable since $\mathcal{F}$ is a $\sigma$-algebra. We can denote $\mu(1_A) := \sum_\Omega 1_A(\omega) = \mu(A)$, in that we summed up all elements measures in $A$ with unit weights.
+This map basically partitions the space of $\Omega$ into elements that are in $A$ and those that aren't. This function is obviously measurable, since $A$ is measurable and $A^c$ must be measurable since $\mathcal{F}$ is a $\sigma$-algebra. We can denote $$\mu(1_A) := \sum_\Omega 1_A(\omega) = \mu(A)$$, in that we summed up all elements measures in $A$ with unit weights.
 
 A function $f$ is called **simple** if it can be constructed by a positive weighted sum of stepwise indicator functions of measurable sets $A_1,...,A_n$ (finite!) in $\mathcal{F}$:
 
@@ -49,17 +49,17 @@ There are some obvious properties of simple functions. Let's take $f, g$ as simp
 4. Min/max: $\text{min}(f, g)$ and $\text{max}(f,g)$ are simple.
 5. Composition: $f$ composed with an indicator function $1_A$ is simple.
 
-Integrals of simple functions are also easy to reason about. Let's start with a sequence of monotonically increasing simple functions $h_n$ such that the sequence converges to $1_A$ for a measurable set $A \in \mathcal{F}$. Is $\text{lim}_{n \to \infty} \mu(h_n) \to \mu(1_A)$? Or in other words, can we "pull out the limit", so that:
+Integrals of simple functions are also easy to reason about. Let's start with a sequence of monotonically increasing simple functions $h_n$ such that the sequence converges to $$1_A$$ for a measurable set $$A \in \mathcal{F}$$. Is $$\text{lim}_{n \to \infty} \mu(h_n) \to \mu(1_A)$$? Or in other words, can we "pull out the limit", so that:
 
 $$
 \mu(\lim_{n \to \infty} h_n) \stackrel{?}{=} \lim_{n \to \infty} \mu(h_n)
 $$
 
-We can correspond these functions $h_n$ to measurable sets $A_n := \{\omega : h_n(\omega) > 1 - \epsilon\}$ for some $\epsilon$ (recall it's also bounded above by the indicator functions). Note that $(1-\epsilon) \mu(A_n) \leq \mu(h_n)$ by definition, since it's only a subset of the outcomes for $h_n$:
+We can correspond these functions $h_n$ to measurable sets $$A_n := \{\omega : h_n(\omega) > 1 - \epsilon\}$$ for some $\epsilon$ (recall it's also bounded above by the indicator functions). Note that $$(1-\epsilon) \mu(A_n) \leq \mu(h_n)$$ by definition, since it's only a subset of the outcomes for $h_n$:
 
 ![simple_fn]({{ site.url }}/assets/lebesgue_simple_fn.png)
 
-The sequence of sets $A_n$ converge to $A$ since $h_n \to 1_A$ and $A = \{\omega: 1_A(\omega) = 1 > 1-\epsilon\}$. This means $\lim_{n \to \infty} \mu(h_n) \geq (1-\epsilon)\mu(A)$. Now we take $\epsilon$ small and we have that $\lim_{n \to \infty} \mu(h_n) = \mu(A) = \mu(\lim_{n \to \infty} h_n) = \mu(1_A)$. Note that we started with a simple indicator function in the above example, but it can be pretty trivially extended to any simple function. 
+The sequence of sets $A_n$ converge to $A$ since $$h_n \to 1_A$$ and $$A = \{\omega: 1_A(\omega) = 1 > 1-\epsilon\}$$. This means $$\lim_{n \to \infty} \mu(h_n) \geq (1-\epsilon)\mu(A)$$. Now we take $\epsilon$ small and we have that $$\lim_{n \to \infty} \mu(h_n) = \mu(A) = \mu(\lim_{n \to \infty} h_n) = \mu(1_A)$$. Note that we started with a simple indicator function in the above example, but it can be pretty trivially extended to any simple function. 
 
 Measurable functions aren't always simple. For an arbitary measurable $f : \Omega \to \mathbb{R}^+$ we can't just represent it with a finite sum of indicator functions. Just like how we take the limit as the rectangles widths go to zero in the Riemann integral, we can take a limit on a sequence of monotonically increasing simple functions bounded by $f$. The integral of $f$ can thus be expressed as the integral of the least upper bound of these simple functions:
 
@@ -80,7 +80,8 @@ First, let's fix $\epsilon > 0$ and some simple function $0 \leq h \leq f$. The 
 $$
 A_n := \{\omega: f_n(\omega) \geq (1-\epsilon) h(\omega)\}
 $$
-is interesting (note that this is slightly different than the simple function case, since we're using $\geq$ here). As $n \to \infty$, $A_n \to \Omega$ since $f_n$ will eventually converge to $f \geq h$. We know that $\mu(f_n) \geq \mu(f_n 1_{A_n})$, since we're restricting our domain to a smaller set $A_n$. We also know that $\mu(f_n 1_{A_n}) \geq \mu((1-\epsilon)h 1_{A_n})$. Now we have a chain of inequalities which we can take the limit of:
+
+is interesting (note that this is slightly different than the simple function case, since we're using $\geq$ here). As $n \to \infty$, $A_n \to \Omega$ since $f_n$ will eventually converge to $f \geq h$. We know that $$\mu(f_n) \geq \mu(f_n 1_{A_n})$$, since we're restricting our domain to a smaller set $A_n$. We also know that $$\mu(f_n 1_{A_n}) \geq \mu((1-\epsilon)h 1_{A_n})$$. Now we have a chain of inequalities which we can take the limit of:
 
 $$
 \begin{align}
@@ -88,6 +89,7 @@ $$
 \implies \lim_{n \to \infty} \mu(f_n) \geq \lim_{n \to \infty}  \mu(f_n 1_{A_n}) \geq \lim_{n \to \infty}  \mu((1-\epsilon)h1_{A_n})
 \end{align}
 $$
+
 Note that since $h1_{A_n}$ and $h1_A$ are simple, from previous results on simple functions we have:
 
 $$
@@ -128,7 +130,7 @@ $$
 \end{align}
 $$
 
-Here, we just have to look at $g_k := \inf_{n \geq k} f_n$ which is an increasing sequence of functions on $k$, converging to some function $g_k \uparrow g$. We know that:
+Here, we just have to look at $$g_k := \inf_{n \geq k} f_n$$ which is an increasing sequence of functions on $k$, converging to some function $g_k \uparrow g$. We know that:
 
 $$
 \begin{align}
@@ -156,7 +158,7 @@ $$
 |f_n(x)| \leq g(x) \forall f_n, x
 $$
 
-If this holds, then $f \in \mathcal{L}^1(\Omega, \mathcal{F}, \mu)$, and $\mu(f_n) \uparrow \mu(f)$(we can pull out the limit) . We know by triangle inequality  $|f_n - f| < 2g \implies h_n := 2g - |f_n - f|$, i.e. $(h_n)$ is a sequence of positive measurable functions. We can prove that $\mu(|f_n - f|)$ vanishes:
+If this holds, then $$f \in \mathcal{L}^1(\Omega, \mathcal{F}, \mu)$$, and $$\mu(f_n) \uparrow \mu(f)$$ (we can pull out the limit) . We know by triangle inequality  $$|f_n - f| < 2g \implies h_n := 2g - |f_n - f|$$, i.e. $(h_n)$ is a sequence of positive measurable functions. We can prove that $\mu(|f_n - f|)$ vanishes:
 
 $$
 \begin{align}
@@ -169,9 +171,9 @@ $$
 where the starred inequality is due to Fatou's lemmas. 
 
 ### Counterexamples to Dominated Convergence Theorem
-Say we don't have a dominating function $g$ for a sequence of functions $(f_n)$. Then it's hard to say whether we can pull out the limit. Suppose we have the function $f_n(x) = \frac{1}{x} * 1_{[\frac{1}{n}, 1)}$.  $\mu(f_n) < \infty \forall n$, but the limit is the integral of $\log(1) - \log(0) = \infty$. Here we couldn't bound $f_n$ by any dominating function in $\mathcal{L}^1(\Omega, \mathcal{F}, \mu)$. 
+Say we don't have a dominating function $g$ for a sequence of functions $(f_n)$. Then it's hard to say whether we can pull out the limit. Suppose we have the function $$f_n(x) = \frac{1}{x} * 1_{[\frac{1}{n}, 1)}$$.  $$\mu(f_n) < \infty \forall n$$, but the limit is the integral of $$\log(1) - \log(0) = \infty$$. Here we couldn't bound $f_n$ by any dominating function in $$\mathcal{L}^1(\Omega, \mathcal{F}, \mu)$$. 
 
-Another canonical example is the function $f_n(x) = n * 1_{(0, \frac{1}{n}]}$. This function converges to the zero function so $\mu(\lim f_n) = 0$, but $\mu(f_n) = 1 \forall n \implies \lim \mu(f_n) = 1$. This is another case of us unable to bound $f_n(x)$ by any dominating function.
+Another canonical example is the function $$f_n(x) = n * 1_{(0, \frac{1}{n}]}$$. This function converges to the zero function so $$\mu(\lim f_n) = 0$$, but $$\mu(f_n) = 1 \forall n \implies \lim \mu(f_n) = 1$$. This is another case of us unable to bound $f_n(x)$ by any dominating function.
 
 
 <script src="https://utteranc.es/client.js" repo="OneRaynyDay/oneraynyday.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async> </script>
