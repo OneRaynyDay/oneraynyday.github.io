@@ -158,7 +158,11 @@ $$
 |f_n(x)| \leq g(x) \forall f_n, x
 $$
 
-If this holds, then $$f \in \mathcal{L}^1(\Omega, \mathcal{F}, \mu)$$, and $$\mu(f_n) \uparrow \mu(f)$$ (we can pull out the limit) . We know by triangle inequality  $$|f_n - f| < 2g \implies h_n := 2g - |f_n - f|$$, i.e. $(h_n)$ is a sequence of positive measurable functions. We can prove that $\mu(|f_n - f|)$ vanishes:
+If this holds, then $$f \in \mathcal{L}^1(\Omega, \mathcal{F}, \mu)$$, and $$\mu(f_n) \uparrow \mu(f)$$ (we can pull out the limit) . We know by triangle inequality:
+
+$$|f_n - f| < 2g \implies h_n := 2g - |f_n - f|$$
+
+Here, $(h_n)$ is a sequence of positive measurable functions. We can prove that $\mu(|f_n - f|)$ vanishes:
 
 $$
 \begin{align}
